@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  angular:
+  api:
     image: vibioh/hello
     labels:
       traefik.frontend.passHostHeader: 'true'
