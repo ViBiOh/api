@@ -5,7 +5,7 @@ services:
     image: vibioh/hello
     labels:
       traefik.frontend.passHostHeader: 'true'
-      traefik.frontend.rule: 'Host: hello.${DOMAIN}'
+      traefik.frontend.rule: 'Host: api.${DOMAIN}'
       traefik.port: '1080'
     logging:
       driver: json-file
