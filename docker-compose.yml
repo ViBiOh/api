@@ -2,7 +2,7 @@ version: '2'
 
 services:
   api:
-    image: vibioh/hello
+    image: vibioh/api
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.${DOMAIN}'
