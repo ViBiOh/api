@@ -38,7 +38,7 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-  http.HandleFunc("/api/hello/", apiHello)
+  http.HandleFunc("/hello/", apiHello)
 
   log.Print("Starting server on port " + port)
   log.Fatal(http.ListenAndServe(":"+port, nil))
