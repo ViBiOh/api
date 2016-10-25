@@ -24,7 +24,7 @@ func pluralize(s string, n int) string {
 
 func apiHello(w http.ResponseWriter, r *http.Request) {
   time.Sleep(delayInSeconds * time.Second)
-  hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/api/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
+  hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
 
   helloJson, err := json.Marshal(hello)
   if err == nil {
