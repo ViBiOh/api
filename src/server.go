@@ -69,7 +69,7 @@ func getPerformance(rawValue []byte) float64 {
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
-	morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
+	morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/morningStar/", "", -1))
 
 	performanceResponse, err := http.Get(PERFORMANCE_URL + morningStarId)
 	if err != nil {
@@ -114,7 +114,7 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/hello/", apiHello)
-	http.HandleFunc("/perf/", apiPerf)
+	http.HandleFunc("/morningStar/", apiPerf)
 
 	log.Print("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
