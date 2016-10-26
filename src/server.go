@@ -14,11 +14,13 @@ const delayInSeconds = 1
 const port = "1080"
 
 const PERFORMANCE_URL = "http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=1&id="
+const VOLATILITE_URL = "http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=2&id="
 
 var PERF_ONE_MONTH = regexp.MustCompile("<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_THREE_MONTH = regexp.MustCompile("<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_SIX_MONTH = regexp.MustCompile("<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_ONE_YEAR = regexp.MustCompile("<td[^>]*?>1 an</td><td[^>]*?>(.*?)</td>")
+var VOL_3_YEAR = regexp.MustCompile("<td[^>]*?>Ecart-type 3 ans.?</td><td[^>]*?>(.*?)</td>")
 
 func responseJson(w http.ResponseWriter, obj interface{}) {
 	objJson, err := json.Marshal(obj)
@@ -57,41 +59,55 @@ type Performance struct {
 	ThreeMonth    float64 `json:"threeMonths"`
 	SixMonth      float64 `json:"sixMonths"`
 	OneYear       float64 `json:"oneYear"`
+	VolThreeYears       float64 `json:"volThreeYears"`
 }
 
 func getPerformance(rawValue []byte) float64 {
-	result, _ := strconv.ParseFloat(strings.Replace(string(rawValue[:]), ",", ".", -1), 64)
+	result, _ := strconv.ParseFloat(strings.Replace(strings.Replace(string(rawValue[:]), ",", ".", -1), "%", "", -1), 64)
 	return result
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
 	morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
-	response, err := http.Get(PERFORMANCE_URL + morningStarId)
 
+	performanceResponse, err := http.Get(PERFORMANCE_URL + morningStarId)
 	if err != nil {
 		http.Error(w, "Error while fetching data", 500)
 		return
 	}
 
-	if response.StatusCode >= 400 {
-		http.Error(w, morningStarId+" not found", response.StatusCode)
+	if performanceResponse.StatusCode >= 400 {
+		http.Error(w, morningStarId+" not found", performanceResponse.StatusCode)
 		return
 	}
 
-	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	defer performanceResponse.Body.Close()
+	performanceBody, err := ioutil.ReadAll(performanceResponse.Body)
 	if err != nil {
-		log.Fatal(err)
-		http.Error(w, "Error while reading body", 500)
+		http.Error(w, "Error while reading performance body", 500)
+		return
+	}
+	
+	volatiliteResponse, err := http.Get(VOLATILITE_URL + morningStarId)
+	if err != nil {
+		http.Error(w, "Error while fetching data", 500)
 		return
 	}
 
-	oneMonth := getPerformance(PERF_ONE_MONTH.FindSubmatch(body)[1])
-	threeMonths := getPerformance(PERF_THREE_MONTH.FindSubmatch(body)[1])
-	sixMonths := getPerformance(PERF_SIX_MONTH.FindSubmatch(body)[1])
-	oneYear := getPerformance(PERF_ONE_YEAR.FindSubmatch(body)[1])
+	defer volatiliteResponse.Body.Close()
+	volatiliteBody, err := ioutil.ReadAll(volatiliteResponse.Body)
+	if err != nil {
+		http.Error(w, "Error while reading volatilite body", 500)
+		return
+	}
 
-	performance := Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear}
+	oneMonth := getPerformance(PERF_ONE_MONTH.FindSubmatch(performanceBody)[1])
+	threeMonths := getPerformance(PERF_THREE_MONTH.FindSubmatch(performanceBody)[1])
+	sixMonths := getPerformance(PERF_SIX_MONTH.FindSubmatch(performanceBody)[1])
+	oneYear := getPerformance(PERF_ONE_YEAR.FindSubmatch(performanceBody)[1])
+	volThreeYears := getPerformance(VOL_3_YEAR.FindSubmatch(volatiliteBody)[1])
+
+	performance := Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears}
 	responseJson(w, performance)
 }
 
