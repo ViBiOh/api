@@ -8,7 +8,7 @@ import "./morningStar"
 const port = "1080"
 
 func main() {
-  http.HandleFunc("/hello/", hello.Handler)
+	http.HandleFunc("/hello/", hello.Handler)
 	http.HandleFunc("/morningStar/", morningStar.Handler)
 
 	log.Print("Starting server on port " + port)
