@@ -31,19 +31,24 @@ func pluralize(s string, n int) string {
 	return s
 }
 
-func apiHello(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(delayInSeconds * time.Second)
-	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
+func responseJson(w http.ResponseWriter, obj interface{}) {
+	objJson, err := json.Marshal(obj)
 
-	helloJson, err := json.Marshal(hello)
 	if err == nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Write(helloJson)
 	} else {
-		log.Fatal(err)
+		http.Error(w, "Error while marshalling JSON response", 500)
 	}
+}
+
+func apiHello(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(delayInSeconds * time.Second)
+	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
+
+	responseJson(hello)
 }
 
 type Performance struct {
@@ -83,14 +88,7 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		string(PERF_SIX_MONTH.FindSubmatch(body)[1][:]),
 		string(PERF_ONE_YEAR.FindSubmatch(body)[1][:]),
 	}
-	performanceJson, errJson := json.Marshal(performance)
-
-	if errJson != nil {
-		http.Error(w, "Error while marshalling json", 500)
-	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(performanceJson)
-	}
+	responseJson(performance)
 }
 
 func main() {
