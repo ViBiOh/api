@@ -63,7 +63,7 @@ type Performance struct {
 }
 
 func getPerformance(rawValue []byte) float64 {
-	result, _ := strconv.ParseFloat(strings.Replace(strings.Replace(string(rawValue[:]), ",", ".", -1), "%", "", -1), 64)
+	result, _ := strconv.ParseFloat(strings.TrimSpace(strings.Replace(strings.Replace(string(rawValue[:]), ",", ".", -1), "%", "", -1)), 64)
 	return result
 }
 
