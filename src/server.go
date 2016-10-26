@@ -45,6 +45,10 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type Performance struct {
+	OneMonth byte[]
+}
+
 func apiPerf(w http.ResponseWriter, r *http.Request) {
   morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
 	response, err := http.Get(PERFORMANCE_URL + morningStarId)
@@ -66,8 +70,16 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while reading body", 500)
 		return
 	}
-
-  w.Write(PERF_ONE_MONTH.FindSubmatch(body)[1])
+	
+	performance := Performance{PERF_ONE_MONTH.FindSubmatch(body)[1]}
+	performanceJson, errJson := json.Marshal(performance)
+	
+	if errJson != nil {
+		http.Error(w, "Error while marshalling json", 500)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(performanceJson)
+	}
 }
 
 func main() {
