@@ -55,11 +55,11 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 
 type Performance struct {
 	MorningStarId string  `json:"id"`
-	OneMonth      float64 `json:"oneMonth"`
-	ThreeMonth    float64 `json:"threeMonths"`
-	SixMonth      float64 `json:"sixMonths"`
-	OneYear       float64 `json:"oneYear"`
-	VolThreeYears       float64 `json:"volThreeYears"`
+	OneMonth      float64 `json:"1m"`
+	ThreeMonth    float64 `json:"3m"`
+	SixMonth      float64 `json:"6m"`
+	OneYear       float64 `json:"1y"`
+	VolThreeYears       float64 `json:"v1y"`
 }
 
 func getPerformance(rawValue []byte) float64 {
