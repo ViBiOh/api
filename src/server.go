@@ -20,17 +20,6 @@ var PERF_THREE_MONTH = regexp.MustCompile("<td[^>]*?>3 mois</td><td[^>]*?>(.*?)<
 var PERF_SIX_MONTH = regexp.MustCompile("<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_ONE_YEAR = regexp.MustCompile("<td[^>]*?>1 an</td><td[^>]*?>(.*?)</td>")
 
-type Hello struct {
-	Name string `json:"greeting"`
-}
-
-func pluralize(s string, n int) string {
-	if n > 1 {
-		return (s + "s")
-	}
-	return s
-}
-
 func responseJson(w http.ResponseWriter, obj interface{}) {
 	objJson, err := json.Marshal(obj)
 
@@ -44,6 +33,17 @@ func responseJson(w http.ResponseWriter, obj interface{}) {
 	}
 }
 
+type Hello struct {
+	Name string `json:"greeting"`
+}
+
+func pluralize(s string, n int) string {
+	if n > 1 {
+		return (s + "s")
+	}
+	return s
+}
+
 func apiHello(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(delayInSeconds * time.Second)
 	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
@@ -54,8 +54,8 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 type Performance struct {
 	MorningStarId string `json:"id"`
 	OneMonth      string `json:"oneMonth"`
-	ThreeMonth    string `json:"threeMonth"`
-	SixMonth      string `json:"sixMonth"`
+	ThreeMonth    string `json:"threeMonths"`
+	SixMonth      string `json:"sixMonths"`
 	OneYear       string `json:"oneYear"`
 }
 
