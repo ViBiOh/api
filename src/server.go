@@ -27,7 +27,7 @@ func responseJson(w http.ResponseWriter, obj interface{}) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Write(helloJson)
+		w.Write(objJson)
 	} else {
 		http.Error(w, "Error while marshalling JSON response", 500)
 	}
@@ -48,15 +48,15 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(delayInSeconds * time.Second)
 	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
 
-	responseJson(hello)
+	responseJson(w, hello)
 }
 
 type Performance struct {
-	MorningStarId string `json:"id"`
-	OneMonth      string `json:"oneMonth"`
-	ThreeMonth    string `json:"threeMonths"`
-	SixMonth      string `json:"sixMonths"`
-	OneYear       string `json:"oneYear"`
+	MorningStarId string  `json:"id"`
+	OneMonth      float64 `json:"oneMonth"`
+	ThreeMonth    float64 `json:"threeMonths"`
+	SixMonth      float64 `json:"sixMonths"`
+	OneYear       float64 `json:"oneYear"`
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
@@ -81,14 +81,13 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	performance := Performance{
-		morningStarId,
-		string(PERF_ONE_MONTH.FindSubmatch(body)[1][:]),
-		string(PERF_THREE_MONTH.FindSubmatch(body)[1][:]),
-		string(PERF_SIX_MONTH.FindSubmatch(body)[1][:]),
-		string(PERF_ONE_YEAR.FindSubmatch(body)[1][:]),
-	}
-	responseJson(performance)
+	oneMonth, err := strconv.ParseFloat(string(PERF_ONE_MONTH.FindSubmatch(body)[1][:]), 64)
+	threeMonths, err := strconv.ParseFloat(string(PERF_THREE_MONTH.FindSubmatch(body)[1][:]), 64)
+	sixMonths, err := strconv.ParseFloat(string(PERF_SIX_MONTH.FindSubmatch(body)[1][:]), 64)
+	oneYear, err := strconv.ParseFloat(string(PERF_ONE_YEAR.FindSubmatch(body)[1][:]), 64)
+
+	performance := Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear}
+	responseJson(w, performance)
 }
 
 func main() {
