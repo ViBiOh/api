@@ -15,6 +15,7 @@ const port = "1080"
 
 const PERFORMANCE_URL = "http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=1&id="
 const VOLATILITE_URL = "http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=2&id="
+const SEARCH_ID = 'http://www.morningstar.fr/fr/util/SecuritySearch.ashx?q='
 
 var PERF_ONE_MONTH = regexp.MustCompile("<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_THREE_MONTH = regexp.MustCompile("<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>")
