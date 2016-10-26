@@ -14,6 +14,7 @@ const delayInSeconds = 1
 const port = "1080"
 
 const PERFORMANCE_URL = "http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=1&id="
+
 var PERF_ONE_MONTH = regexp.MustCompile("<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_THREE_MONTH = regexp.MustCompile("<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>")
 var PERF_SIX_MONTH = regexp.MustCompile("<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</td>")
@@ -46,11 +47,15 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 }
 
 type Performance struct {
-	OneMonth string
+	MorningStarId string `json:"id"`
+	OneMonth      string `json:"oneMonth"`
+	ThreeMonth    string `json:"threeMonth"`
+	SixMonth      string `json:"sixMonth"`
+	OneYear       string `json:"oneYear"`
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
-  morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
+	morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
 	response, err := http.Get(PERFORMANCE_URL + morningStarId)
 
 	if err != nil {
@@ -58,10 +63,10 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-  if response.StatusCode >= 400 {
-    http.Error(w, morningStarId + " not found", response.StatusCode)
-    return
-  }
+	if response.StatusCode >= 400 {
+		http.Error(w, morningStarId+" not found", response.StatusCode)
+		return
+	}
 
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
@@ -70,10 +75,16 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error while reading body", 500)
 		return
 	}
-	
-	performance := Performance{string(PERF_ONE_MONTH.FindSubmatch(body)[1][:])}
+
+	performance := Performance{
+		morningStarId,
+		string(PERF_ONE_MONTH.FindSubmatch(body)[1][:]),
+		string(PERF_THREE_MONTH.FindSubmatch(body)[1][:]),
+		string(PERF_SIX_MONTH.FindSubmatch(body)[1][:]),
+		string(PERF_ONE_YEAR.FindSubmatch(body)[1][:]),
+	}
 	performanceJson, errJson := json.Marshal(performance)
-	
+
 	if errJson != nil {
 		http.Error(w, "Error while marshalling json", 500)
 	} else {
