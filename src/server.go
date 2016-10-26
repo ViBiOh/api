@@ -59,6 +59,11 @@ type Performance struct {
 	OneYear       float64 `json:"oneYear"`
 }
 
+func getPerformance(rawValue []byte) float64 {
+	result, _ := strconv.ParseFloat(strings.Replace(string(rawValue[:]), ",", ".", -1), 64)
+	return result
+}
+
 func apiPerf(w http.ResponseWriter, r *http.Request) {
 	morningStarId := strings.ToLower(strings.Replace(r.URL.Path, "/perf/", "", -1))
 	response, err := http.Get(PERFORMANCE_URL + morningStarId)
@@ -81,10 +86,10 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	oneMonth, err := strconv.ParseFloat(string(PERF_ONE_MONTH.FindSubmatch(body)[1][:]), 64)
-	threeMonths, err := strconv.ParseFloat(string(PERF_THREE_MONTH.FindSubmatch(body)[1][:]), 64)
-	sixMonths, err := strconv.ParseFloat(string(PERF_SIX_MONTH.FindSubmatch(body)[1][:]), 64)
-	oneYear, err := strconv.ParseFloat(string(PERF_ONE_YEAR.FindSubmatch(body)[1][:]), 64)
+	oneMonth := getPerformance(PERF_ONE_MONTH.FindSubmatch(body)[1])
+	threeMonths := getPerformance(PERF_THREE_MONTH.FindSubmatch(body)[1])
+	sixMonths := getPerformance(PERF_SIX_MONTH.FindSubmatch(body)[1])
+	oneYear := getPerformance(PERF_ONE_YEAR.FindSubmatch(body)[1])
 
 	performance := Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear}
 	responseJson(w, performance)
