@@ -46,7 +46,7 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 }
 
 type Performance struct {
-	OneMonth []byte
+	OneMonth string
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +71,7 @@ func apiPerf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	performance := Performance{PERF_ONE_MONTH.FindSubmatch(body)[1]}
+	performance := Performance{string(PERF_ONE_MONTH.FindSubmatch(body)[1][:])}
 	performanceJson, errJson := json.Marshal(performance)
 	
 	if errJson != nil {
