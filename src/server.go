@@ -46,7 +46,7 @@ func apiHello(w http.ResponseWriter, r *http.Request) {
 }
 
 type Performance struct {
-	OneMonth byte[]
+	OneMonth []byte
 }
 
 func apiPerf(w http.ResponseWriter, r *http.Request) {
