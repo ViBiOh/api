@@ -34,7 +34,7 @@ func getBody(url string, w http.ResponseWriter) []byte {
 	}
 
 	if response.StatusCode >= 400 {
-		http.Error(w, "Got error "+response.StatusCode+" while getting "+url, response.StatusCode)
+		http.Error(w, "Got error "+strconv.Itoa(response.StatusCode)+" while getting "+url, response.StatusCode)
 		return nil
 	}
 
