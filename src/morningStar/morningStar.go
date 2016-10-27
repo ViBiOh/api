@@ -26,6 +26,28 @@ type Performance struct {
 	VolThreeYears float64 `json:"v1y"`
 }
 
+func getBody(url string) {
+	response, err := http.Get(url)
+	if err != nil {
+		http.Error(w, "Error while retrieving data from "+url, 500)
+		return nil
+	}
+
+	if response.StatusCode >= 400 {
+		http.Error(w, "Got error "+response.StatusCode+" while getting "+url, response.StatusCode)
+		return nil
+	}
+
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		http.Error(w, "Error while reading body of "+url, 500)
+		return nil
+	}
+
+	return body
+}
+
 func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 	match := extract.FindSubmatch(body)
 	if match == nil {
@@ -52,34 +74,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	performanceResponse, err := http.Get(PERFORMANCE_URL + morningStarId)
-	if err != nil {
-		http.Error(w, "Error while fetching data", 500)
+	performanceBody := getBody(PERFORMANCE_URL + morningStarId)
+	if performanceBody == nil {
 		return
 	}
 
-	if performanceResponse.StatusCode >= 400 {
-		http.Error(w, morningStarId+" not found", performanceResponse.StatusCode)
-		return
-	}
-
-	defer performanceResponse.Body.Close()
-	performanceBody, err := ioutil.ReadAll(performanceResponse.Body)
-	if err != nil {
-		http.Error(w, "Error while reading performance body", 500)
-		return
-	}
-
-	volatiliteResponse, err := http.Get(VOLATILITE_URL + morningStarId)
-	if err != nil {
-		http.Error(w, "Error while fetching data", 500)
-		return
-	}
-
-	defer volatiliteResponse.Body.Close()
-	volatiliteBody, err := ioutil.ReadAll(volatiliteResponse.Body)
-	if err != nil {
-		http.Error(w, "Error while reading volatilite body", 500)
+	volatiliteBody := getBody(VOLATILITE_URL + morningStarId)
+	if performanceBody == nil {
 		return
 	}
 
