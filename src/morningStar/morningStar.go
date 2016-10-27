@@ -26,7 +26,7 @@ type Performance struct {
 	VolThreeYears float64 `json:"v1y"`
 }
 
-func getBody(url string) {
+func getBody(url string, w http.ResponseWriter) []byte {
 	response, err := http.Get(url)
 	if err != nil {
 		http.Error(w, "Error while retrieving data from "+url, 500)
