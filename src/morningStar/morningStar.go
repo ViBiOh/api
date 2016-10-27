@@ -74,12 +74,12 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	performanceBody := getBody(PERFORMANCE_URL + morningStarId)
+	performanceBody := getBody(PERFORMANCE_URL + morningStarId, w)
 	if performanceBody == nil {
 		return
 	}
 
-	volatiliteBody := getBody(VOLATILITE_URL + morningStarId)
+	volatiliteBody := getBody(VOLATILITE_URL + morningStarId, w)
 	if performanceBody == nil {
 		return
 	}
