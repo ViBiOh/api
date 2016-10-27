@@ -2,9 +2,7 @@ package hello
 
 import "net/http"
 import "html"
-import "time"
 import "strings"
-import "strconv"
 import "../json"
 
 const delayInSeconds = 1
@@ -21,8 +19,7 @@ func pluralize(s string, n int) string {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(delayInSeconds * time.Second)
-	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server with " + strconv.Itoa(delayInSeconds) + " " + pluralize("second", delayInSeconds) + " delay"}
+	hello := Hello{"Hello " + html.EscapeString(strings.Replace(r.URL.Path, "/hello/", "", -1)) + ", I'm greeting you from the server!"}
 
 	json.ResponseJson(w, hello)
 }
