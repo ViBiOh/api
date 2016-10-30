@@ -1,6 +1,7 @@
 package morningStar
 
 import "net/http"
+import "time"
 import "strings"
 import "strconv"
 import "regexp"
@@ -23,13 +24,16 @@ var PERF_SIX_MONTH = regexp.MustCompile(`<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</t
 var PERF_ONE_YEAR = regexp.MustCompile(`<td[^>]*?>1 an</td><td[^>]*?>(.*?)</td>`)
 var VOL_3_YEAR = regexp.MustCompile(`<td[^>]*?>Ecart-type 3 ans.?</td><td[^>]*?>(.*?)</td>`)
 
+var PERFORMANCE_CACHE = make(map[string]Performance)
+
 type Performance struct {
-	MorningStarId string  `json:"id"`
-	OneMonth      float64 `json:"1m"`
-	ThreeMonth    float64 `json:"3m"`
-	SixMonth      float64 `json:"6m"`
-	OneYear       float64 `json:"1y"`
-	VolThreeYears float64 `json:"v1y"`
+	MorningStarId string    `json:"id"`
+	OneMonth      float64   `json:"1m"`
+	ThreeMonth    float64   `json:"3m"`
+	SixMonth      float64   `json:"6m"`
+	OneYear       float64   `json:"1y"`
+	VolThreeYears float64   `json:"v1y"`
+	Update        time.Time `json:"ts"`
 }
 
 type Search struct {
@@ -82,6 +86,12 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 }
 
 func performanceHandler(w http.ResponseWriter, morningStarId string) {
+	performance, present := PERFORMANCE_CACHE[morningStarId]
+	if present && time.Now().Add(time.Hour*-18).Before(performance.Update) {
+		jsonHttp.ResponseJson(w, performance)
+		return
+	}
+
 	performanceBody := getBody(PERFORMANCE_URL+morningStarId, w)
 	if performanceBody == nil {
 		return
@@ -98,7 +108,8 @@ func performanceHandler(w http.ResponseWriter, morningStarId string) {
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance := Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears}
+	performance = Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	PERFORMANCE_CACHE[morningStarId] = performance
 	jsonHttp.ResponseJson(w, performance)
 }
 
