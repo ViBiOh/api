@@ -14,7 +14,9 @@ const PERFORMANCE_URL = `http://www.morningstar.fr/fr/funds/snapshot/snapshot.as
 const VOLATILITE_URL = `http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=2&id=`
 const SEARCH_ID = `http://www.morningstar.fr/fr/util/SecuritySearch.ashx?q=`
 
-var ISIN_REQUEST = regexp.MustCompile(`(.*?)/isin`)
+var ISIN_REQUEST = regexp.MustCompile(`(.+?)/isin`)
+var PERF_REQUEST = regexp.MustCompile(`(.+?)`)
+var LIST_REQUEST = regexp.MustCompile(`^/?$`)
 var CARRIAGE_RETURN = regexp.MustCompile(`\r?\n`)
 var END_CARRIAGE_RETURN = regexp.MustCompile(`\r?\n$`)
 var PIPE = regexp.MustCompile(`[|]`)
@@ -86,8 +88,7 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performance, error) {
 	performance, present := PERFORMANCE_CACHE[morningStarId]
 	if present && time.Now().Add(time.Hour*-18).Before(performance.Update) {
-		jsonHttp.ResponseJson(w, performance)
-		return nil, nil
+		return &performance, nil
 	}
 
 	performanceBody, err := getBody(PERFORMANCE_URL+morningStarId, w)
@@ -145,16 +146,11 @@ func isinHandler(w http.ResponseWriter, isin string) {
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	id := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
+	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
 
-	if strings.TrimSpace(id) == `` {
-		http.Error(w, "Missing id", 400)
-		return
-	}
-
-	if ISIN_REQUEST.MatchString(id) {
-		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(id)[1])
-	} else {
-		singlePerformanceHandler(w, id)
+	if PERF_REQUEST.MatchString(path) {
+			singlePerformanceHandler(w, path)
+	} else if ISIN_REQUEST.MatchString(path) {
+		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(path)[1])
 	}
 }
