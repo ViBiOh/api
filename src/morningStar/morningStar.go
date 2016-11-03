@@ -1,6 +1,7 @@
 package morningStar
 
 import "net/http"
+import "errors"
 import "time"
 import "strings"
 import "strconv"
@@ -45,26 +46,23 @@ type Results struct {
 	Results interface{} `json:"results"`
 }
 
-func getBody(url string, w http.ResponseWriter) []byte {
+func getBody(url string, w http.ResponseWriter) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {
-		http.Error(w, `Error while retrieving data from `+url, 500)
-		return nil
+		return nil, errors.New(`Error while retrieving data from `+url)
 	}
 
 	if response.StatusCode >= 400 {
-		http.Error(w, `Got error `+strconv.Itoa(response.StatusCode)+` while getting `+url, response.StatusCode)
-		return nil
+		return nil, errors.New(`Got error `+strconv.Itoa(response.StatusCode)+` while getting `+url)
 	}
 
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		http.Error(w, `Error while reading body of `+url, 500)
-		return nil
+		return nil, errors.New(`Error while reading body of `+url)
 	}
 
-	return body
+	return body, nil
 }
 
 func getPerformance(extract *regexp.Regexp, body []byte) float64 {
@@ -92,14 +90,14 @@ func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performanc
 		return nil, nil
 	}
 
-	performanceBody := getBody(PERFORMANCE_URL+morningStarId, w)
-	if performanceBody == nil {
-		return nil, nil
+	performanceBody, err := getBody(PERFORMANCE_URL+morningStarId, w)
+	if err != nil {
+		return nil, err
 	}
 
-	volatiliteBody := getBody(VOLATILITE_URL+morningStarId, w)
-	if performanceBody == nil {
-		return nil, nil
+	volatiliteBody, err := getBody(VOLATILITE_URL+morningStarId, w)
+	if err != nil {
+		return nil, err
 	}
 
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
@@ -117,14 +115,17 @@ func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performanc
 func singlePerformanceHandler(w http.ResponseWriter, morningStarId string) {
 	performance, err := singlePerformance(w, morningStarId)
 
-	if err == nil {
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	} else {
 		jsonHttp.ResponseJson(w, *performance)
 	}
 }
 
 func isinHandler(w http.ResponseWriter, isin string) {
-	searchBody := getBody(SEARCH_ID+strings.ToLower(isin), w)
-	if searchBody == nil {
+	searchBody, err := getBody(SEARCH_ID+strings.ToLower(isin), w)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
 		return
 	}
 
