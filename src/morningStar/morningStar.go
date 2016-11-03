@@ -13,6 +13,7 @@ import "../jsonHttp"
 const PERFORMANCE_URL = `http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=1&id=`
 const VOLATILITE_URL = `http://www.morningstar.fr/fr/funds/snapshot/snapshot.aspx?tab=2&id=`
 const SEARCH_ID = `http://www.morningstar.fr/fr/util/SecuritySearch.ashx?q=`
+const REFRESH_DELAY = 18
 
 var ISIN_REQUEST = regexp.MustCompile(`(.+?)/isin`)
 var PERF_REQUEST = regexp.MustCompile(`(.+?)`)
@@ -87,7 +88,7 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 
 func singlePerformance(morningStarId string) (*Performance, error) {
 	performance, present := PERFORMANCE_CACHE[morningStarId]
-	if present && time.Now().Add(time.Hour*-18).Before(performance.Update) {
+	if present && time.Now().Add(time.Hour*-REFRESH_DELAY).Before(performance.Update) {
 		return &performance, nil
 	}
 
