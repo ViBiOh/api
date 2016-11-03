@@ -16,7 +16,7 @@ const SEARCH_ID = `http://www.morningstar.fr/fr/util/SecuritySearch.ashx?q=`
 
 var ISIN_REQUEST = regexp.MustCompile(`(.+?)/isin`)
 var PERF_REQUEST = regexp.MustCompile(`(.+?)`)
-var LIST_REQUEST = regexp.MustCompile(`^/?$`)
+
 var CARRIAGE_RETURN = regexp.MustCompile(`\r?\n`)
 var END_CARRIAGE_RETURN = regexp.MustCompile(`\r?\n$`)
 var PIPE = regexp.MustCompile(`[|]`)
@@ -48,20 +48,20 @@ type Results struct {
 	Results interface{} `json:"results"`
 }
 
-func getBody(url string, w http.ResponseWriter) ([]byte, error) {
+func getBody(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {
-		return nil, errors.New(`Error while retrieving data from `+url)
+		return nil, errors.New(`Error while retrieving data from ` + url)
 	}
 
 	if response.StatusCode >= 400 {
-		return nil, errors.New(`Got error `+strconv.Itoa(response.StatusCode)+` while getting `+url)
+		return nil, errors.New(`Got error ` + strconv.Itoa(response.StatusCode) + ` while getting ` + url)
 	}
 
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, errors.New(`Error while reading body of `+url)
+		return nil, errors.New(`Error while reading body of ` + url)
 	}
 
 	return body, nil
@@ -85,18 +85,18 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 	return result
 }
 
-func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performance, error) {
+func singlePerformance(morningStarId string) (*Performance, error) {
 	performance, present := PERFORMANCE_CACHE[morningStarId]
 	if present && time.Now().Add(time.Hour*-18).Before(performance.Update) {
 		return &performance, nil
 	}
 
-	performanceBody, err := getBody(PERFORMANCE_URL+morningStarId, w)
+	performanceBody, err := getBody(PERFORMANCE_URL + morningStarId)
 	if err != nil {
 		return nil, err
 	}
 
-	volatiliteBody, err := getBody(VOLATILITE_URL+morningStarId, w)
+	volatiliteBody, err := getBody(VOLATILITE_URL + morningStarId)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performanc
 }
 
 func singlePerformanceHandler(w http.ResponseWriter, morningStarId string) {
-	performance, err := singlePerformance(w, morningStarId)
+	performance, err := singlePerformance(morningStarId)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -124,7 +124,7 @@ func singlePerformanceHandler(w http.ResponseWriter, morningStarId string) {
 }
 
 func isinHandler(w http.ResponseWriter, isin string) {
-	searchBody, err := getBody(SEARCH_ID+strings.ToLower(isin), w)
+	searchBody, err := getBody(SEARCH_ID + strings.ToLower(isin))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -136,8 +136,8 @@ func isinHandler(w http.ResponseWriter, isin string) {
 
 	results := make([]Search, size)
 	for i := 0; i < size; i++ {
-		jsonErr := json.Unmarshal([]byte(PIPE.Split(lines[i], -1)[1]), &results[i])
-		if jsonErr != nil {
+		err := json.Unmarshal([]byte(PIPE.Split(lines[i], -1)[1]), &results[i])
+		if err != nil {
 			http.Error(w, `Error while unmarshalling data for ISIN `+isin, 500)
 		}
 	}
@@ -149,7 +149,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
 
 	if PERF_REQUEST.MatchString(path) {
-			singlePerformanceHandler(w, path)
+		singlePerformanceHandler(w, path)
 	} else if ISIN_REQUEST.MatchString(path) {
 		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(path)[1])
 	}
