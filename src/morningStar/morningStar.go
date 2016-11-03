@@ -85,21 +85,21 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 	return result
 }
 
-func performanceHandler(w http.ResponseWriter, morningStarId string) {
+func singlePerformance(w http.ResponseWriter, morningStarId string) (*Performance, error) {
 	performance, present := PERFORMANCE_CACHE[morningStarId]
 	if present && time.Now().Add(time.Hour*-18).Before(performance.Update) {
 		jsonHttp.ResponseJson(w, performance)
-		return
+		return nil, nil
 	}
 
 	performanceBody := getBody(PERFORMANCE_URL+morningStarId, w)
 	if performanceBody == nil {
-		return
+		return nil, nil
 	}
 
 	volatiliteBody := getBody(VOLATILITE_URL+morningStarId, w)
 	if performanceBody == nil {
-		return
+		return nil, nil
 	}
 
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
@@ -110,7 +110,16 @@ func performanceHandler(w http.ResponseWriter, morningStarId string) {
 
 	performance = Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
-	jsonHttp.ResponseJson(w, performance)
+
+	return &performance, nil
+}
+
+func singlePerformanceHandler(w http.ResponseWriter, morningStarId string) {
+	performance, err := singlePerformance(w, morningStarId)
+
+	if err == nil {
+		jsonHttp.ResponseJson(w, *performance)
+	}
 }
 
 func isinHandler(w http.ResponseWriter, isin string) {
@@ -145,6 +154,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if ISIN_REQUEST.MatchString(id) {
 		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(id)[1])
 	} else {
-		performanceHandler(w, id)
+		singlePerformanceHandler(w, id)
 	}
 }
