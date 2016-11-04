@@ -22,6 +22,7 @@ var CARRIAGE_RETURN = regexp.MustCompile(`\r?\n`)
 var END_CARRIAGE_RETURN = regexp.MustCompile(`\r?\n$`)
 var PIPE = regexp.MustCompile(`[|]`)
 
+var LABEL = regexp.MustCompile(`<h1>(.*?)</h1>`)
 var PERF_ONE_MONTH = regexp.MustCompile(`<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>`)
 var PERF_THREE_MONTH = regexp.MustCompile(`<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>`)
 var PERF_SIX_MONTH = regexp.MustCompile(`<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</td>`)
@@ -32,6 +33,7 @@ var PERFORMANCE_CACHE = make(map[string]Performance)
 
 type Performance struct {
 	MorningStarId string    `json:"id"`
+	Label         string    `json:"label"`
 	OneMonth      float64   `json:"1m"`
 	ThreeMonth    float64   `json:"3m"`
 	SixMonth      float64   `json:"6m"`
@@ -68,14 +70,17 @@ func getBody(url string) ([]byte, error) {
 	return body, nil
 }
 
-func getPerformance(extract *regexp.Regexp, body []byte) float64 {
+func getLabel(extract *regexp.Regexp, body []byte) string {
 	match := extract.FindSubmatch(body)
 	if match == nil {
-		return 0.0
+		return ``
 	}
 
-	rawResult := string(match[1][:])
-	dotResult := strings.Replace(rawResult, `,`, `.`, -1)
+	return string(match[1][:])
+}
+
+func getPerformance(extract *regexp.Regexp, body []byte) float64 {
+	dotResult := strings.Replace(getLabel(extract, body), `,`, `.`, -1)
 	percentageResult := strings.Replace(dotResult, `%`, ``, -1)
 	trimResult := strings.TrimSpace(percentageResult)
 
@@ -102,13 +107,14 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 		return nil, err
 	}
 
+	label := getLabel(LABEL, performanceBody)
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
 	threeMonths := getPerformance(PERF_THREE_MONTH, performanceBody)
 	sixMonths := getPerformance(PERF_SIX_MONTH, performanceBody)
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance = Performance{morningStarId, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	performance = Performance{morningStarId, label, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
 
 	return &performance, nil
