@@ -22,7 +22,9 @@ var CARRIAGE_RETURN = regexp.MustCompile(`\r?\n`)
 var END_CARRIAGE_RETURN = regexp.MustCompile(`\r?\n$`)
 var PIPE = regexp.MustCompile(`[|]`)
 
-var LABEL = regexp.MustCompile(`<h1>(.*?)</h1>`)
+var ISIN = regexp.MustCompile(`ISIN.:(\S+)`)
+var LABEL = regexp.MustCompile(`<h1[^>]*?>((?:.|\n)*?)</h1>`)
+var CATEGORY = regexp.MustCompile(`<span[^>]*?>Catégorie</span>.*?<span[^>]*?>(.*?)</span>`)
 var PERF_ONE_MONTH = regexp.MustCompile(`<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>`)
 var PERF_THREE_MONTH = regexp.MustCompile(`<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>`)
 var PERF_SIX_MONTH = regexp.MustCompile(`<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</td>`)
@@ -32,8 +34,9 @@ var VOL_3_YEAR = regexp.MustCompile(`<td[^>]*?>Ecart-type 3 ans.?</td><td[^>]*?>
 var PERFORMANCE_CACHE = make(map[string]Performance)
 
 type Performance struct {
-	MorningStarId string    `json:"id"`
+	Isin          string    `json:"isin"`
 	Label         string    `json:"label"`
+	Category      string    `json:"category"`
 	OneMonth      float64   `json:"1m"`
 	ThreeMonth    float64   `json:"3m"`
 	SixMonth      float64   `json:"6m"`
@@ -107,14 +110,16 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 		return nil, err
 	}
 
+	isin := getLabel(ISIN, performanceBody)
 	label := getLabel(LABEL, performanceBody)
+	category := getLabel(CATEGORY, performanceBody)
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
 	threeMonths := getPerformance(PERF_THREE_MONTH, performanceBody)
 	sixMonths := getPerformance(PERF_SIX_MONTH, performanceBody)
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance = Performance{morningStarId, label, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	performance = Performance{isin, label, category, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
 
 	return &performance, nil
