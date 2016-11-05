@@ -111,7 +111,7 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	}
 
 	isin := getLabel(ISIN, performanceBody)
-	label := getLabel(LABEL, performanceBody)
+	label := strings.Replace(getLabel(LABEL, performanceBody), `&amp;`, `&`)
 	category := getLabel(CATEGORY, performanceBody)
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
 	threeMonths := getPerformance(PERF_THREE_MONTH, performanceBody)
