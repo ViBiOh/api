@@ -24,6 +24,7 @@ var PIPE = regexp.MustCompile(`[|]`)
 
 var ISIN = regexp.MustCompile(`ISIN.:(\S+)`)
 var LABEL = regexp.MustCompile(`<h1[^>]*?>((?:.|\n)*?)</h1>`)
+var RATING = regexp.MustCompile(`<span\sclass=".*?stars([0-9]).*?">`)
 var CATEGORY = regexp.MustCompile(`<span[^>]*?>Catégorie</span>.*?<span[^>]*?>(.*?)</span>`)
 var PERF_ONE_MONTH = regexp.MustCompile(`<td[^>]*?>1 mois</td><td[^>]*?>(.*?)</td>`)
 var PERF_THREE_MONTH = regexp.MustCompile(`<td[^>]*?>3 mois</td><td[^>]*?>(.*?)</td>`)
@@ -37,6 +38,7 @@ type Performance struct {
 	Isin          string    `json:"isin"`
 	Label         string    `json:"label"`
 	Category      string    `json:"category"`
+	Rating        string    `json:"rating"`
 	OneMonth      float64   `json:"1m"`
 	ThreeMonth    float64   `json:"3m"`
 	SixMonth      float64   `json:"6m"`
@@ -111,7 +113,8 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	}
 
 	isin := getLabel(ISIN, performanceBody)
-	label := strings.Replace(getLabel(LABEL, performanceBody), `&amp;`, `&`)
+	label := strings.Replace(getLabel(LABEL, performanceBody), `&amp;`, `&`, -1)
+	rating := getLabel(RATING, performanceBody)
 	category := getLabel(CATEGORY, performanceBody)
 	oneMonth := getPerformance(PERF_ONE_MONTH, performanceBody)
 	threeMonths := getPerformance(PERF_THREE_MONTH, performanceBody)
@@ -119,7 +122,7 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance = Performance{isin, label, category, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	performance = Performance{isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
 
 	return &performance, nil
