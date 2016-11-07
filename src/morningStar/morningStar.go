@@ -35,6 +35,7 @@ var VOL_3_YEAR = regexp.MustCompile(`<td[^>]*?>Ecart-type 3 ans.?</td><td[^>]*?>
 var PERFORMANCE_CACHE = make(map[string]Performance)
 
 type Performance struct {
+	Id            string    `json:"id"`
 	Isin          string    `json:"isin"`
 	Label         string    `json:"label"`
 	Category      string    `json:"category"`
@@ -122,7 +123,7 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance = Performance{isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	performance = Performance{morningStarId, isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
 
 	return &performance, nil
@@ -162,7 +163,7 @@ func isinHandler(w http.ResponseWriter, isin string) {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
-	
+
 	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
 
 	if PERF_REQUEST.MatchString(path) {
