@@ -45,6 +45,7 @@ type Performance struct {
 	SixMonth      float64   `json:"6m"`
 	OneYear       float64   `json:"1y"`
 	VolThreeYears float64   `json:"v1y"`
+	Score         float64   `json:"score"`
 	Update        time.Time `json:"ts"`
 }
 
@@ -123,7 +124,10 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	oneYear := getPerformance(PERF_ONE_YEAR, performanceBody)
 	volThreeYears := getPerformance(VOL_3_YEAR, volatiliteBody)
 
-	performance = Performance{morningStarId, isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, time.Now()}
+	score := (0.25 * oneMonth) + (0.3 * threeMonths) + (0.25 * sixMonths) + (0.2 * oneYear) - (0.1 * volThreeYears)
+	scoreTruncated := float64(int(score*100)) / 100
+
+	performance = Performance{morningStarId, isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, scoreTruncated, time.Now()}
 	PERFORMANCE_CACHE[morningStarId] = performance
 
 	return &performance, nil
