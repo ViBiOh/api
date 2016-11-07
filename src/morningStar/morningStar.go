@@ -162,6 +162,8 @@ func isinHandler(w http.ResponseWriter, isin string) {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
+	
+	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
 
 	if PERF_REQUEST.MatchString(path) {
 		singlePerformanceHandler(w, path)
