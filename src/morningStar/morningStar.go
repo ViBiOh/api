@@ -169,6 +169,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
 
 	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
+	w.Header().Add(`X-Content-Type-Options`, `nosniff`)
 
 	if PERF_REQUEST.MatchString(path) {
 		singlePerformanceHandler(w, path)
