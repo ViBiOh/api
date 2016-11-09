@@ -6,6 +6,7 @@ import "time"
 import "strings"
 import "strconv"
 import "regexp"
+import "io"
 import "io/ioutil"
 import "encoding/json"
 import "../jsonHttp"
@@ -15,8 +16,9 @@ const VOLATILITE_URL = `http://www.morningstar.fr/fr/funds/snapshot/snapshot.asp
 const SEARCH_ID = `http://www.morningstar.fr/fr/util/SecuritySearch.ashx?q=`
 const REFRESH_DELAY = 18
 
-var ISIN_REQUEST = regexp.MustCompile(`(.+?)/isin`)
-var PERF_REQUEST = regexp.MustCompile(`(.+?)`)
+var LIST_REQUEST = regexp.MustCompile(`^list$`)
+var PERF_REQUEST = regexp.MustCompile(`^(.+?)$`)
+var ISIN_REQUEST = regexp.MustCompile(`^(.+?)/isin$`)
 
 var CARRIAGE_RETURN = regexp.MustCompile(`\r?\n`)
 var END_CARRIAGE_RETURN = regexp.MustCompile(`\r?\n$`)
@@ -58,6 +60,11 @@ type Results struct {
 	Results interface{} `json:"results"`
 }
 
+func readBody(body io.ReadCloser) ([]byte, error) {
+	defer body.Close()
+	return ioutil.ReadAll(body)
+}
+
 func getBody(url string) ([]byte, error) {
 	response, err := http.Get(url)
 	if err != nil {
@@ -68,8 +75,7 @@ func getBody(url string) ([]byte, error) {
 		return nil, errors.New(`Got error ` + strconv.Itoa(response.StatusCode) + ` while getting ` + url)
 	}
 
-	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := readBody(response.Body)
 	if err != nil {
 		return nil, errors.New(`Error while reading body of ` + url)
 	}
@@ -165,13 +171,44 @@ func isinHandler(w http.ResponseWriter, isin string) {
 	jsonHttp.ResponseJson(w, Results{results})
 }
 
+func listHandler(w http.ResponseWriter, r *http.Request) {
+	listBody, err := readBody(r.Body)
+	if err != nil {
+		http.Error(w, `Error while reading body for list`, 500)
+		return
+	}
+
+	stringBody := string(listBody[:])
+	if strings.TrimSpace(stringBody) == `` {
+		jsonHttp.ResponseJson(w, Results{[0]Performance{}})
+		return
+	}
+
+	ids := strings.Split(string(listBody[:]), `,`)
+	size := len(ids)
+
+	results := make([]Performance, size)
+	for i := 0; i < size-1; i++ {
+		performance, err := singlePerformance(ids[i])
+		if err == nil {
+			results[i] = *performance
+		}
+	}
+
+	jsonHttp.ResponseJson(w, Results{results})
+}
+
 func Handler(w http.ResponseWriter, r *http.Request) {
 	path := strings.ToLower(strings.Replace(r.URL.Path, `/morningStar/`, ``, -1))
 
 	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
+	w.Header().Add(`Access-Control-Allow-Headers`, `Content-Type`)
+	w.Header().Add(`Access-Control-Allow-Methods`, `GET, POST`)
 	w.Header().Add(`X-Content-Type-Options`, `nosniff`)
 
-	if PERF_REQUEST.MatchString(path) {
+	if LIST_REQUEST.MatchString(path) {
+		listHandler(w, r)
+	} else if PERF_REQUEST.MatchString(path) {
 		singlePerformanceHandler(w, path)
 	} else if ISIN_REQUEST.MatchString(path) {
 		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(path)[1])
