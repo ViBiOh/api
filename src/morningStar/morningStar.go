@@ -8,6 +8,7 @@ import "strconv"
 import "regexp"
 import "io"
 import "io/ioutil"
+import "sync"
 import "encoding/json"
 import "../jsonHttp"
 
@@ -34,7 +35,10 @@ var PERF_SIX_MONTH = regexp.MustCompile(`<td[^>]*?>6 mois</td><td[^>]*?>(.*?)</t
 var PERF_ONE_YEAR = regexp.MustCompile(`<td[^>]*?>1 an</td><td[^>]*?>(.*?)</td>`)
 var VOL_3_YEAR = regexp.MustCompile(`<td[^>]*?>Ecart-type 3 ans.?</td><td[^>]*?>(.*?)</td>`)
 
-var PERFORMANCE_CACHE = make(map[string]Performance)
+var PERFORMANCE_CACHE = struct {
+	sync.RWMutex
+	m map[string]Performance
+}{m: make(map[string]Performance)}
 
 type Performance struct {
 	Id            string    `json:"id"`
@@ -49,6 +53,11 @@ type Performance struct {
 	VolThreeYears float64   `json:"v1y"`
 	Score         float64   `json:"score"`
 	Update        time.Time `json:"ts"`
+}
+
+type PerformanceAsync struct {
+	performance *Performance
+	err         error
 }
 
 type Search struct {
@@ -105,7 +114,10 @@ func getPerformance(extract *regexp.Regexp, body []byte) float64 {
 }
 
 func singlePerformance(morningStarId string) (*Performance, error) {
-	performance, present := PERFORMANCE_CACHE[morningStarId]
+	PERFORMANCE_CACHE.RLock()
+	performance, present := PERFORMANCE_CACHE.m[morningStarId]
+	PERFORMANCE_CACHE.RUnlock()
+
 	if present && time.Now().Add(time.Hour*-REFRESH_DELAY).Before(performance.Update) {
 		return &performance, nil
 	}
@@ -134,9 +146,17 @@ func singlePerformance(morningStarId string) (*Performance, error) {
 	scoreTruncated := float64(int(score*100)) / 100
 
 	performance = Performance{morningStarId, isin, label, category, rating, oneMonth, threeMonths, sixMonths, oneYear, volThreeYears, scoreTruncated, time.Now()}
-	PERFORMANCE_CACHE[morningStarId] = performance
+
+	PERFORMANCE_CACHE.Lock()
+	PERFORMANCE_CACHE.m[morningStarId] = performance
+	PERFORMANCE_CACHE.Unlock()
 
 	return &performance, nil
+}
+
+func singlePerformanceAsync(morningStarId string, ch chan<- PerformanceAsync) {
+	performance, err := singlePerformance(morningStarId)
+	ch <- PerformanceAsync{performance, err}
 }
 
 func singlePerformanceHandler(w http.ResponseWriter, morningStarId string) {
@@ -187,11 +207,17 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	ids := strings.Split(string(listBody[:]), `,`)
 	size := len(ids)
 
+	ch := make(chan PerformanceAsync, size)
 	results := make([]Performance, size)
-	for i, id := range ids {
-		performance, err := singlePerformance(id)
-		if err == nil {
-			results[i] = *performance
+
+	for _, id := range ids {
+		go singlePerformanceAsync(id, ch)
+	}
+
+	for i, _ := range ids {
+		performanceAsync := <-ch
+		if performanceAsync.err == nil {
+			results[i] = *performanceAsync.performance
 		}
 	}
 
