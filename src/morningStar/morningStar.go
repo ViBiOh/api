@@ -161,8 +161,8 @@ func isinHandler(w http.ResponseWriter, isin string) {
 	size := len(lines)
 
 	results := make([]Search, size)
-	for i := 0; i < size; i++ {
-		err := json.Unmarshal([]byte(PIPE.Split(lines[i], -1)[1]), &results[i])
+	for i, line := range lines {
+		err := json.Unmarshal([]byte(PIPE.Split(line, -1)[1]), &results[i])
 		if err != nil {
 			http.Error(w, `Error while unmarshalling data for ISIN `+isin, 500)
 		}
@@ -188,8 +188,8 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	size := len(ids)
 
 	results := make([]Performance, size)
-	for i := 0; i < size-1; i++ {
-		performance, err := singlePerformance(ids[i])
+	for i, id := range ids {
+		performance, err := singlePerformance(id)
 		if err == nil {
 			results[i] = *performance
 		}
@@ -208,9 +208,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	if LIST_REQUEST.MatchString(path) {
 		listHandler(w, r)
-	} else if PERF_REQUEST.MatchString(path) {
-		singlePerformanceHandler(w, path)
 	} else if ISIN_REQUEST.MatchString(path) {
 		isinHandler(w, ISIN_REQUEST.FindStringSubmatch(path)[1])
+	} else if PERF_REQUEST.MatchString(path) {
+		singlePerformanceHandler(w, path)
 	}
 }
