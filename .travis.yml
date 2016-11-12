@@ -20,6 +20,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} "bash -s" -- < ./deploy.sh api https://github.com/ViBiOh/go-hello.git vibioh.fr api
+  script: ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} "bash -s" -- < ./deploy.sh api https://github.com/ViBiOh/go-hello.git vibioh.fr
   on:
     branch: master
