@@ -2,7 +2,6 @@ package hello
 
 import "net/http"
 import "html"
-import "strings"
 import "../jsonHttp"
 
 const delayInSeconds = 1
