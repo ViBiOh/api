@@ -24,7 +24,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add(`Access-Control-Allow-Methods`, `GET`)
 	w.Header().Add(`X-Content-Type-Options`, `nosniff`)
 
-	hello := Hello{`Hello ` + html.EscapeString(strings.Replace(r.URL.Path, `/hello/`, ``, -1)) + `, I'm greeting you from the server!`}
+	hello := Hello{`Hello ` + html.EscapeString(r.URL.Path) + `, I'm greeting you from the server!`}
 
 	jsonHttp.ResponseJson(w, hello)
 }
