@@ -1,8 +1,10 @@
 package hello
 
-import "net/http"
-import "html"
-import "../jsonHttp"
+import (
+	"../jsonHttp"
+	"html"
+	"net/http"
+)
 
 const delayInSeconds = 1
 
@@ -17,7 +19,10 @@ func pluralize(s string, n int) string {
 	return s
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+type Handler struct {
+}
+
+func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
 	w.Header().Add(`Access-Control-Allow-Headers`, `Content-Type`)
 	w.Header().Add(`Access-Control-Allow-Methods`, `GET`)
