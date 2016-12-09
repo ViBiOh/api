@@ -7,10 +7,10 @@ import (
 )
 
 const port = `1080`
-const HELLO_PATH = `/hello/`
+const helloPath = `/hello/`
 
 func main() {
-	http.Handle(HELLO_PATH, http.StripPrefix(HELLO_PATH, hello.Handler{}))
+	http.Handle(helloPath, http.StripPrefix(helloPath, hello.Handler{}))
 
 	log.Print(`Starting server on port ` + port)
 	log.Fatal(http.ListenAndServe(`:`+port, nil))
