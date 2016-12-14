@@ -1,4 +1,14 @@
-default: back
+default: lint vet test build
 
-back:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo src/server.go
+lint:
+	go get -u github.com/golang/lint/golint
+	golint ./...
+
+vet:
+	go vet ./...
+
+test:
+	go test ./...
+
+build:
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo server.go

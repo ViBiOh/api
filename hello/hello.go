@@ -1,7 +1,7 @@
 package hello
 
 import (
-	"../jsonHttp"
+	"github.com/ViBiOh/go-api/jsonHttp"
 	"html"
 	"net/http"
 )

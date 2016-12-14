@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./hello"
+	"github.com/ViBiOh/go-api/hello"
 	"log"
 	"net/http"
 	"runtime"
