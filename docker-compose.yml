@@ -5,7 +5,7 @@ services:
     image: vibioh/api
     labels:
       traefik.frontend.passHostHeader: 'true'
-      traefik.frontend.rule: 'Host: api.${DOMAIN}'
+      traefik.frontend.rule: 'Host: api.vibioh.fr'
       traefik.port: '1080'
     logging:
       driver: json-file
