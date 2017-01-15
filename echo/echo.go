@@ -29,12 +29,12 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		messageType, p, err := ws.ReadMessage()
-		if err != nil {
-			log.Print(err)
+		if messageType == websocket.CloseMessage {
 			return
 		}
 
-		if messageType == websocket.CloseMessage {
+		if err != nil {
+			log.Print(err)
 			return
 		}
 
