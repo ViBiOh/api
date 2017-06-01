@@ -5,11 +5,9 @@ services:
 go: 1.8
 install: make
 script: |
-  docker build -t ${DOCKER_USER}/api .
+  docker build -t ${DOCKER_USER}/api`"${TRAVIS_BRANCH}" == "master" && echo '' || echo ":${TRAVIS_BRANCH}"}` .
 after_success: |
-  if [ "${TRAVIS_BRANCH}" == "master" ]; then
-    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/api
-  fi
+  docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/api`"${TRAVIS_BRANCH}" == "master" && echo '' || echo ":${TRAVIS_BRANCH}"}`
 notifications:
   email: false
 deploy:
