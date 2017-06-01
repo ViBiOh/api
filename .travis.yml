@@ -5,9 +5,14 @@ services:
 go: 1.8
 install: make
 script: |
-  docker build -t ${DOCKER_USER}/api`"${TRAVIS_BRANCH}" == "master" && echo '' || echo ":${TRAVIS_BRANCH}"}` .
+  DOCKER_IMAGE_NAME=${DOCKER_USER}/api
+  if [ "${TRAVIS_BRANCH}" != "master" ]; then
+    DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}:${TRAVIS_BRANCH}
+  fi
+  
+  docker build -t ${DOCKER_IMAGE_NAME} .
 after_success: |
-  docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/api`"${TRAVIS_BRANCH}" == "master" && echo '' || echo ":${TRAVIS_BRANCH}"}`
+  docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_IMAGE_NAME}
 notifications:
   email: false
 deploy:
