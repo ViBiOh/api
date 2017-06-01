@@ -20,4 +20,4 @@ deploy:
   skip_cleanup: true
   script: curl -u ${DEPLOY_USER}:${DEPLOY_PASS} -X POST https://dashboard-api.vibioh.fr/containers/api/ --data-binary @docker-compose.yml
   on:
-    branch: master
+    condition: "${TRAVIS_BRANCH}" == "master"
