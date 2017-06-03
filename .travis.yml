@@ -25,7 +25,8 @@ deploy:
     condition: ${TRAVIS_BRANCH} == 'master'
 - provider: script
   skip_cleanup: true
-  script: cat docker-compose.yml | sed "s|api.vibioh.fr|api-${TRAVIS_BRANCH}.vibioh.fr|" | sed "s|${DOCKER_IMAGE_DEFAULT}|${DOCKER_IMAGE_NAME}|" | curl -u ${DEPLOY_USER}:${DEPLOY_PASS} -X POST https://dashboard-api.vibioh.fr/containers/api-${TRAVIS_BRANCH}/ --data-binary @-
+  script: >-
+    cat docker-compose.yml | sed "s|traefik.frontend.rule.*|traefik.frontend.rule: 'Host: api-${TRAVIS_BRANCH}.vibioh.fr'|" | sed "s|${DOCKER_IMAGE_DEFAULT}|${DOCKER_IMAGE_NAME}|" | curl -u ${DEPLOY_USER}:${DEPLOY_PASS} -X POST https://dashboard-api.vibioh.fr/containers/api-${TRAVIS_BRANCH}/ --data-binary @-
   on:
     all_branches: true
     condition: ${TRAVIS_BRANCH} != 'master'
