@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// Handler for Health request. Should be use with net/http
 type Handler struct {
 }
 
