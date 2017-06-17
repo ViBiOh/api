@@ -14,7 +14,7 @@ const port = `1080`
 const helloPath = `/hello/`
 const echoPath = `/echo/`
 const authPath = `/auth/`
-const statusPath = `/health/`
+const healthPath = `/health/`
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
