@@ -1,22 +1,29 @@
-package health
+package main
 
 import (
+	"log"
 	"net/http"
+	"time"
 )
 
-// Handler for Health request. Should be use with net/http
-type Handler struct {
-}
+func main() {
+	httpClient := http.Client{Timeout: 5 * time.Second}
 
-func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add(`Access-Control-Allow-Origin`, `*`)
-	w.Header().Add(`Access-Control-Allow-Headers`, `Content-Type`)
-	w.Header().Add(`Access-Control-Allow-Methods`, `OPTIONS`)
-	w.Header().Add(`X-Content-Type-Options`, `nosniff`)
-
-	if r.Method == http.MethodGet {
-		w.WriteHeader(http.StatusOK)
-	} else {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	request, err := http.NewRequest(`GET`, `http://localhost:1080/health`, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	response, err := httpClient.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		log.Fatalf(`HTTP/%d`, response.StatusCode)
+	}
+
+	log.Print(`Health succeed`)
 }
