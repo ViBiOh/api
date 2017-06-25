@@ -1,11 +1,11 @@
-default: lint vet tst build
+default: deps lint tst build
 
-lint:
+deps:
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/gorilla/websocket
-	golint ./...
 
-vet:
+lint:
+	golint ./...
 	go vet ./...
 
 tst:
@@ -13,4 +13,3 @@ tst:
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo server.go
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o health_check health/health.go
