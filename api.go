@@ -30,12 +30,12 @@ var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
 const authPath = `/auth`
 
 var authRequestMatcher = regexp.MustCompile(`^` + authPath)
-var authHandler = http.StripPrefix(authPath, echo.Handler{})
+var authHandler = http.StripPrefix(authPath, auth.Handler{})
 
 const healthcheckPath = `/health`
 
 var healthcheckRequestMatcher = regexp.MustCompile(`^` + healthcheckPath)
-var healthcheckHandler = http.StripPrefix(healthcheckPath, health.Handler{})
+var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
 
 func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
