@@ -4,6 +4,7 @@ import (
 	"github.com/ViBiOh/go-api/jsonHttp"
 	"html"
 	"net/http"
+	"strings"
 )
 
 const delayInSeconds = 1
@@ -34,7 +35,12 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hello := hello{`Hello ` + html.EscapeString(r.URL.Path) + `, I'm greeting you from the server!`}
+	name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
+	if name == `` {
+		name = `World`
+	}
+
+	hello := hello{`Hello ` + name + `, I'm greeting you from the server!`}
 
 	jsonHttp.ResponseJSON(w, hello)
 }
