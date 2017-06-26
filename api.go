@@ -18,18 +18,22 @@ import (
 const port = `1080`
 
 const helloPath = `/hello`
+
 var helloRequestMatcher = regexp.MustCompile(`^` + helloPath)
 var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
 
 const echoPath = `/echo`
+
 var echoRequestMatcher = regexp.MustCompile(`^` + echoPath)
 var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
 
 const authPath = `/auth`
+
 var authRequestMatcher = regexp.MustCompile(`^` + authPath)
 var authHandler = http.StripPrefix(authPath, echo.Handler{})
 
 const healthcheckPath = `/health`
+
 var healthcheckRequestMatcher = regexp.MustCompile(`^` + healthcheckPath)
 var healthcheckHandler = http.StripPrefix(healthcheckPath, health.Handler{})
 
