@@ -16,15 +16,22 @@ import (
 )
 
 const port = `1080`
-const helloPath = `/hello`
-const echoPath = `/echo`
-const authPath = `/auth`
-const healthPath = `/health`
 
+const helloPath = `/hello`
 var helloRequestMatcher = regexp.MustCompile(`^` + helloPath)
+var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
+
+const echoPath = `/echo`
 var echoRequestMatcher = regexp.MustCompile(`^` + echoPath)
+var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
+
+const authPath = `/auth`
 var authRequestMatcher = regexp.MustCompile(`^` + authPath)
-var healthRequestMatcher = regexp.MustCompile(`^` + healthPath)
+var authHandler = http.StripPrefix(authPath, echo.Handler{})
+
+const healthcheckPath = `/health`
+var healthcheckRequestMatcher = regexp.MustCompile(`^` + healthcheckPath)
+var healthcheckHandler = http.StripPrefix(healthcheckPath, health.Handler{})
 
 func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
@@ -48,13 +55,13 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	urlPath := []byte(r.URL.Path)
 
 	if helloRequestMatcher.Match(urlPath) {
-		http.StripPrefix(helloPath, hello.Handler{}).ServeHTTP(w, r)
+		helloHandler.ServeHTTP(w, r)
 	} else if echoRequestMatcher.Match(urlPath) {
-		http.StripPrefix(echoPath, echo.Handler{}).ServeHTTP(w, r)
+		echoHandler.ServeHTTP(w, r)
 	} else if authRequestMatcher.Match(urlPath) {
-		http.StripPrefix(authPath, auth.Handler{}).ServeHTTP(w, r)
-	} else if healthRequestMatcher.Match(urlPath) {
-		http.StripPrefix(healthPath, healthcheck.Handler{}).ServeHTTP(w, r)
+		authHandler.ServeHTTP(w, r)
+	} else if healthcheckRequestMatcher.Match(urlPath) {
+		healthcheckHandler.ServeHTTP(w, r)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
