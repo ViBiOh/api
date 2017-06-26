@@ -1,7 +1,10 @@
 package jsonHttp
 
-import "net/http"
-import "encoding/json"
+import (
+	"net/http"
+	"encoding/json"
+	"log"
+)
 
 // ResponseJSON write marshalled obj to http.ResponseWriter with correct header
 func ResponseJSON(w http.ResponseWriter, obj interface{}) {
@@ -13,6 +16,7 @@ func ResponseJSON(w http.ResponseWriter, obj interface{}) {
 		w.Header().Set(`Access-Control-Allow-Origin`, `*`)
 		w.Write(objJSON)
 	} else {
+		log.Print(err)
 		http.Error(w, `Error while marshalling JSON response`, http.StatusInternalServerError)
 	}
 }
