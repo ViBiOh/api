@@ -4,7 +4,6 @@ services:
   api:
     image: vibioh/api
     labels:
-      traefik.backend.healthcheck.path: '/health'
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
       traefik.port: '1080'
