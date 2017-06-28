@@ -24,7 +24,6 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
-
 	defer ws.Close()
 
 	for {
