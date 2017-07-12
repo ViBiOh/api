@@ -2,10 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/ViBiOh/go-api/auth"
-	"github.com/ViBiOh/go-api/echo"
-	"github.com/ViBiOh/go-api/healthcheck"
-	"github.com/ViBiOh/go-api/hello"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +9,11 @@ import (
 	"regexp"
 	"runtime"
 	"syscall"
+
+	"github.com/ViBiOh/go-api/auth"
+	"github.com/ViBiOh/go-api/echo"
+	"github.com/ViBiOh/go-api/healthcheck"
+	"github.com/ViBiOh/go-api/hello"
 )
 
 const port = `1080`
@@ -40,19 +41,17 @@ var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{}
 func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM)
-	go func() {
-		<-signals
-		log.Print(`SIGTERM received`)
 
-		if server != nil {
-			log.Print(`Shutting down http server`)
-			if err := server.Shutdown(context.Background()); err != nil {
-				log.Fatal(err)
-			}
+	<-signals
+
+	log.Print(`SIGTERM received`)
+
+	if server != nil {
+		log.Print(`Shutting down http server`)
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Print(err)
 		}
-
-		os.Exit(0)
-	}()
+	}
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +80,6 @@ func main() {
 		Handler: http.HandlerFunc(apiHandler),
 	}
 
+	go server.ListenAndServe()
 	handleGracefulClose(server)
-	log.Fatal(server.ListenAndServe())
 }

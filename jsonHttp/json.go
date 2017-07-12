@@ -1,9 +1,9 @@
 package jsonHttp
 
 import (
-	"net/http"
 	"encoding/json"
 	"log"
+	"net/http"
 )
 
 // ResponseJSON write marshalled obj to http.ResponseWriter with correct header

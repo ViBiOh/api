@@ -4,6 +4,9 @@ deps:
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/gorilla/websocket
 
+fmt:
+	gofmt -s -w **/*.go
+
 lint:
 	golint ./...
 	go vet ./...
