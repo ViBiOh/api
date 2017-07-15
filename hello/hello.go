@@ -1,10 +1,11 @@
 package hello
 
 import (
-	"github.com/ViBiOh/go-api/jsonHttp"
 	"html"
 	"net/http"
 	"strings"
+
+	"github.com/ViBiOh/go-api/jsonHttp"
 )
 
 const delayInSeconds = 1

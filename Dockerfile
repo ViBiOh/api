@@ -1,8 +1,8 @@
-FROM vibioh/alcotest
+FROM scratch
 
 HEALTHCHECK --retries=10 CMD http://localhost:1080/health
 
 EXPOSE 1080
-ENTRYPOINT [ "/api" ]
+ENTRYPOINT [ "/bin/sh" ]
 
-COPY api /
+COPY api /bin/sh

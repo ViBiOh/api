@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"runtime"
 	"syscall"
 
+	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/go-api/auth"
 	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/healthcheck"
@@ -71,6 +73,14 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	url := flag.String(`c`, ``, `URL to check`)
+	flag.Parse()
+
+	if *url != `` {
+		alcotest.Do(url)
+		return
+	}
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.Print(`Starting server on port ` + port)
