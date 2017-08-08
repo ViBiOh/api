@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/go-api/jsonHttp"
+	"github.com/ViBiOh/httputils"
 )
 
 const delayInSeconds = 1
@@ -43,5 +43,5 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	hello := hello{`Hello ` + name + `, I'm greeting you from the server!`}
 
-	jsonHttp.ResponseJSON(w, hello)
+	httputils.ResponseJSON(w, hello)
 }

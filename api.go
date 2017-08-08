@@ -1,22 +1,18 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
 	"regexp"
 	"runtime"
-	"syscall"
-	"time"
 
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/go-api/auth"
 	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
+	"github.com/ViBiOh/httputils"
 )
 
 const port = `1080`
@@ -41,36 +37,14 @@ const healthcheckPath = `/health`
 var healthcheckRequestMatcher = regexp.MustCompile(`^` + healthcheckPath)
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
 
-func handleGracefulClose(server *http.Server) {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGTERM)
-
-	<-signals
-
-	log.Print(`SIGTERM received`)
-
-	if server != nil {
-		log.Print(`Shutting down http server`)
-
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		if err := server.Shutdown(ctx); err != nil {
-			log.Print(err)
-		}
-	}
-}
-
 func apiHandler(w http.ResponseWriter, r *http.Request) {
-	urlPath := []byte(r.URL.Path)
-
-	if helloRequestMatcher.Match(urlPath) {
+	if helloRequestMatcher.MatchString(r.URL.Path) {
 		helloHandler.ServeHTTP(w, r)
-	} else if echoRequestMatcher.Match(urlPath) {
+	} else if echoRequestMatcher.MatchString(r.URL.Path) {
 		echoHandler.ServeHTTP(w, r)
-	} else if authRequestMatcher.Match(urlPath) {
+	} else if authRequestMatcher.MatchString(r.URL.Path) {
 		authHandler.ServeHTTP(w, r)
-	} else if healthcheckRequestMatcher.Match(urlPath) {
+	} else if healthcheckRequestMatcher.MatchString(r.URL.Path) {
 		healthcheckHandler.ServeHTTP(w, r)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
@@ -96,5 +70,5 @@ func main() {
 	}
 
 	go server.ListenAndServe()
-	handleGracefulClose(server)
+	httputils.ServerGracefulClose(server, nil)
 }

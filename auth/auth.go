@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/ViBiOh/httputils"
 )
 
 // Handler for Hello request. Should be use with net/http
@@ -19,6 +22,5 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusUnauthorized)
-	w.Write(nil)
+	httputils.Unauthorized(w, fmt.Errorf(`No auth`))
 }
