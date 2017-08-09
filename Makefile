@@ -19,4 +19,4 @@ tst:
 	script/coverage
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo api.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/api api.go

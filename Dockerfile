@@ -5,4 +5,4 @@ HEALTHCHECK --retries=10 CMD http://localhost:1080/health
 EXPOSE 1080
 ENTRYPOINT [ "/bin/sh" ]
 
-COPY api /bin/sh
+COPY bin/api /bin/sh

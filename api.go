@@ -13,6 +13,8 @@ import (
 	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/cors"
+	"github.com/ViBiOh/httputils/owasp"
 )
 
 const port = `1080`
@@ -20,22 +22,22 @@ const port = `1080`
 const helloPath = `/hello`
 
 var helloRequestMatcher = regexp.MustCompile(`^` + helloPath)
-var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
+var helloHandler = owasp.Handler{Handler: cors.Handler{Handler: http.StripPrefix(helloPath, hello.Handler{})}}
 
 const echoPath = `/echo`
 
 var echoRequestMatcher = regexp.MustCompile(`^` + echoPath)
-var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
+var echoHandler = owasp.Handler{Handler: cors.Handler{Handler: http.StripPrefix(echoPath, echo.Handler{})}}
 
 const authPath = `/auth`
 
 var authRequestMatcher = regexp.MustCompile(`^` + authPath)
-var authHandler = http.StripPrefix(authPath, auth.Handler{})
+var authHandler = owasp.Handler{Handler: cors.Handler{Handler: http.StripPrefix(authPath, auth.Handler{})}}
 
 const healthcheckPath = `/health`
 
 var healthcheckRequestMatcher = regexp.MustCompile(`^` + healthcheckPath)
-var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
+var healthcheckHandler = owasp.Handler{Handler: cors.Handler{Handler: http.StripPrefix(healthcheckPath, healthcheck.Handler{})}}
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	if helloRequestMatcher.MatchString(r.URL.Path) {
