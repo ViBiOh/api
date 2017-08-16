@@ -69,7 +69,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: prometheus.NewPrometheusHandler(`api`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
+		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
 	go server.ListenAndServe()
