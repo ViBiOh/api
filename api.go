@@ -72,6 +72,6 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
-	go server.ListenAndServe()
+	go log.Print(server.ListenAndServe())
 	httputils.ServerGracefulClose(server, nil)
 }
