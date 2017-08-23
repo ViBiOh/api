@@ -4,7 +4,7 @@ services:
   api:
     image: vibioh/api
     command:
-    - prometheusMetricsIP
+    - -prometheusMetricsIP
     - ^172\.18\..*\$
     labels:
       traefik.protocol: 'https'
