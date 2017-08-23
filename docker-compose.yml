@@ -4,6 +4,7 @@ services:
   api:
     image: vibioh/api
     labels:
+      traefik.protocol: 'https'
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
       traefik.port: '1080'
@@ -12,7 +13,6 @@ services:
       options:
         max-size: '50m'
     restart: on-failure:5
-    read_only: true
     cpu_shares: 128
     mem_limit: 67108864
     security_opt:

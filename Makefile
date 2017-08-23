@@ -7,6 +7,7 @@ deps:
 	go get -u github.com/ViBiOh/alcotest/alcotest
 	go get -u github.com/ViBiOh/httputils
 	go get -u github.com/ViBiOh/httputils/prometheus
+	go get -u github.com/ViBiOh/httputils/cert
 
 fmt:
 	goimports -w **/*.go *.go

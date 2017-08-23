@@ -13,6 +13,7 @@ import (
 	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
@@ -72,6 +73,10 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
-	go log.Print(server.ListenAndServe())
+	if err := cert.GenerateCert(`ViBiOh`, nil); err != nil {
+		log.Panicf(`Error while generating certificates: %v`, err)
+	}
+
+	go log.Panic(server.ListenAndServeTLS(`cert.pem`, `key.pem`))
 	httputils.ServerGracefulClose(server, nil)
 }
