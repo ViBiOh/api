@@ -3,6 +3,9 @@ version: '2'
 services:
   api:
     image: vibioh/api
+    command:
+    - prometheusMetricsIP
+    - ^172\.18\..*\$
     labels:
       traefik.protocol: 'https'
       traefik.frontend.passHostHeader: 'true'
