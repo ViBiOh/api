@@ -4,8 +4,8 @@ services:
   api:
     image: vibioh/api
     command:
-    - -prometheusMetricsIP
-    - ^172\.18\..*$$
+    - -prometheusMetricsRemoteHost
+    - ^api:1080$$
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
