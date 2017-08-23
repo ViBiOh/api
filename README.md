@@ -19,8 +19,8 @@ Usage of api:
       Content-Security-Policy (default "default-src 'self'")
   -hsts
       Indicate Strict Transport Security (default true)
-  -prometheusMetricsIP string
-      Prometheus - Allowed regex IP to call metrics endpoint (default "*")
   -prometheusMetricsPath string
-      Prometheus - Allowed regex IP to call metrics endpoint (default "/metrics")
+      Prometheus - Metrics endpoint path (default "/metrics")
+  -prometheusMetricsRemoteHost string
+      Prometheus - Regex of allowed hosts to call metrics endpoint (default ".*")
 ```
