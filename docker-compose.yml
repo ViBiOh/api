@@ -5,11 +5,11 @@ services:
     image: vibioh/api
     command:
     - -prometheusMetricsIP
-    - ^172\.18\..*\$$
+    - ^172\.18\..*$$
     labels:
-      traefik.protocol: 'https'
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
+      traefik.protocol: 'https'
       traefik.port: '1080'
     logging:
       driver: json-file
