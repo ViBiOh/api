@@ -1,6 +1,3 @@
 # Go binary
 bin/
 coverage.txt
-
-# Certificates
-*.pem
