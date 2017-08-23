@@ -73,7 +73,7 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
-	if err := cert.GenerateCert(`ViBiOh`, nil); err != nil {
+	if err := cert.GenerateCert(`ViBiOh`, []string{`localhost`}); err != nil {
 		log.Panicf(`Error while generating certificates: %v`, err)
 	}
 
