@@ -73,11 +73,6 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
-	certPEMBlock, keyPEMBlock, err := cert.GenerateCert(`ViBiOh`, []string{`localhost`})
-	if err != nil {
-		log.Panicf(`Error while generating certificate: %v`, err)
-	}
-
-	go log.Panic(cert.ListenAndServeTLS(server, certPEMBlock, keyPEMBlock))
+	go log.Panic(cert.ListenAndServeTLS(server))
 	httputils.ServerGracefulClose(server, nil)
 }
