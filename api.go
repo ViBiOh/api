@@ -64,10 +64,16 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
 	}
 
-	if *tls {
-		go log.Print(cert.ListenAndServeTLS(server))
-	} else {
-		go log.Print(server.ListenAndServe())
-	}
-	httputils.ServerGracefulClose(server, nil)
+	var serveError = make(chan error)
+	go func() {
+		defer close(serveError)
+		if *tls {
+			log.Print(`Listening with TLS enabled`)
+			serveError <- cert.ListenAndServeTLS(server)
+		} else {
+			serveError <- server.ListenAndServe()
+		}
+	}()
+
+	httputils.ServerGracefulClose(server, serveError, nil)
 }
