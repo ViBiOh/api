@@ -25,22 +25,29 @@ const echoPath = `/echo`
 const authPath = `/auth`
 const healthcheckPath = `/health`
 
-var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
 var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
+var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
 var authHandler = http.StripPrefix(authPath, auth.Handler{})
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
+var restHandler = owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(httpHandler)}}
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
+func httpHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, helloPath) {
 		helloHandler.ServeHTTP(w, r)
-	} else if strings.HasPrefix(r.URL.Path, echoPath) {
-		echoHandler.ServeHTTP(w, r)
 	} else if strings.HasPrefix(r.URL.Path, authPath) {
 		authHandler.ServeHTTP(w, r)
 	} else if strings.HasPrefix(r.URL.Path, healthcheckPath) {
 		healthcheckHandler.ServeHTTP(w, r)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
+	}
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, echoPath) {
+		echoHandler.ServeHTTP(w, r)
+	} else {
+		restHandler.ServeHTTP(w, r)
 	}
 }
 
@@ -58,7 +65,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: prometheus.NewPrometheusHandler(`http`, owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}),
+		Handler: prometheus.NewPrometheusHandler(`http`, http.HandlerFunc(apiHandler)),
 	}
 
 	var serveError = make(chan error)
