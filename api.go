@@ -16,6 +16,7 @@ import (
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
+	"github.com/ViBiOh/httputils/rate"
 )
 
 const port = `1080`
@@ -65,7 +66,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: prometheus.NewPrometheusHandler(`http`, http.HandlerFunc(apiHandler)),
+		Handler: prometheus.NewPrometheusHandler(`http`, rate.Handler{Handler: http.HandlerFunc(apiHandler)}),
 	}
 
 	var serveError = make(chan error)
