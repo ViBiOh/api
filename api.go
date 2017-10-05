@@ -8,6 +8,7 @@ import (
 
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/go-api/auth"
+	"github.com/ViBiOh/go-api/crud"
 	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
@@ -21,13 +22,15 @@ import (
 
 const port = `1080`
 
-const helloPath = `/hello`
 const echoPath = `/echo`
+const helloPath = `/hello`
+const crudPath = `/crud`
 const authPath = `/auth`
 const healthcheckPath = `/health`
 
 var echoHandler = http.StripPrefix(echoPath, echo.Handler{})
 var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
+var crudHandler = http.StripPrefix(crudPath, crud.Handler{})
 var authHandler = http.StripPrefix(authPath, auth.Handler{})
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
 var restHandler = owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(httpHandler)}}
