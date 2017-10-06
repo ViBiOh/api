@@ -50,7 +50,7 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(strconv.Itoa(id)))
 		}
 	} else if r.Method == http.MethodGet {
-		if id, err := strconv.Atoi(strings.TrimPrefix(`/`, r.URL.Path)); err != nil {
+		if id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, `/`)); err != nil {
 			httputils.BadRequest(w, err)
 		} else if foundUser := get(id); foundUser != nil {
 			httputils.ResponseJSON(w, foundUser)

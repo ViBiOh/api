@@ -42,6 +42,8 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 		authHandler.ServeHTTP(w, r)
 	} else if strings.HasPrefix(r.URL.Path, healthcheckPath) {
 		healthcheckHandler.ServeHTTP(w, r)
+	} else if strings.HasPrefix(r.URL.Path, crudPath) {
+		crudHandler.ServeHTTP(w, r)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
