@@ -8,6 +8,7 @@ deps:
 	go get -u github.com/ViBiOh/httputils
 	go get -u github.com/ViBiOh/httputils/prometheus
 	go get -u github.com/ViBiOh/httputils/cert
+	go get -u github.com/satori/go.uuid
 
 format:
 	goimports -w **/*.go *.go

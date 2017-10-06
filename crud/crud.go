@@ -2,31 +2,30 @@ package crud
 
 import (
 	"encoding/json"
-	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/ViBiOh/httputils"
+	"github.com/satori/go.uuid"
 )
 
 type user struct {
-	ID   int    `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-var users = map[int]*user{}
+var users = map[string]*user{}
 
 // Handler for Hello request. Should be use with net/http
 type Handler struct {
 }
 
-func get(id int) *user {
+func get(id string) *user {
 	return users[id]
 }
 
-func create(created user) int {
-	created.ID = rand.Int()
+func create(created user) string {
+	created.ID = uuid.NewV4().String()
 	users[created.ID] = &created
 
 	return created.ID
@@ -46,13 +45,10 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else if err := json.Unmarshal(bodyBytes, &bodyUser); err != nil {
 			httputils.BadRequest(w, err)
 		} else {
-			id := create(bodyUser)
-			w.Write([]byte(strconv.Itoa(id)))
+			w.Write([]byte(create(bodyUser)))
 		}
 	} else if r.Method == http.MethodGet {
-		if id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, `/`)); err != nil {
-			httputils.BadRequest(w, err)
-		} else if foundUser := get(id); foundUser != nil {
+		if foundUser := get(strings.TrimPrefix(r.URL.Path, `/`)); foundUser != nil {
 			httputils.ResponseJSON(w, foundUser)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
