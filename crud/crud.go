@@ -24,6 +24,17 @@ var (
 type Handler struct {
 }
 
+func getRequestID(w http.ResponseWriter, r *http.Request) int {
+	id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, `/`))
+
+	if err != nil {
+		httputils.BadRequest(w, fmt.Errorf(`error while parsing given id %s: %v`, strings.TrimPrefix(r.URL.Path, `/`), err))
+		return -1
+
+	}
+	return id
+}
+
 func getUser(id int) *user {
 	return users[id]
 }
@@ -36,6 +47,16 @@ func createUser(name string) *user {
 	return createdUser
 }
 
+func updateUser(id int, name string) *user {
+	foundUser, ok := users[id]
+
+	if ok {
+		foundUser.Name = name
+	}
+
+	return foundUser
+}
+
 func deleteUser(id int) {
 	delete(users, id)
 }
@@ -46,30 +67,48 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var bodyUser user
+	var requestID int
+	var requestUser *user
 
 	if r.Method == http.MethodGet {
-		if id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, `/`)); err != nil {
-			httputils.BadRequest(w, fmt.Errorf(`error while parsing given id %s: %v`, strings.TrimPrefix(r.URL.Path, `/`), err))
-		} else if foundUser := getUser(id); foundUser == nil {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			httputils.ResponseJSON(w, foundUser)
+		requestID = getRequestID(w, r)
+
+		if requestID > 0 {
+			if requestUser = getUser(requestID); requestUser == nil {
+				w.WriteHeader(http.StatusNotFound)
+			} else {
+				httputils.ResponseJSON(w, requestUser)
+			}
 		}
 	} else if r.Method == http.MethodPost {
 		if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
 			httputils.BadRequest(w, fmt.Errorf(`error while reading body: %v`, err))
-		} else if err := json.Unmarshal(bodyBytes, &bodyUser); err != nil {
+		} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
 			httputils.BadRequest(w, fmt.Errorf(`error while unmarshalling body: %v`, err))
 		} else {
 			w.WriteHeader(http.StatusCreated)
-			httputils.ResponseJSON(w, createUser(bodyUser.Name))
+			httputils.ResponseJSON(w, createUser(requestUser.Name))
+		}
+	} else if r.Method == http.MethodPut {
+		requestID = getRequestID(w, r)
+
+		if requestID > 0 {
+			if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
+				httputils.BadRequest(w, fmt.Errorf(`error while reading body: %v`, err))
+			} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
+				httputils.BadRequest(w, fmt.Errorf(`error while unmarshalling body: %v`, err))
+			} else if updatedUser := updateUser(requestID, requestUser.Name); updatedUser == nil {
+				w.WriteHeader(http.StatusNotFound)
+			} else {
+				w.WriteHeader(http.StatusOK)
+				httputils.ResponseJSON(w, updatedUser)
+			}
 		}
 	} else if r.Method == http.MethodDelete {
-		if id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, `/`)); err != nil {
-			httputils.BadRequest(w, fmt.Errorf(`error while parsing given id %s: %v`, strings.TrimPrefix(r.URL.Path, `/`), err))
-		} else {
-			deleteUser(id)
+		requestID = getRequestID(w, r)
+
+		if requestID > 0 {
+			deleteUser(requestID)
 			w.WriteHeader(http.StatusNoContent)
 		}
 	}
