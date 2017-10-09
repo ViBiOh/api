@@ -30,6 +30,7 @@ func TestGetUser(t *testing.T) {
 		}
 	}
 }
+
 func TestDeleteUser(t *testing.T) {
 	testUser := &user{ID: 1, Name: `Test name`}
 
