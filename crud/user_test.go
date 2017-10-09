@@ -3,7 +3,7 @@ package crud
 import "testing"
 import "reflect"
 
-func TestGetUser(t *testing.T) {
+func Test_getUser(t *testing.T) {
 	testUser := &user{ID: 1, Name: `Test name`}
 
 	var cases = []struct {
@@ -35,7 +35,7 @@ func TestGetUser(t *testing.T) {
 	}
 }
 
-func TestCreateUser(t *testing.T) {
+func Test_createUser(t *testing.T) {
 	var cases = []struct {
 		intention string
 		init      map[int64]*user
@@ -66,7 +66,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestUpdateUser(t *testing.T) {
+func Test_updateUser(t *testing.T) {
 	var cases = []struct {
 		intention string
 		init      map[int64]*user
@@ -98,7 +98,7 @@ func TestUpdateUser(t *testing.T) {
 		}
 	}
 }
-func TestDeleteUser(t *testing.T) {
+func Test_deleteUser(t *testing.T) {
 	testUser := &user{ID: 1, Name: `Test name`}
 
 	var cases = []struct {
