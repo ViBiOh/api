@@ -114,7 +114,7 @@ func Test_deleteUser(t *testing.T) {
 			nil,
 		},
 		{
-			`should properly remove given instance`,
+			`should remove given instance`,
 			map[int64]*user{1: testUser},
 			1,
 			nil,
