@@ -275,7 +275,7 @@ func Test_ServeHTTP(t *testing.T) {
 			http.StatusCreated,
 		},
 		{
-			`should handle create request`,
+			`should handle get request`,
 			map[int64]*user{1: {ID: 1, Name: `test`}},
 			2,
 			httptest.NewRequest(http.MethodGet, `/1`, nil),
@@ -323,5 +323,35 @@ func Test_ServeHTTP(t *testing.T) {
 		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
 			t.Errorf("%v\nServeHTTP(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
+	}
+}
+
+func Benchmark_ServeHTTP_options(b *testing.B) {
+	handler := Handler{}
+	users = map[int64]*user{}
+	seq = 1
+
+	for i := 0; i < b.N; i++ {
+		handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodOptions, `/`, nil))
+	}
+}
+
+func Benchmark_ServeHTTP_create(b *testing.B) {
+	handler := Handler{}
+	users = map[int64]*user{}
+	seq = 1
+
+	for i := 0; i < b.N; i++ {
+		handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, `/`, strings.NewReader(`{"name":"test"}`)))
+	}
+}
+
+func Benchmark_ServeHTTP_get(b *testing.B) {
+	handler := Handler{}
+	users = map[int64]*user{1: {ID: 1, Name: `test`}}
+	seq = 2
+
+	for i := 0; i < b.N; i++ {
+		handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, `/1`, nil))
 	}
 }
