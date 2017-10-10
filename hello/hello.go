@@ -1,6 +1,7 @@
 package hello
 
 import (
+	"fmt"
 	"html"
 	"net/http"
 	"strings"
@@ -8,17 +9,8 @@ import (
 	"github.com/ViBiOh/httputils"
 )
 
-const delayInSeconds = 1
-
 type hello struct {
 	Name string `json:"greeting"`
-}
-
-func pluralize(s string, n int) string {
-	if n > 1 {
-		return (s + `s`)
-	}
-	return s
 }
 
 // Handler for Hello request. Should be use with net/http
@@ -36,7 +28,5 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		name = `World`
 	}
 
-	hello := hello{`Hello ` + name + `, I'm greeting you from the server!`}
-
-	httputils.ResponseJSON(w, hello)
+	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, I'm greeting you from the server!`, name)})
 }

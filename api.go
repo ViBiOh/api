@@ -27,7 +27,7 @@ const healthcheckPath = `/health`
 var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
 var crudHandler = http.StripPrefix(crudPath, crud.Handler{})
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
-var restHandler = owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}
+var restHandler = rate.Handler{Handler: owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}}
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, healthcheckPath) {
@@ -55,7 +55,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: prometheus.NewPrometheusHandler(`http`, rate.Handler{Handler: restHandler}),
+		Handler: prometheus.NewPrometheusHandler(`http`, restHandler),
 	}
 
 	var serveError = make(chan error)
