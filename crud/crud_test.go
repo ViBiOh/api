@@ -164,8 +164,8 @@ func Test_updateCrud(t *testing.T) {
 		{
 			`should handle invalid JSON`,
 			nil,
-			httptest.NewRequest(http.MethodGet, `/`, strings.NewReader(`{"name":"test"`)),
-			`Error while parsing request id: strconv.ParseInt: parsing "": invalid syntax
+			httptest.NewRequest(http.MethodGet, `/1`, strings.NewReader(`{"name":"test"`)),
+			`Error while unmarshalling body: unexpected end of JSON input
 `,
 			http.StatusBadRequest,
 		},
@@ -245,6 +245,83 @@ func Test_deleteCrud(t *testing.T) {
 
 		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
 			t.Errorf("%v\ndeleteCrudTest_deleteCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
+		}
+	}
+}
+
+func Test_ServeHTTP(t *testing.T) {
+	var cases = []struct {
+		intention  string
+		init       map[int64]*user
+		initSeq    int64
+		request    *http.Request
+		want       string
+		wantStatus int
+	}{
+		{
+			`should handle OPTIONS request for CORS`,
+			nil,
+			1,
+			httptest.NewRequest(http.MethodOptions, `/`, nil),
+			``,
+			http.StatusNoContent,
+		},
+		{
+			`should handle create request`,
+			map[int64]*user{},
+			1,
+			httptest.NewRequest(http.MethodPost, `/`, strings.NewReader(`{"name":"test"}`)),
+			`{"id":1,"name":"test"}`,
+			http.StatusCreated,
+		},
+		{
+			`should handle create request`,
+			map[int64]*user{1: {ID: 1, Name: `test`}},
+			2,
+			httptest.NewRequest(http.MethodGet, `/1`, nil),
+			`{"id":1,"name":"test"}`,
+			http.StatusOK,
+		},
+		{
+			`should handle update request`,
+			map[int64]*user{1: {ID: 1, Name: `test`}},
+			2,
+			httptest.NewRequest(http.MethodPut, `/1`, strings.NewReader(`{"name":"Updated test"}`)),
+			`{"id":1,"name":"Updated test"}`,
+			http.StatusOK,
+		},
+		{
+			`should handle delete request`,
+			map[int64]*user{1: {ID: 1, Name: `test`}},
+			2,
+			httptest.NewRequest(http.MethodDelete, `/1`, nil),
+			``,
+			http.StatusNoContent,
+		},
+		{
+			`should handle unexpected method`,
+			nil,
+			1,
+			httptest.NewRequest(http.MethodTrace, `/1`, nil),
+			``,
+			http.StatusMethodNotAllowed,
+		},
+	}
+
+	for _, testCase := range cases {
+		writer := httptest.NewRecorder()
+
+		users = testCase.init
+		seq = testCase.initSeq
+
+		Handler{}.ServeHTTP(writer, testCase.request)
+
+		if result := writer.Code; result != testCase.wantStatus {
+			t.Errorf("%v\nServeHTTP(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
+		}
+
+		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
+			t.Errorf("%v\nServeHTTP(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }

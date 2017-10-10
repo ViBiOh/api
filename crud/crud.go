@@ -65,6 +65,10 @@ func deleteCrud(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handler for CRUD request. Should be use with net/http
+type Handler struct {
+}
+
 func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)

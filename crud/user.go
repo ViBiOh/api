@@ -10,10 +10,6 @@ var (
 	seq   = int64(1)
 )
 
-// Handler for Hello request. Should be use with net/http
-type Handler struct {
-}
-
 func getUser(id int64) *user {
 	return users[id]
 }
