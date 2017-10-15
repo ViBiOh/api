@@ -3,6 +3,7 @@ package hello
 import (
 	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -11,6 +12,18 @@ import (
 )
 
 const locationStr = `Europe/Paris`
+
+var location *time.Location
+
+func init() {
+	loc, err := time.LoadLocation(locationStr)
+	if err != nil {
+		log.Panicf(`Error while loading location %s: %v`, locationStr, err)
+		return
+	}
+
+	location = loc
+}
 
 type hello struct {
 	Name string `json:"greeting"`
@@ -29,12 +42,6 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
 	if name == `` {
 		name = `World`
-	}
-
-	location, err := time.LoadLocation(locationStr)
-	if err != nil {
-		httputils.InternalServer(w, fmt.Errorf(`Error while loading location %s: %v`, locationStr, err))
-		return
 	}
 
 	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, it's %v !`, name, time.Now().In(location))})
