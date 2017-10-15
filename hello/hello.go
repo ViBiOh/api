@@ -5,9 +5,12 @@ import (
 	"html"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ViBiOh/httputils"
 )
+
+const locationStr = `Europe/Paris`
 
 type hello struct {
 	Name string `json:"greeting"`
@@ -28,5 +31,11 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		name = `World`
 	}
 
-	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, I'm greeting you from the server!`, name)})
+	location, err := time.LoadLocation(locationStr)
+	if err != nil {
+		httputils.InternalServer(w, fmt.Errorf(`Error while loading location %s: %v`, locationStr, err))
+		return
+	}
+
+	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, it's %v !`, name, time.Now().In(location))})
 }
