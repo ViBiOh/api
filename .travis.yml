@@ -3,8 +3,6 @@ sudo: required
 services:
 - docker
 go: 1.9
-before_install:
-  - export GOROOT=$(go env GOROOT)
 install: make
 script: |
   DOCKER_IMAGE_DEFAULT=${DOCKER_USER}/api
@@ -13,6 +11,9 @@ script: |
     DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}:${TRAVIS_BRANCH}
   fi
   
+  go env GOROOT
+  export GOROOT=$(go env GOROOT)
+  which go
   echo GOROOT=$GOROOT
   docker build -t ${DOCKER_IMAGE_NAME} .
 after_success: |
