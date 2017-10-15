@@ -44,5 +44,5 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		name = `World`
 	}
 
-	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, it's %v !`, name, time.Now().In(location))})
+	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
 }
