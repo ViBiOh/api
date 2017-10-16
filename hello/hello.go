@@ -11,8 +11,6 @@ import (
 	"github.com/ViBiOh/httputils"
 )
 
-const locationStr = `Europe/Paris`
-
 var locationName = flag.String(`location`, `Europe/Paris`, `TimeZone for displaying current time`)
 var location *time.Location
 
