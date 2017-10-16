@@ -20,7 +20,7 @@ func getCrud(w http.ResponseWriter, r *http.Request) {
 	} else if requestUser := getUser(requestID); requestUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		httputils.ResponseJSON(w, requestUser)
+		httputils.ResponseJSON(w, http.StatusOK, requestUser)
 	}
 }
 
@@ -32,8 +32,7 @@ func createCrud(w http.ResponseWriter, r *http.Request) {
 	} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
 		httputils.BadRequest(w, fmt.Errorf(`Error while unmarshalling body: %v`, err))
 	} else {
-		w.WriteHeader(http.StatusCreated)
-		httputils.ResponseJSON(w, createUser(requestUser.Name))
+		httputils.ResponseJSON(w, http.StatusCreated, createUser(requestUser.Name))
 	}
 }
 
@@ -49,8 +48,7 @@ func updateCrud(w http.ResponseWriter, r *http.Request) {
 	} else if updatedUser := updateUser(requestID, requestUser.Name); updatedUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		w.WriteHeader(http.StatusOK)
-		httputils.ResponseJSON(w, updatedUser)
+		httputils.ResponseJSON(w, http.StatusOK, updatedUser)
 	}
 }
 

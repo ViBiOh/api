@@ -13,6 +13,7 @@ import (
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
+	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
@@ -24,8 +25,8 @@ const helloPath = `/hello`
 const crudPath = `/crud`
 const healthcheckPath = `/health`
 
-var helloHandler = http.StripPrefix(helloPath, hello.Handler{})
-var crudHandler = http.StripPrefix(crudPath, crud.Handler{})
+var helloHandler = http.StripPrefix(helloPath, gzip.Handler{Handler: hello.Handler{}})
+var crudHandler = http.StripPrefix(crudPath, gzip.Handler{Handler: crud.Handler{}})
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
 var restHandler = rate.Handler{Handler: owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}}
 
