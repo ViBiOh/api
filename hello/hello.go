@@ -1,9 +1,9 @@
 package hello
 
 import (
+	"flag"
 	"fmt"
 	"html"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -13,16 +13,18 @@ import (
 
 const locationStr = `Europe/Paris`
 
+var locationName = flag.String(`location`, `Europe/Paris`, `TimeZone for displaying current time`)
 var location *time.Location
 
-func init() {
-	loc, err := time.LoadLocation(locationStr)
+// Init hello handler
+func Init() error {
+	loc, err := time.LoadLocation(*locationName)
 	if err != nil {
-		log.Panicf(`Error while loading location %s: %v`, locationStr, err)
-		return
+		return fmt.Errorf(`Error while loading location %s: %v`, *locationName, err)
 	}
 
 	location = loc
+	return nil
 }
 
 type hello struct {
@@ -36,13 +38,12 @@ type Handler struct {
 func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		w.Write(nil)
-		return
-	}
+	} else {
+		name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
+		if name == `` {
+			name = `World`
+		}
 
-	name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
-	if name == `` {
-		name = `World`
+		httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
 	}
-
-	httputils.ResponseJSON(w, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
 }

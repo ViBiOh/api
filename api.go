@@ -53,6 +53,10 @@ func main() {
 
 	log.Print(`Starting server on port ` + port)
 
+	if err := hello.Init(); err != nil {
+		log.Printf(`Error while initializing hello Handler: %v`, err)
+	}
+
 	server := &http.Server{
 		Addr:    `:` + port,
 		Handler: prometheus.NewPrometheusHandler(`http`, restHandler),
