@@ -314,7 +314,7 @@ func Test_ServeHTTP(t *testing.T) {
 		users = testCase.init
 		seq = testCase.initSeq
 
-		Handler{}.ServeHTTP(writer, testCase.request)
+		Handler().ServeHTTP(writer, testCase.request)
 
 		if result := writer.Code; result != testCase.wantStatus {
 			t.Errorf("%v\nServeHTTP(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
@@ -327,7 +327,7 @@ func Test_ServeHTTP(t *testing.T) {
 }
 
 func Benchmark_ServeHTTP_options(b *testing.B) {
-	handler := Handler{}
+	handler := Handler()
 	users = map[int64]*user{}
 	seq = 1
 
@@ -337,7 +337,7 @@ func Benchmark_ServeHTTP_options(b *testing.B) {
 }
 
 func Benchmark_ServeHTTP_create(b *testing.B) {
-	handler := Handler{}
+	handler := Handler()
 	users = map[int64]*user{}
 	seq = 1
 
@@ -347,7 +347,7 @@ func Benchmark_ServeHTTP_create(b *testing.B) {
 }
 
 func Benchmark_ServeHTTP_get(b *testing.B) {
-	handler := Handler{}
+	handler := Handler()
 	users = map[int64]*user{1: {ID: 1, Name: `test`}}
 	seq = 2
 

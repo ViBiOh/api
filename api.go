@@ -25,21 +25,23 @@ const helloPath = `/hello`
 const crudPath = `/crud`
 const healthcheckPath = `/health`
 
-var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler{}))
-var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler{}))
-var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler{})
-var restHandler = rate.Handler{Handler: owasp.Handler{Handler: cors.Handler{Handler: http.HandlerFunc(apiHandler)}}}
+var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler()))
+var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
+var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
+var restHandler = prometheus.Handler(`http`, rate.Handler(owasp.Handler(cors.Handler(handler()))))
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, healthcheckPath) {
-		healthcheckHandler.ServeHTTP(w, r)
-	} else if strings.HasPrefix(r.URL.Path, helloPath) {
-		helloHandler.ServeHTTP(w, r)
-	} else if strings.HasPrefix(r.URL.Path, crudPath) {
-		crudHandler.ServeHTTP(w, r)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-	}
+func handler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, healthcheckPath) {
+			healthcheckHandler.ServeHTTP(w, r)
+		} else if strings.HasPrefix(r.URL.Path, helloPath) {
+			helloHandler.ServeHTTP(w, r)
+		} else if strings.HasPrefix(r.URL.Path, crudPath) {
+			crudHandler.ServeHTTP(w, r)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	})
 }
 
 func main() {
@@ -60,7 +62,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: prometheus.NewPrometheusHandler(`http`, restHandler),
+		Handler: restHandler,
 	}
 
 	var serveError = make(chan error)

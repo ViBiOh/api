@@ -30,18 +30,17 @@ type hello struct {
 }
 
 // Handler for Hello request. Should be use with net/http
-type Handler struct {
-}
+func Handler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodOptions {
+			w.Write(nil)
+		} else {
+			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
+			if name == `` {
+				name = `World`
+			}
 
-func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		w.Write(nil)
-	} else {
-		name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
-		if name == `` {
-			name = `World`
+			httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
 		}
-
-		httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
-	}
+	})
 }
