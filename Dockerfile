@@ -6,7 +6,7 @@ COPY script/ca-certificates.crt /etc/ssl/certs/
 
 ENV ZONEINFO script/zoneinfo.zip
 COPY script/zoneinfo.zip script/zoneinfo.zip
-RUN echo Europe/Paris > /etc/timezone
+COPY script/timezone /etc/timezone
 
 EXPOSE 1080
 ENTRYPOINT [ "/bin/sh" ]
