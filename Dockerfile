@@ -2,13 +2,11 @@ FROM scratch
 
 HEALTHCHECK --retries=10 CMD http://localhost:1080/health
 
-COPY script/ca-certificates.crt /etc/ssl/certs/
-
-ENV ZONEINFO script/zoneinfo.zip
-COPY script/zoneinfo.zip script/zoneinfo.zip
-COPY script/timezone /etc/timezone
-
-EXPOSE 1080
 ENTRYPOINT [ "/bin/sh" ]
+ENV ZONEINFO zoneinfo.zip
+EXPOSE 1080
+
+COPY cacert.pem /etc/ssl/certs/
+COPY zoneinfo.zip zoneinfo.zip
 
 COPY bin/api /bin/sh
