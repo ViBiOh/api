@@ -1,5 +1,4 @@
 # Go binary
 bin/
 coverage.txt
-cacert.pem
 zoneinfos.zip
