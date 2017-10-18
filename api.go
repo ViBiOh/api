@@ -9,6 +9,7 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/go-api/crud"
+	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
@@ -21,10 +22,12 @@ import (
 
 const port = `1080`
 
+const echoPath = `/echo`
 const helloPath = `/hello`
 const crudPath = `/crud`
 const healthcheckPath = `/health`
 
+var echoHandler = http.StripPrefix(echoPath, echo.Handler())
 var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler()))
 var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
@@ -40,6 +43,16 @@ func handler() http.Handler {
 			crudHandler.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
+		}
+	})
+}
+
+func apiHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, echoPath) {
+			echoHandler.ServeHTTP(w, r)
+		} else {
+			restHandler.ServeHTTP(w, r)
 		}
 	})
 }
@@ -62,7 +75,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + port,
-		Handler: restHandler,
+		Handler: apiHandler(),
 	}
 
 	var serveError = make(chan error)

@@ -2,6 +2,7 @@ default: deps format lint tst build
 
 deps:
 	go get -u github.com/golang/lint/golint
+	go get -u github.com/gorilla/websocket
 	go get -u github.com/NYTimes/gziphandler
 	go get -u github.com/ViBiOh/alcotest/alcotest
 	go get -u github.com/ViBiOh/httputils
