@@ -31,7 +31,7 @@ services:
       traefik.frontend.rule: 'Host: api.vibioh.fr'
       traefik.port: '1080'
     healthcheck:
-      test: [ "CMD", "/bin/sh", "-c", "http://localhost/health" ]
+      test: [ "CMD", "/bin/sh", "-c", "http://localhost:1080/health" ]
     logging:
       driver: json-file
       options:
