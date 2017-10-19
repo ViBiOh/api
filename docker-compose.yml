@@ -1,17 +1,37 @@
-version: '2'
+version: '2.1'
 
 services:
+  tls:
+    image: vibioh/api
+    command:
+    - -tls
+    labels:
+      traefik.frontend.passHostHeader: 'true'
+      traefik.frontend.rule: 'Host: api-tls.vibioh.fr'
+      traefik.protocol: 'https'
+      traefik.port: '1080'
+    logging:
+      driver: json-file
+      options:
+        max-size: '50m'
+    restart: on-failure:5
+    read_only: true
+    cpu_shares: 128
+    mem_limit: 25165824
+    security_opt:
+    - no-new-privileges
+
   api:
     image: vibioh/api
     command:
     - -prometheusMetricsHost
     - api:1080
-    - -tls
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
-      traefik.protocol: 'https'
       traefik.port: '1080'
+    healthcheck:
+      test: [ "CMD", "/bin/sh", "-c", "http://localhost/health" ]
     logging:
       driver: json-file
       options:
