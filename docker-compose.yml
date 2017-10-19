@@ -10,6 +10,7 @@ services:
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
+      traefik.protocol: 'https'
       traefik.port: '1080'
     logging:
       driver: json-file
