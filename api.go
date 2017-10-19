@@ -20,8 +20,6 @@ import (
 	"github.com/ViBiOh/httputils/rate"
 )
 
-const port = `1080`
-
 const echoPath = `/echo`
 const helloPath = `/hello`
 const crudPath = `/crud`
@@ -59,6 +57,7 @@ func apiHandler() http.Handler {
 
 func main() {
 	url := flag.String(`c`, ``, `URL to check`)
+	port := flag.String(`port`, `1080`, `Listen port`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
 	flag.Parse()
 
@@ -67,14 +66,14 @@ func main() {
 		return
 	}
 
-	log.Print(`Starting server on port ` + port)
+	log.Printf(`Starting server on port %s`, *port)
 
 	if err := hello.Init(); err != nil {
 		log.Printf(`Error while initializing hello Handler: %v`, err)
 	}
 
 	server := &http.Server{
-		Addr:    `:` + port,
+		Addr:    `:` + *port,
 		Handler: apiHandler(),
 	}
 
