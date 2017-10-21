@@ -10,6 +10,62 @@ import (
 	"github.com/ViBiOh/httputils"
 )
 
+func Test_listCrud(t *testing.T) {
+	var cases = []struct {
+		intention  string
+		init       map[int64]*user
+		request    *http.Request
+		want       string
+		wantStatus int
+	}{
+		{
+			`should work with empty params`,
+			nil,
+			httptest.NewRequest(http.MethodGet, `/`, nil),
+			`{"results":[]}`,
+			http.StatusOK,
+		},
+		{
+			`should consider given args`,
+			map[int64]*user{1: {ID: 1, Name: `1`}, 2: {ID: 2, Name: `2`}},
+			httptest.NewRequest(http.MethodGet, `/?page=2&pageSize=1`, nil),
+			`{"results":[{"id":2,"name":"2"}]}`,
+			http.StatusOK,
+		},
+		{
+			`should handle bad page`,
+			nil,
+			httptest.NewRequest(http.MethodGet, `/?page=invalid`, nil),
+			`Error while parsing page param: strconv.ParseInt: parsing "invalid": invalid syntax
+`,
+			http.StatusBadRequest,
+		},
+		{
+			`should handle bad page`,
+			nil,
+			httptest.NewRequest(http.MethodGet, `/?pageSize=invalid`, nil),
+			`Error while parsing pageSize param: strconv.ParseInt: parsing "invalid": invalid syntax
+`,
+			http.StatusBadRequest,
+		},
+	}
+
+	for _, testCase := range cases {
+		writer := httptest.NewRecorder()
+		users = testCase.init
+
+		listCrud(writer, testCase.request)
+
+		if result := writer.Code; result != testCase.wantStatus {
+			t.Errorf("%v\nlistCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
+		}
+
+		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
+			t.Errorf("%v\nlistCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
+		}
+	}
+}
+
 func Test_getRequestID(t *testing.T) {
 	var cases = []struct {
 		intention string
@@ -275,6 +331,14 @@ func Test_ServeHTTP(t *testing.T) {
 			http.StatusCreated,
 		},
 		{
+			`should handle list request`,
+			map[int64]*user{1: {ID: 1, Name: `test`}},
+			2,
+			httptest.NewRequest(http.MethodGet, `/`, nil),
+			`{"results":[{"id":1,"name":"test"}]}`,
+			http.StatusOK,
+		},
+		{
 			`should handle get request`,
 			map[int64]*user{1: {ID: 1, Name: `test`}},
 			2,
@@ -323,6 +387,16 @@ func Test_ServeHTTP(t *testing.T) {
 		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
 			t.Errorf("%v\nServeHTTP(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
+	}
+}
+
+func Benchmark_ServeHTTP_list(b *testing.B) {
+	handler := Handler()
+	users = map[int64]*user{}
+	seq = 1
+
+	for i := 0; i < b.N; i++ {
+		handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, `/`, nil))
 	}
 }
 

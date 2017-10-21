@@ -19,7 +19,7 @@ func getRequestID(r *http.Request) (int64, error) {
 
 func listCrud(w http.ResponseWriter, r *http.Request) {
 	page := defaultPage
-	rawPage := r.Form.Get(`page`)
+	rawPage := r.URL.Query().Get(`page`)
 	if rawPage != `` {
 		parsedPage, err := strconv.ParseInt(rawPage, 10, 64)
 		if err != nil {
@@ -31,7 +31,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageSize := defaultPageSize
-	rawPageSize := r.Form.Get(`pageSize`)
+	rawPageSize := r.URL.Query().Get(`pageSize`)
 	if rawPageSize != `` {
 		parsedPageSize, err := strconv.ParseInt(rawPageSize, 10, 64)
 		if err != nil {
