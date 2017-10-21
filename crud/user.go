@@ -17,16 +17,18 @@ func listUser(page, pageSize int64) []*user {
 	var min int64
 
 	if page > 1 {
-		min = page - 1*pageSize
+		min = (page - 1) * pageSize
 	}
 	max := page * pageSize
 
 	for _, value := range users {
-		if min <= i && i < max {
+		if min <= i {
 			list = append(list, value)
 		}
 
-		if i >= max {
+		i++
+
+		if i == max {
 			break
 		}
 	}

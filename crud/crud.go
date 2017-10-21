@@ -101,6 +101,8 @@ func Handler() http.Handler {
 			w.WriteHeader(http.StatusNoContent)
 		} else if r.Method == http.MethodPost && r.URL.Path == `/` {
 			createCrud(w, r)
+		} else if r.Method == http.MethodGet && r.URL.Path == `/` {
+			listCrud(w, r)
 		} else if r.Method == http.MethodGet {
 			getCrud(w, r)
 		} else if r.Method == http.MethodPut {

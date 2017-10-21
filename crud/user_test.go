@@ -3,6 +3,49 @@ package crud
 import "testing"
 import "reflect"
 
+func Test_listUser(t *testing.T) {
+	firstUser := &user{ID: 1, Name: `Test 1`}
+	secondUser := &user{ID: 2, Name: `Test 2`}
+	thirdUser := &user{ID: 3, Name: `Test 3`}
+
+	var cases = []struct {
+		intention string
+		init      map[int64]*user
+		page      int64
+		pageSize  int64
+		want      []*user
+	}{
+		{
+			`should return page 1`,
+			map[int64]*user{1: firstUser},
+			1,
+			20,
+			[]*user{firstUser},
+		},
+		{
+			`should respect given pageSize`,
+			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
+			1,
+			2,
+			[]*user{firstUser, secondUser},
+		},
+		{
+			`should respect given page and pageSize`,
+			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
+			2,
+			2,
+			[]*user{thirdUser},
+		},
+	}
+
+	for _, testCase := range cases {
+		users = testCase.init
+
+		if result := listUser(testCase.page, testCase.pageSize); len(result) != len(testCase.want) {
+			t.Errorf("%v\nlistUser(%v, %v) = %v, want %v", testCase.intention, testCase.page, testCase.pageSize, result, testCase.want)
+		}
+	}
+}
 func Test_getUser(t *testing.T) {
 	testUser := &user{ID: 1, Name: `Test name`}
 
