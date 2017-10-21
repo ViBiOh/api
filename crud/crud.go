@@ -10,8 +10,39 @@ import (
 	"github.com/ViBiOh/httputils"
 )
 
+const defaultPage = int64(1)
+const defaultPageSize = int64(20)
+
 func getRequestID(r *http.Request) (int64, error) {
 	return strconv.ParseInt(strings.TrimPrefix(r.URL.Path, `/`), 10, 64)
+}
+
+func listCrud(w http.ResponseWriter, r *http.Request) {
+	page := defaultPage
+	rawPage := r.Form.Get(`page`)
+	if rawPage != `` {
+		parsedPage, err := strconv.ParseInt(rawPage, 10, 64)
+		if err != nil {
+			httputils.BadRequest(w, fmt.Errorf(`Error while parsing page param: %v`, err))
+			return
+		}
+
+		page = parsedPage
+	}
+
+	pageSize := defaultPageSize
+	rawPageSize := r.Form.Get(`pageSize`)
+	if rawPageSize != `` {
+		parsedPageSize, err := strconv.ParseInt(rawPageSize, 10, 64)
+		if err != nil {
+			httputils.BadRequest(w, fmt.Errorf(`Error while parsing pageSize param: %v`, err))
+			return
+		}
+
+		pageSize = parsedPageSize
+	}
+
+	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize))
 }
 
 func getCrud(w http.ResponseWriter, r *http.Request) {
