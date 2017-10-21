@@ -29,7 +29,7 @@ var echoHandler = http.StripPrefix(echoPath, echo.Handler())
 var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler()))
 var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-var restHandler = prometheus.Handler(`http`, rate.Handler(owasp.Handler(cors.Handler(handler()))))
+var restHandler = prometheus.Handler(`http`, rate.Handler(owasp.Handler(cors.Handler(cors.Flags(``), handler()))))
 
 func handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

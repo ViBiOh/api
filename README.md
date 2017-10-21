@@ -10,6 +10,10 @@
 Usage of api:
   -c string
     	URL to check
+  -corsCredentials string
+    	Access-Control-Allow-Credentials
+  -corsExpose string
+    	Access-Control-Expose-Headers
   -corsHeaders string
     	Access-Control-Allow-Headers (default "Content-Type")
   -corsMethods string
@@ -20,6 +24,10 @@ Usage of api:
     	Content-Security-Policy (default "default-src 'self'")
   -hsts
     	Indicate Strict Transport Security (default true)
+  -location string
+    	TimeZone for displaying current time (default "Europe/Paris")
+  -port string
+    	Listen port (default "1080")
   -prometheusMetricsHost string
     	Prometheus - Allowed hostname to call metrics endpoint (default "localhost")
   -prometheusMetricsPath string
