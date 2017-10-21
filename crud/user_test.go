@@ -13,6 +13,7 @@ func Test_listUser(t *testing.T) {
 		init      map[int64]*user
 		page      int64
 		pageSize  int64
+		sortFn    func(*user, *user) bool
 		want      []*user
 	}{
 		{
@@ -20,6 +21,7 @@ func Test_listUser(t *testing.T) {
 			map[int64]*user{1: firstUser},
 			1,
 			20,
+			sortByID,
 			[]*user{firstUser},
 		},
 		{
@@ -27,6 +29,7 @@ func Test_listUser(t *testing.T) {
 			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
 			1,
 			2,
+			sortByID,
 			[]*user{firstUser, secondUser},
 		},
 		{
@@ -34,6 +37,7 @@ func Test_listUser(t *testing.T) {
 			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
 			2,
 			2,
+			sortByID,
 			[]*user{thirdUser},
 		},
 	}
@@ -41,7 +45,7 @@ func Test_listUser(t *testing.T) {
 	for _, testCase := range cases {
 		users = testCase.init
 
-		if result := listUser(testCase.page, testCase.pageSize); len(result) != len(testCase.want) {
+		if result := listUser(testCase.page, testCase.pageSize, testCase.sortFn); !reflect.DeepEqual(result, testCase.want) {
 			t.Errorf("%v\nlistUser(%v, %v) = %v, want %v", testCase.intention, testCase.page, testCase.pageSize, result, testCase.want)
 		}
 	}

@@ -42,7 +42,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 		pageSize = parsedPageSize
 	}
 
-	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize))
+	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID))
 }
 
 func getCrud(w http.ResponseWriter, r *http.Request) {
