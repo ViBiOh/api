@@ -42,7 +42,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 		pageSize = parsedPageSize
 	}
 
-	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID))
+	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID), httputils.IsPretty(r.URL.RawQuery))
 }
 
 func getCrud(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,7 @@ func getCrud(w http.ResponseWriter, r *http.Request) {
 	} else if requestUser := getUser(requestID); requestUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		httputils.ResponseJSON(w, http.StatusOK, requestUser)
+		httputils.ResponseJSON(w, http.StatusOK, requestUser, httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 
@@ -63,7 +63,7 @@ func createCrud(w http.ResponseWriter, r *http.Request) {
 	} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
 		httputils.BadRequest(w, fmt.Errorf(`Error while unmarshalling body: %v`, err))
 	} else {
-		httputils.ResponseJSON(w, http.StatusCreated, createUser(requestUser.Name))
+		httputils.ResponseJSON(w, http.StatusCreated, createUser(requestUser.Name), httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 
@@ -79,7 +79,7 @@ func updateCrud(w http.ResponseWriter, r *http.Request) {
 	} else if updatedUser := updateUser(requestID, requestUser.Name); updatedUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		httputils.ResponseJSON(w, http.StatusOK, updatedUser)
+		httputils.ResponseJSON(w, http.StatusOK, updatedUser, httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 

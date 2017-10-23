@@ -40,7 +40,7 @@ func Handler() http.Handler {
 				name = `World`
 			}
 
-			httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))})
+			httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httputils.IsPretty(r.URL.RawQuery))
 		}
 	})
 }
