@@ -29,7 +29,7 @@ var echoHandler = http.StripPrefix(echoPath, echo.Handler())
 var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler()))
 var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-var restHandler = prometheus.Handler(`http`, rate.Handler(owasp.Handler(cors.Handler(cors.Flags(``), handler()))))
+var restHandler http.Handler
 
 func handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -59,6 +59,7 @@ func main() {
 	url := flag.String(`c`, ``, `URL to check`)
 	port := flag.String(`port`, `1080`, `Listen port`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	corsConfig := cors.Flags(``)
 	flag.Parse()
 
 	if *url != `` {
@@ -72,6 +73,7 @@ func main() {
 		log.Printf(`Error while initializing hello Handler: %v`, err)
 	}
 
+	restHandler = prometheus.Handler(`http`, rate.Handler(owasp.Handler(cors.Handler(corsConfig, handler()))))
 	server := &http.Server{
 		Addr:    `:` + *port,
 		Handler: apiHandler(),
