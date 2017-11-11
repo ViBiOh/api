@@ -10,36 +10,38 @@
 Usage of api:
   -c string
     	URL to check
-  -corsCredentials string
-    	Access-Control-Allow-Credentials
+  -corsCredentials
+    	[cors] Access-Control-Allow-Credentials
   -corsExpose string
-    	Access-Control-Expose-Headers
+    	[cors] Access-Control-Expose-Headers
   -corsHeaders string
-    	Access-Control-Allow-Headers (default "Content-Type")
+    	[cors] Access-Control-Allow-Headers (default "Content-Type")
   -corsMethods string
-    	Access-Control-Allow-Methods (default "GET")
+    	[cors] Access-Control-Allow-Methods (default "GET")
   -corsOrigin string
-    	Access-Control-Allow-Origin (default "*")
+    	[cors] Access-Control-Allow-Origin (default "*")
   -csp string
-    	Content-Security-Policy (default "default-src 'self'")
+    	[owasp] Content-Security-Policy (default "default-src 'self'")
   -hsts
-    	Indicate Strict Transport Security (default true)
+    	[owasp] Indicate Strict Transport Security (default true)
   -location string
     	TimeZone for displaying current time (default "Europe/Paris")
   -port string
     	Listen port (default "1080")
   -prometheusMetricsHost string
-    	Prometheus - Allowed hostname to call metrics endpoint (default "localhost")
+    	[prometheus] Allowed hostname to call metrics endpoint (default "localhost")
   -prometheusMetricsPath string
-    	Prometheus - Metrics endpoint path (default "/metrics")
-  -rateCount int
-    	Rate IP limit (default 5000)
+    	[prometheus] Metrics endpoint path (default "/metrics")
+  -prometheusPrefix string
+    	[prometheus] Prefix (default "http")
+  -rateCount uint
+    	[rate] IP limit (default 5000)
   -tls
     	Serve TLS content
-  -tlscert string
-    	TLS PEM Certificate file
-  -tlshosts string
-    	TLS Self-signed certificate hosts, comma separated (default "localhost")
-  -tlskey string
-    	TLS PEM Key file
+  -tlsCert string
+    	[tls] PEM Certificate file
+  -tlsHosts string
+    	[tls] Self-signed certificate hosts, comma separated (default "localhost")
+  -tlsKey string
+    	[tls] PEM Key file
 ```
