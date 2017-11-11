@@ -56,9 +56,9 @@ func apiHandler() http.Handler {
 }
 
 func main() {
-	url := flag.String(`c`, ``, `URL to check`)
 	port := flag.String(`port`, `1080`, `Listen port`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
 	prometheusConfig := prometheus.Flags(`prometheus`)
 	rateConfig := rate.Flags(`rate`)
@@ -66,10 +66,7 @@ func main() {
 	corsConfig := cors.Flags(`cors`)
 	flag.Parse()
 
-	if *url != `` {
-		alcotest.Do(url)
-		return
-	}
+	alcotest.DoAndExit(alcotestConfig)
 
 	log.Printf(`Starting server on port %s`, *port)
 
