@@ -13,7 +13,7 @@ import (
 func Test_listCrud(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		init       map[int64]*user
+		init       map[uint]*user
 		request    *http.Request
 		want       string
 		wantStatus int
@@ -27,7 +27,7 @@ func Test_listCrud(t *testing.T) {
 		},
 		{
 			`should consider given args`,
-			map[int64]*user{1: {ID: 1, Name: `1`}, 2: {ID: 2, Name: `2`}},
+			map[uint]*user{1: {ID: 1, Name: `1`}, 2: {ID: 2, Name: `2`}},
 			httptest.NewRequest(http.MethodGet, `/?page=2&pageSize=1`, nil),
 			`{"results":[{"id":2,"name":"2"}]}`,
 			http.StatusOK,
@@ -36,15 +36,15 @@ func Test_listCrud(t *testing.T) {
 			`should handle bad page`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/?page=invalid`, nil),
-			`Error while parsing page param: strconv.ParseInt: parsing "invalid": invalid syntax
+			`Error while parsing pagination: Error while parsing page param: strconv.ParseUint: parsing "invalid": invalid syntax
 `,
 			http.StatusBadRequest,
 		},
 		{
-			`should handle bad page`,
+			`should handle bad page size`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/?pageSize=invalid`, nil),
-			`Error while parsing pageSize param: strconv.ParseInt: parsing "invalid": invalid syntax
+			`Error while parsing pagination: Error while parsing pageSize param: strconv.ParseUint: parsing "invalid": invalid syntax
 `,
 			http.StatusBadRequest,
 		},
@@ -69,25 +69,25 @@ func Test_listCrud(t *testing.T) {
 func Test_getRequestID(t *testing.T) {
 	var cases = []struct {
 		intention string
-		request   *http.Request
-		want      int64
+		path      string
+		want      uint
 		wantErr   error
 	}{
 		{
 			`should handle empty path`,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
+			`/`,
 			0,
-			fmt.Errorf(`strconv.ParseInt: parsing "": invalid syntax`),
+			fmt.Errorf(`strconv.ParseUint: parsing "": invalid syntax`),
 		},
 		{
 			`should handle invalid number`,
-			httptest.NewRequest(http.MethodGet, `/abc123`, nil),
+			`/abc123`,
 			0,
-			fmt.Errorf(`strconv.ParseInt: parsing "abc123": invalid syntax`),
+			fmt.Errorf(`strconv.ParseUint: parsing "abc123": invalid syntax`),
 		},
 		{
 			`should handle positive number`,
-			httptest.NewRequest(http.MethodGet, `/2`, nil),
+			`/2`,
 			2,
 			nil,
 		},
@@ -96,7 +96,7 @@ func Test_getRequestID(t *testing.T) {
 	var failed bool
 
 	for _, testCase := range cases {
-		result, err := getRequestID(testCase.request)
+		result, err := getRequestID(testCase.path)
 
 		failed = false
 
@@ -111,38 +111,33 @@ func Test_getRequestID(t *testing.T) {
 		}
 
 		if failed {
-			t.Errorf("%v\ngetRequestID(%v) = (%v, %v), want (%v, %v)", testCase.intention, testCase.request, result, err, testCase.want, testCase.wantErr)
+			t.Errorf("%v\ngetRequestID(%v) = (%v, %v), want (%v, %v)", testCase.intention, testCase.path, result, err, testCase.want, testCase.wantErr)
 		}
 	}
 }
 
-func Test_getCrud(t *testing.T) {
+func Test_readCrud(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		init       map[int64]*user
+		init       map[uint]*user
 		request    *http.Request
+		id         uint
 		want       string
 		wantStatus int
 	}{
 		{
-			`should return bad request if invalid id`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`Error while parsing request id: strconv.ParseInt: parsing "": invalid syntax
-`,
-			http.StatusBadRequest,
-		},
-		{
 			`should handle not found id`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, nil),
+			8000,
 			``,
 			http.StatusNotFound,
 		},
 		{
 			`should return serialized instance`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			httptest.NewRequest(http.MethodGet, `/1`, nil),
+			1,
 			`{"id":1,"name":"test"}`,
 			http.StatusOK,
 		},
@@ -152,14 +147,14 @@ func Test_getCrud(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		users = testCase.init
-		getCrud(writer, testCase.request)
+		readCrud(writer, testCase.request, testCase.id)
 
 		if result := writer.Code; result != testCase.wantStatus {
-			t.Errorf("%v\ngetCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
+			t.Errorf("%v\nreadCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
 		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
-			t.Errorf("%v\ngetCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
+			t.Errorf("%v\nreadCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }
@@ -204,23 +199,17 @@ func Test_createCrud(t *testing.T) {
 func Test_updateCrud(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		init       map[int64]*user
+		init       map[uint]*user
 		request    *http.Request
+		id         uint
 		want       string
 		wantStatus int
 	}{
 		{
-			`should handle invalid ID`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`Error while parsing request id: strconv.ParseInt: parsing "": invalid syntax
-`,
-			http.StatusBadRequest,
-		},
-		{
 			`should handle invalid JSON`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/1`, strings.NewReader(`{"name":"test"`)),
+			1,
 			`Error while unmarshalling body: unexpected end of JSON input
 `,
 			http.StatusBadRequest,
@@ -229,13 +218,15 @@ func Test_updateCrud(t *testing.T) {
 			`should handle not found id`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, strings.NewReader(`{"name":"Updated Test"}`)),
+			8000,
 			``,
 			http.StatusNotFound,
 		},
 		{
 			`should update given user`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			httptest.NewRequest(http.MethodGet, `/1`, strings.NewReader(`{"name":"Updated Test"}`)),
+			1,
 			`{"id":1,"name":"Updated Test"}`,
 			http.StatusOK,
 		},
@@ -245,7 +236,7 @@ func Test_updateCrud(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		users = testCase.init
-		updateCrud(writer, testCase.request)
+		updateCrud(writer, testCase.request, testCase.id)
 
 		if result := writer.Code; result != testCase.wantStatus {
 			t.Errorf("%v\nupdateCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
@@ -257,33 +248,28 @@ func Test_updateCrud(t *testing.T) {
 	}
 }
 
-func Test_deleteCrud(t *testing.T) {
+func Test_removeCrud(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		init       map[int64]*user
+		init       map[uint]*user
 		request    *http.Request
+		id         uint
 		want       string
 		wantStatus int
 	}{
 		{
-			`should handle invalid ID`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`Error while parsing request id: strconv.ParseInt: parsing "": invalid syntax
-`,
-			http.StatusBadRequest,
-		},
-		{
 			`should handle not found id`,
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, nil),
+			8000,
 			``,
 			http.StatusNotFound,
 		},
 		{
 			`should delete given user`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			httptest.NewRequest(http.MethodGet, `/1`, nil),
+			1,
 			``,
 			http.StatusNoContent,
 		},
@@ -293,14 +279,14 @@ func Test_deleteCrud(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		users = testCase.init
-		deleteCrud(writer, testCase.request)
+		removeCrud(writer, testCase.request, testCase.id)
 
 		if result := writer.Code; result != testCase.wantStatus {
-			t.Errorf("%v\ndeleteCrudTest_deleteCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
+			t.Errorf("%v\nremoveCrudTest_removeCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
 		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
-			t.Errorf("%v\ndeleteCrudTest_deleteCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
+			t.Errorf("%v\nremoveCrudTest_removeCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }
@@ -308,8 +294,8 @@ func Test_deleteCrud(t *testing.T) {
 func Test_ServeHTTP(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		init       map[int64]*user
-		initSeq    int64
+		init       map[uint]*user
+		initSeq    uint
 		request    *http.Request
 		want       string
 		wantStatus int
@@ -324,7 +310,7 @@ func Test_ServeHTTP(t *testing.T) {
 		},
 		{
 			`should handle create request`,
-			map[int64]*user{},
+			map[uint]*user{},
 			1,
 			httptest.NewRequest(http.MethodPost, `/`, strings.NewReader(`{"name":"test"}`)),
 			`{"id":1,"name":"test"}`,
@@ -332,7 +318,7 @@ func Test_ServeHTTP(t *testing.T) {
 		},
 		{
 			`should handle list request`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			2,
 			httptest.NewRequest(http.MethodGet, `/`, nil),
 			`{"results":[{"id":1,"name":"test"}]}`,
@@ -340,7 +326,7 @@ func Test_ServeHTTP(t *testing.T) {
 		},
 		{
 			`should handle get request`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			2,
 			httptest.NewRequest(http.MethodGet, `/1`, nil),
 			`{"id":1,"name":"test"}`,
@@ -348,7 +334,7 @@ func Test_ServeHTTP(t *testing.T) {
 		},
 		{
 			`should handle update request`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			2,
 			httptest.NewRequest(http.MethodPut, `/1`, strings.NewReader(`{"name":"Updated test"}`)),
 			`{"id":1,"name":"Updated test"}`,
@@ -356,7 +342,7 @@ func Test_ServeHTTP(t *testing.T) {
 		},
 		{
 			`should handle delete request`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			2,
 			httptest.NewRequest(http.MethodDelete, `/1`, nil),
 			``,
@@ -392,7 +378,7 @@ func Test_ServeHTTP(t *testing.T) {
 
 func Benchmark_ServeHTTP_list(b *testing.B) {
 	handler := Handler()
-	users = map[int64]*user{}
+	users = map[uint]*user{}
 	seq = 1
 
 	for i := 0; i < b.N; i++ {
@@ -402,7 +388,7 @@ func Benchmark_ServeHTTP_list(b *testing.B) {
 
 func Benchmark_ServeHTTP_options(b *testing.B) {
 	handler := Handler()
-	users = map[int64]*user{}
+	users = map[uint]*user{}
 	seq = 1
 
 	for i := 0; i < b.N; i++ {
@@ -412,7 +398,7 @@ func Benchmark_ServeHTTP_options(b *testing.B) {
 
 func Benchmark_ServeHTTP_create(b *testing.B) {
 	handler := Handler()
-	users = map[int64]*user{}
+	users = map[uint]*user{}
 	seq = 1
 
 	for i := 0; i < b.N; i++ {
@@ -422,7 +408,7 @@ func Benchmark_ServeHTTP_create(b *testing.B) {
 
 func Benchmark_ServeHTTP_get(b *testing.B) {
 	handler := Handler()
-	users = map[int64]*user{1: {ID: 1, Name: `test`}}
+	users = map[uint]*user{1: {ID: 1, Name: `test`}}
 	seq = 2
 
 	for i := 0; i < b.N; i++ {

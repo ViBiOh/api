@@ -10,15 +10,15 @@ func Test_listUser(t *testing.T) {
 
 	var cases = []struct {
 		intention string
-		init      map[int64]*user
-		page      int64
-		pageSize  int64
+		init      map[uint]*user
+		page      uint
+		pageSize  uint
 		sortFn    func(*user, *user) bool
 		want      []*user
 	}{
 		{
 			`should return page 1`,
-			map[int64]*user{1: firstUser},
+			map[uint]*user{1: firstUser},
 			1,
 			20,
 			sortByID,
@@ -26,7 +26,7 @@ func Test_listUser(t *testing.T) {
 		},
 		{
 			`should respect given pageSize`,
-			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
+			map[uint]*user{1: firstUser, 2: secondUser, 3: thirdUser},
 			1,
 			2,
 			sortByID,
@@ -34,7 +34,7 @@ func Test_listUser(t *testing.T) {
 		},
 		{
 			`should respect given page and pageSize`,
-			map[int64]*user{1: firstUser, 2: secondUser, 3: thirdUser},
+			map[uint]*user{1: firstUser, 2: secondUser, 3: thirdUser},
 			2,
 			2,
 			sortByID,
@@ -55,8 +55,8 @@ func Test_getUser(t *testing.T) {
 
 	var cases = []struct {
 		intention string
-		init      map[int64]*user
-		id        int64
+		init      map[uint]*user
+		id        uint
 		want      *user
 	}{
 		{
@@ -67,7 +67,7 @@ func Test_getUser(t *testing.T) {
 		},
 		{
 			`should return found instance`,
-			map[int64]*user{1: testUser},
+			map[uint]*user{1: testUser},
 			1,
 			testUser,
 		},
@@ -85,14 +85,14 @@ func Test_getUser(t *testing.T) {
 func Test_createUser(t *testing.T) {
 	var cases = []struct {
 		intention string
-		init      map[int64]*user
-		initSeq   int64
+		init      map[uint]*user
+		initSeq   uint
 		name      string
 		want      *user
 	}{
 		{
 			`should create user with given string`,
-			map[int64]*user{},
+			map[uint]*user{},
 			1,
 			`test`,
 			&user{ID: 1, Name: `test`},
@@ -116,8 +116,8 @@ func Test_createUser(t *testing.T) {
 func Test_updateUser(t *testing.T) {
 	var cases = []struct {
 		intention string
-		init      map[int64]*user
-		id        int64
+		init      map[uint]*user
+		id        uint
 		name      string
 		want      *user
 	}{
@@ -130,7 +130,7 @@ func Test_updateUser(t *testing.T) {
 		},
 		{
 			`should return updated instance`,
-			map[int64]*user{1: {ID: 1, Name: `test`}},
+			map[uint]*user{1: {ID: 1, Name: `test`}},
 			1,
 			`Edited test`,
 			&user{ID: 1, Name: `Edited test`},
@@ -150,8 +150,8 @@ func Test_deleteUser(t *testing.T) {
 
 	var cases = []struct {
 		intention string
-		init      map[int64]*user
-		id        int64
+		init      map[uint]*user
+		id        uint
 		want      *user
 	}{
 		{
@@ -162,7 +162,7 @@ func Test_deleteUser(t *testing.T) {
 		},
 		{
 			`should remove given instance`,
-			map[int64]*user{1: testUser},
+			map[uint]*user{1: testUser},
 			1,
 			nil,
 		},

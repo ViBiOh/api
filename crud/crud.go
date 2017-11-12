@@ -8,47 +8,30 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/pagination"
 )
 
-const defaultPage = int64(1)
-const defaultPageSize = int64(20)
+const defaultPage = uint(1)
+const defaultPageSize = uint(20)
+const maxPageSize = uint(^uint(0) >> 1)
 
-func getRequestID(r *http.Request) (int64, error) {
-	return strconv.ParseInt(strings.TrimPrefix(r.URL.Path, `/`), 10, 64)
+func getRequestID(path string) (uint, error) {
+	parsed, err := strconv.ParseUint(strings.TrimPrefix(path, `/`), 10, 32)
+	return uint(parsed), err
 }
 
 func listCrud(w http.ResponseWriter, r *http.Request) {
-	page := defaultPage
-	rawPage := r.URL.Query().Get(`page`)
-	if rawPage != `` {
-		parsedPage, err := strconv.ParseInt(rawPage, 10, 64)
-		if err != nil {
-			httputils.BadRequest(w, fmt.Errorf(`Error while parsing page param: %v`, err))
-			return
-		}
-
-		page = parsedPage
-	}
-
-	pageSize := defaultPageSize
-	rawPageSize := r.URL.Query().Get(`pageSize`)
-	if rawPageSize != `` {
-		parsedPageSize, err := strconv.ParseInt(rawPageSize, 10, 64)
-		if err != nil {
-			httputils.BadRequest(w, fmt.Errorf(`Error while parsing pageSize param: %v`, err))
-			return
-		}
-
-		pageSize = parsedPageSize
+	page, pageSize, _, _, err := pagination.ParsePaginationParams(r, defaultPageSize, maxPageSize)
+	if err != nil {
+		httputils.BadRequest(w, fmt.Errorf(`Error while parsing pagination: %v`, err))
+		return
 	}
 
 	httputils.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID), httputils.IsPretty(r.URL.RawQuery))
 }
 
-func getCrud(w http.ResponseWriter, r *http.Request) {
-	if requestID, err := getRequestID(r); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while parsing request id: %v`, err))
-	} else if requestUser := getUser(requestID); requestUser == nil {
+func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
+	if requestUser := getUser(id); requestUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
 		httputils.ResponseJSON(w, http.StatusOK, requestUser, httputils.IsPretty(r.URL.RawQuery))
@@ -67,29 +50,25 @@ func createCrud(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateCrud(w http.ResponseWriter, r *http.Request) {
+func updateCrud(w http.ResponseWriter, r *http.Request, id uint) {
 	var requestUser *user
 
-	if requestID, err := getRequestID(r); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while parsing request id: %v`, err))
-	} else if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
+	if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
 		httputils.BadRequest(w, fmt.Errorf(`Error while reading body: %v`, err))
 	} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
 		httputils.BadRequest(w, fmt.Errorf(`Error while unmarshalling body: %v`, err))
-	} else if updatedUser := updateUser(requestID, requestUser.Name); updatedUser == nil {
+	} else if updatedUser := updateUser(id, requestUser.Name); updatedUser == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
 		httputils.ResponseJSON(w, http.StatusOK, updatedUser, httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 
-func deleteCrud(w http.ResponseWriter, r *http.Request) {
-	if requestID, err := getRequestID(r); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while parsing request id: %v`, err))
-	} else if getUser(requestID) == nil {
+func removeCrud(w http.ResponseWriter, r *http.Request, id uint) {
+	if getUser(id) == nil {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		deleteUser(requestID)
+		deleteUser(id)
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
@@ -99,18 +78,26 @@ func Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
-		} else if r.Method == http.MethodPost && (r.URL.Path == `/` || r.URL.Path == ``) {
-			createCrud(w, r)
-		} else if r.Method == http.MethodGet && (r.URL.Path == `/` || r.URL.Path == ``) {
-			listCrud(w, r)
-		} else if r.Method == http.MethodGet {
-			getCrud(w, r)
-		} else if r.Method == http.MethodPut {
-			updateCrud(w, r)
-		} else if r.Method == http.MethodDelete {
-			deleteCrud(w, r)
+		} else if r.URL.Path == `/` || r.URL.Path == `` {
+			if r.Method == http.MethodPost {
+				createCrud(w, r)
+			} else if r.Method == http.MethodGet {
+				listCrud(w, r)
+			} else {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
 		} else {
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			if id, err := getRequestID(r.URL.Path); err != nil {
+				httputils.BadRequest(w, fmt.Errorf(`Error while parsing request path: %v`, err))
+			} else if r.Method == http.MethodGet {
+				readCrud(w, r, id)
+			} else if r.Method == http.MethodPut {
+				updateCrud(w, r, id)
+			} else if r.Method == http.MethodDelete {
+				removeCrud(w, r, id)
+			} else {
+				w.WriteHeader(http.StatusMethodNotAllowed)
+			}
 		}
 	})
 }

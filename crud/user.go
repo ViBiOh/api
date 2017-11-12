@@ -3,13 +3,13 @@ package crud
 import "sort"
 
 type user struct {
-	ID   int64  `json:"id"`
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
 var (
-	users = map[int64]*user{}
-	seq   = int64(1)
+	users = map[uint]*user{}
+	seq   = uint(1)
 )
 
 type usersSorter struct {
@@ -42,16 +42,16 @@ func sortByID(o1, o2 *user) bool {
 	return o1.ID < o2.ID
 }
 
-func listUser(page, pageSize int64, sortFn func(*user, *user) bool) []*user {
+func listUser(page, pageSize uint, sortFn func(*user, *user) bool) []*user {
 	list := make([]*user, 0)
 	for _, value := range users {
 		list = append(list, value)
 	}
 
-	listSize := int64(len(list))
+	listSize := uint(len(list))
 	sortBy(sortFn).Sort(list)
 
-	var min int64
+	var min uint
 	if page > 1 {
 		min = (page - 1) * pageSize
 	}
@@ -63,7 +63,7 @@ func listUser(page, pageSize int64, sortFn func(*user, *user) bool) []*user {
 	return list[min:max]
 }
 
-func getUser(id int64) *user {
+func getUser(id uint) *user {
 	return users[id]
 }
 
@@ -75,7 +75,7 @@ func createUser(name string) *user {
 	return createdUser
 }
 
-func updateUser(id int64, name string) *user {
+func updateUser(id uint, name string) *user {
 	foundUser, ok := users[id]
 
 	if ok {
@@ -85,6 +85,6 @@ func updateUser(id int64, name string) *user {
 	return foundUser
 }
 
-func deleteUser(id int64) {
+func deleteUser(id uint) {
 	delete(users, id)
 }
