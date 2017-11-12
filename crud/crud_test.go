@@ -1,70 +1,15 @@
 package crud
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/ViBiOh/httputils"
 )
-
-func Test_listCrud(t *testing.T) {
-	var cases = []struct {
-		intention  string
-		init       map[uint]*user
-		request    *http.Request
-		want       string
-		wantStatus int
-	}{
-		{
-			`should work with empty params`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`{"results":[]}`,
-			http.StatusOK,
-		},
-		{
-			`should consider given args`,
-			map[uint]*user{1: {ID: 1, Name: `1`}, 2: {ID: 2, Name: `2`}},
-			httptest.NewRequest(http.MethodGet, `/?page=2&pageSize=1`, nil),
-			`{"results":[{"id":2,"name":"2"}]}`,
-			http.StatusOK,
-		},
-		{
-			`should handle bad page`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/?page=invalid`, nil),
-			`Error while parsing pagination: Error while parsing page param: strconv.ParseUint: parsing "invalid": invalid syntax
-`,
-			http.StatusBadRequest,
-		},
-		{
-			`should handle bad page size`,
-			nil,
-			httptest.NewRequest(http.MethodGet, `/?pageSize=invalid`, nil),
-			`Error while parsing pagination: Error while parsing pageSize param: strconv.ParseUint: parsing "invalid": invalid syntax
-`,
-			http.StatusBadRequest,
-		},
-	}
-
-	for _, testCase := range cases {
-		writer := httptest.NewRecorder()
-		users = testCase.init
-
-		listCrud(writer, testCase.request)
-
-		if result := writer.Code; result != testCase.wantStatus {
-			t.Errorf("%v\nlistCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
-		}
-
-		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
-			t.Errorf("%v\nlistCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
-		}
-	}
-}
 
 func Test_getRequestID(t *testing.T) {
 	var cases = []struct {
@@ -77,13 +22,13 @@ func Test_getRequestID(t *testing.T) {
 			`should handle empty path`,
 			`/`,
 			0,
-			fmt.Errorf(`strconv.ParseUint: parsing "": invalid syntax`),
+			errors.New(`strconv.ParseUint: parsing "": invalid syntax`),
 		},
 		{
 			`should handle invalid number`,
 			`/abc123`,
 			0,
-			fmt.Errorf(`strconv.ParseUint: parsing "abc123": invalid syntax`),
+			errors.New(`strconv.ParseUint: parsing "abc123": invalid syntax`),
 		},
 		{
 			`should handle positive number`,
@@ -111,7 +56,99 @@ func Test_getRequestID(t *testing.T) {
 		}
 
 		if failed {
-			t.Errorf("%v\ngetRequestID(%v) = (%v, %v), want (%v, %v)", testCase.intention, testCase.path, result, err, testCase.want, testCase.wantErr)
+			t.Errorf("%v\ngetRequestID(%+v) = (%+v, %+v), want (%+v, %+v)", testCase.intention, testCase.path, result, err, testCase.want, testCase.wantErr)
+		}
+	}
+}
+
+func Test_readCrudFromBody(t *testing.T) {
+	var cases = []struct {
+		intention string
+		request   *http.Request
+		want      *user
+		wantErr   error
+	}{
+		{
+			`should handle invalid JSON`,
+			httptest.NewRequest(http.MethodGet, `/`, strings.NewReader(`{"name":"test"`)),
+			nil,
+			errors.New(`Error while unmarshalling body: unexpected end of JSON input`),
+		},
+		{
+			`should handle valid JSON`,
+			httptest.NewRequest(http.MethodGet, `/`, strings.NewReader(`{"name":"test"}`)),
+			&user{ID: 0, Name: `test`},
+			nil,
+		},
+	}
+
+	var failed bool
+
+	for _, testCase := range cases {
+		result, err := readCrudFromBody(testCase.request)
+
+		failed = false
+
+		if err == nil && testCase.wantErr != nil {
+			failed = true
+		} else if err != nil && testCase.wantErr == nil {
+			failed = true
+		} else if err != nil && err.Error() != testCase.wantErr.Error() {
+			failed = true
+		} else if !reflect.DeepEqual(result, testCase.want) {
+			failed = true
+		}
+
+		if failed {
+			t.Errorf("%v\nreadCrudFromBody(%+v) = (%+v, %+v), want (%+v, %+v)", testCase.intention, testCase.request, result, err, testCase.want, testCase.wantErr)
+		}
+	}
+}
+
+func Test_listCrud(t *testing.T) {
+	var cases = []struct {
+		intention  string
+		init       map[uint]*user
+		request    *http.Request
+		want       string
+		wantStatus int
+	}{
+		{
+			`should handle bad parsing`,
+			nil,
+			httptest.NewRequest(http.MethodGet, `/?page=invalid`, nil),
+			`Error while parsing pagination: Error while parsing page param: strconv.ParseUint: parsing "invalid": invalid syntax
+`,
+			http.StatusBadRequest,
+		},
+		{
+			`should work with empty params`,
+			nil,
+			httptest.NewRequest(http.MethodGet, `/`, nil),
+			`{"results":[]}`,
+			http.StatusOK,
+		},
+		{
+			`should consider given args`,
+			map[uint]*user{1: {ID: 1, Name: `1`}, 2: {ID: 2, Name: `2`}},
+			httptest.NewRequest(http.MethodGet, `/?page=2&pageSize=1`, nil),
+			`{"results":[{"id":2,"name":"2"}]}`,
+			http.StatusOK,
+		},
+	}
+
+	for _, testCase := range cases {
+		writer := httptest.NewRecorder()
+		users = testCase.init
+
+		listCrud(writer, testCase.request)
+
+		if result := writer.Code; result != testCase.wantStatus {
+			t.Errorf("%v\nlistCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
+		}
+
+		if result, _ := httputils.ReadBody(writer.Result().Body); string(result) != testCase.want {
+			t.Errorf("%v\nlistCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }
@@ -130,7 +167,8 @@ func Test_readCrud(t *testing.T) {
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, nil),
 			8000,
-			``,
+			`¯\_(ツ)_/¯
+`,
 			http.StatusNotFound,
 		},
 		{
@@ -169,7 +207,7 @@ func Test_createCrud(t *testing.T) {
 		{
 			`should handle invalid JSON`,
 			httptest.NewRequest(http.MethodGet, `/`, strings.NewReader(`{"name":"test"`)),
-			`Error while unmarshalling body: unexpected end of JSON input
+			`Error while parsing body: Error while unmarshalling body: unexpected end of JSON input
 `,
 			http.StatusBadRequest,
 		},
@@ -210,7 +248,7 @@ func Test_updateCrud(t *testing.T) {
 			nil,
 			httptest.NewRequest(http.MethodGet, `/1`, strings.NewReader(`{"name":"test"`)),
 			1,
-			`Error while unmarshalling body: unexpected end of JSON input
+			`Error while parsing body: Error while unmarshalling body: unexpected end of JSON input
 `,
 			http.StatusBadRequest,
 		},
@@ -219,7 +257,8 @@ func Test_updateCrud(t *testing.T) {
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, strings.NewReader(`{"name":"Updated Test"}`)),
 			8000,
-			``,
+			`¯\_(ツ)_/¯
+`,
 			http.StatusNotFound,
 		},
 		{
@@ -262,7 +301,8 @@ func Test_removeCrud(t *testing.T) {
 			nil,
 			httptest.NewRequest(http.MethodGet, `/8000`, nil),
 			8000,
-			``,
+			`¯\_(ツ)_/¯
+`,
 			http.StatusNotFound,
 		},
 		{
@@ -323,6 +363,23 @@ func Test_ServeHTTP(t *testing.T) {
 			httptest.NewRequest(http.MethodGet, `/`, nil),
 			`{"results":[{"id":1,"name":"test"}]}`,
 			http.StatusOK,
+		},
+		{
+			`should handle unexpected method on root`,
+			nil,
+			1,
+			httptest.NewRequest(http.MethodTrace, `/`, nil),
+			``,
+			http.StatusMethodNotAllowed,
+		},
+		{
+			`should invalid request ID`,
+			map[uint]*user{1: {ID: 1, Name: `test`}},
+			2,
+			httptest.NewRequest(http.MethodGet, `/abcd`, nil),
+			`Error while parsing request path: strconv.ParseUint: parsing "abcd": invalid syntax
+`,
+			http.StatusBadRequest,
 		},
 		{
 			`should handle get request`,

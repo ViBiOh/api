@@ -20,6 +20,18 @@ func getRequestID(path string) (uint, error) {
 	return uint(parsed), err
 }
 
+func readCrudFromBody(r *http.Request) (*user, error) {
+	var requestObj user
+
+	if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
+		return nil, fmt.Errorf(`Error while reading body: %v`, err)
+	} else if err := json.Unmarshal(bodyBytes, &requestObj); err != nil {
+		return nil, fmt.Errorf(`Error while unmarshalling body: %v`, err)
+	}
+
+	return &requestObj, nil
+}
+
 func listCrud(w http.ResponseWriter, r *http.Request) {
 	page, pageSize, _, _, err := pagination.ParsePaginationParams(r, defaultPageSize, maxPageSize)
 	if err != nil {
@@ -32,33 +44,25 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 
 func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
 	if requestUser := getUser(id); requestUser == nil {
-		w.WriteHeader(http.StatusNotFound)
+		httputils.NotFound(w)
 	} else {
 		httputils.ResponseJSON(w, http.StatusOK, requestUser, httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 
 func createCrud(w http.ResponseWriter, r *http.Request) {
-	var requestUser *user
-
-	if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while reading body: %v`, err))
-	} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while unmarshalling body: %v`, err))
+	if obj, err := readCrudFromBody(r); err != nil {
+		httputils.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
 	} else {
-		httputils.ResponseJSON(w, http.StatusCreated, createUser(requestUser.Name), httputils.IsPretty(r.URL.RawQuery))
+		httputils.ResponseJSON(w, http.StatusCreated, createUser(obj.Name), httputils.IsPretty(r.URL.RawQuery))
 	}
 }
 
 func updateCrud(w http.ResponseWriter, r *http.Request, id uint) {
-	var requestUser *user
-
-	if bodyBytes, err := httputils.ReadBody(r.Body); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while reading body: %v`, err))
-	} else if err := json.Unmarshal(bodyBytes, &requestUser); err != nil {
-		httputils.BadRequest(w, fmt.Errorf(`Error while unmarshalling body: %v`, err))
-	} else if updatedUser := updateUser(id, requestUser.Name); updatedUser == nil {
-		w.WriteHeader(http.StatusNotFound)
+	if obj, err := readCrudFromBody(r); err != nil {
+		httputils.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
+	} else if updatedUser := updateUser(id, obj.Name); updatedUser == nil {
+		httputils.NotFound(w)
 	} else {
 		httputils.ResponseJSON(w, http.StatusOK, updatedUser, httputils.IsPretty(r.URL.RawQuery))
 	}
@@ -66,7 +70,7 @@ func updateCrud(w http.ResponseWriter, r *http.Request, id uint) {
 
 func removeCrud(w http.ResponseWriter, r *http.Request, id uint) {
 	if getUser(id) == nil {
-		w.WriteHeader(http.StatusNotFound)
+		httputils.NotFound(w)
 	} else {
 		deleteUser(id)
 		w.WriteHeader(http.StatusNoContent)
