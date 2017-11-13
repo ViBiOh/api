@@ -40,7 +40,7 @@ func handler() http.Handler {
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
 		} else {
-			w.WriteHeader(http.StatusNotFound)
+			httputils.NotFound(w)
 		}
 	})
 }
