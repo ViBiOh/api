@@ -9,7 +9,7 @@
 ```
 Usage of api:
   -c string
-    	URL to check
+    	[health] URL to check
   -corsCredentials
     	[cors] Access-Control-Allow-Credentials
   -corsExpose string
