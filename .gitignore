@@ -1,6 +1,8 @@
-# Go binary
+# Golang
 bin/
-coverage.txt
+vendor/
+coverage.*
+
+# Docker
 cacert.pem
 zoneinfos.zip
-debug.test
