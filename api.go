@@ -8,9 +8,9 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/alcotest/alcotest"
+	"github.com/ViBiOh/alcotest/healthcheck"
 	"github.com/ViBiOh/go-api/crud"
 	"github.com/ViBiOh/go-api/echo"
-	"github.com/ViBiOh/go-api/healthcheck"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/cert"
