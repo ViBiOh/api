@@ -25,11 +25,13 @@ const helloPath = `/hello`
 const crudPath = `/crud`
 const healthcheckPath = `/health`
 
-var echoHandler = http.StripPrefix(echoPath, echo.Handler())
-var helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler()))
-var crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
-var healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-var restHandler http.Handler
+var (
+	echoHandler        http.Handler
+	helloHandler       http.Handler
+	crudHandler        http.Handler
+	healthcheckHandler http.Handler
+	restHandler        http.Handler
+)
 
 func handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -64,16 +66,17 @@ func main() {
 	rateConfig := rate.Flags(`rate`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
+	helloConfig := hello.Flags(``)
 	flag.Parse()
 
 	alcotest.DoAndExit(alcotestConfig)
 
 	log.Printf(`Starting server on port %s`, *port)
 
-	if err := hello.Init(); err != nil {
-		log.Printf(`Error while initializing hello Handler: %v`, err)
-	}
-
+	echoHandler = http.StripPrefix(echoPath, echo.Handler())
+	helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
+	crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
+	healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
 	restHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler()))))
 	server := &http.Server{
 		Addr:    `:` + *port,
