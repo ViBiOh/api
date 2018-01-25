@@ -41,3 +41,7 @@ docker-build:
 docker-push:
 	docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 	docker push ${DOCKER_USER}/api
+
+start-api:
+	go run api.go \
+	  -tls
