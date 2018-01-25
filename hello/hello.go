@@ -32,14 +32,18 @@ func Handler(config map[string]*string) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
-			w.Write(nil)
+			if _, err := w.Write(nil); err != nil {
+				httputils.InternalServerError(w, err)
+			}
 		} else {
 			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
 			if name == `` {
 				name = `World`
 			}
 
-			httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httputils.IsPretty(r.URL.RawQuery))
+			if err := httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httputils.IsPretty(r.URL.RawQuery)); err != nil {
+				httputils.InternalServerError(w, err)
+			}
 		}
 	})
 }

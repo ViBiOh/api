@@ -20,7 +20,11 @@ func Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if ws != nil {
-			defer ws.Close()
+			defer func() {
+				if err := ws.Close(); err != nil {
+					log.Printf(`Error while closing connection: %v`, err)
+				}
+			}()
 		}
 
 		if err != nil {
