@@ -17,7 +17,6 @@ import (
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
-	"github.com/ViBiOh/httputils/rate"
 )
 
 const echoPath = `/echo`
@@ -60,13 +59,15 @@ func apiHandler() http.Handler {
 func main() {
 	port := flag.String(`port`, `1080`, `Listen port`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+
 	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
 	prometheusConfig := prometheus.Flags(`prometheus`)
-	rateConfig := rate.Flags(`rate`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
+
 	helloConfig := hello.Flags(``)
+
 	flag.Parse()
 
 	alcotest.DoAndExit(alcotestConfig)
@@ -77,7 +78,7 @@ func main() {
 	helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
 	crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 	healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-	restHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler()))))
+	restHandler = prometheus.Handler(prometheusConfig, owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler())))
 	server := &http.Server{
 		Addr:    `:` + *port,
 		Handler: apiHandler(),
