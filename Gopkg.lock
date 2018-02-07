@@ -27,7 +27,6 @@
     "owasp",
     "pagination",
     "prometheus",
-    "rate",
     "tools"
   ]
   revision = "481900a491a7bcf17a366e01f47b39c0828a0daf"
@@ -121,6 +120,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "523080c59d0f9c8a5456a2833c2f02e5201c1aab7a2b53ad9580762ad542c2d6"
+  inputs-digest = "4cb42be28adfcd1daa3a24bc8a7fece7ea4fc39cb62eeb075d361400f7021a14"
   solver-name = "gps-cdcl"
   solver-version = 1
