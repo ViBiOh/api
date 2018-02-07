@@ -16,7 +16,6 @@ import (
 	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/owasp"
-	"github.com/ViBiOh/httputils/prometheus"
 )
 
 const echoPath = `/echo`
@@ -62,7 +61,6 @@ func main() {
 
 	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
-	prometheusConfig := prometheus.Flags(`prometheus`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
 
@@ -78,7 +76,7 @@ func main() {
 	helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
 	crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 	healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-	restHandler = prometheus.Handler(prometheusConfig, owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler())))
+	restHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler()))
 	server := &http.Server{
 		Addr:    `:` + *port,
 		Handler: apiHandler(),

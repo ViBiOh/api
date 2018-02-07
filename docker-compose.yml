@@ -5,8 +5,6 @@ services:
     image: vibioh/api
     command:
     - -tls
-    - -prometheusMetricsHost
-    - api:1080
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
