@@ -28,8 +28,6 @@ Usage of api:
     	TimeZone for displaying current time (default "Europe/Paris")
   -port string
     	Listen port (default "1080")
-  -rateCount uint
-    	[rate] IP limit (default 5000)
   -tls
     	Serve TLS content
   -tlsCert string
