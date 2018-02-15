@@ -28,7 +28,7 @@
     "pagination",
     "tools"
   ]
-  revision = "25bff7e5ea008fefc07a5467745b73ade0eba52c"
+  revision = "ea8da0656b64e1b5d610eaf6b7dc08f8a69eeb81"
 
 [[projects]]
   name = "github.com/gorilla/websocket"

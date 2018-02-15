@@ -43,5 +43,4 @@ docker-push:
 	docker push ${DOCKER_USER}/api
 
 start-api:
-	go run api.go \
-	  -tls
+	go run api.go
