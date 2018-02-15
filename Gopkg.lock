@@ -28,7 +28,7 @@
     "pagination",
     "tools"
   ]
-  revision = "ea8da0656b64e1b5d610eaf6b7dc08f8a69eeb81"
+  revision = "288533be2fefec40812d7805b6b5abf603ac283b"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -65,6 +65,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "76eb7a0aac276ef93ec91f6832267da95a894dfb7701d341e804df29a0a48571"
+  inputs-digest = "61e40f0ebcb84e28e873d955d4c5aa23cbd25c17c9cdfad4a5226232b3913fc2"
   solver-name = "gps-cdcl"
   solver-version = 1

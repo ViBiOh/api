@@ -60,5 +60,5 @@ func main() {
 				restHandler.ServeHTTP(w, r)
 			}
 		})
-	})
+	}, nil)
 }
