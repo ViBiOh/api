@@ -2,33 +2,28 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
-  revision = "289a3b81f5aedc99f8d6eb0f67827c142f1310d8"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/ViBiOh/alcotest"
-  packages = [
-    "alcotest",
-    "healthcheck",
-    "httpclient"
-  ]
-  revision = "7820b5444e1a46e9edefbc45d504df7723bb0ca8"
+  revision = "d6f46609c7629af3a02d791a4666866eed3cbd3e"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/ViBiOh/httputils"
   packages = [
     ".",
+    "alcotest",
     "cert",
     "cors",
+    "healthcheck",
+    "httperror",
+    "json",
     "owasp",
     "pagination",
+    "server",
     "tools"
   ]
-  revision = "288533be2fefec40812d7805b6b5abf603ac283b"
+  revision = "2802a9be4581106f0f41023d815ed5239145382d"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -36,35 +31,9 @@
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
 
-[[projects]]
-  name = "github.com/tdewolff/minify"
-  packages = [
-    ".",
-    "css",
-    "html",
-    "js",
-    "xml"
-  ]
-  revision = "222672169d634c440a73abc47685074e1a9daa60"
-  version = "v2.3.4"
-
-[[projects]]
-  name = "github.com/tdewolff/parse"
-  packages = [
-    ".",
-    "buffer",
-    "css",
-    "html",
-    "js",
-    "strconv",
-    "xml"
-  ]
-  revision = "639f6272aec6b52094db77b9ec488214b0b4b1a1"
-  version = "v2.3.2"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "61e40f0ebcb84e28e873d955d4c5aa23cbd25c17c9cdfad4a5226232b3913fc2"
+  inputs-digest = "1c0c935aee8f2407948175933d893807c1990c7f09944d71d942e5053784358b"
   solver-name = "gps-cdcl"
   solver-version = 1

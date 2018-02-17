@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/ViBiOh/alcotest/healthcheck"
 	"github.com/ViBiOh/go-api/crud"
 	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/cors"
+	"github.com/ViBiOh/httputils/healthcheck"
+	"github.com/ViBiOh/httputils/httperror"
 	"github.com/ViBiOh/httputils/owasp"
 )
 
@@ -36,7 +37,7 @@ func handler() http.Handler {
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
 		} else {
-			httputils.NotFound(w)
+			httperror.NotFound(w)
 		}
 	})
 }

@@ -9,7 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/httperror"
+	"github.com/ViBiOh/httputils/json"
 )
 
 type hello struct {
@@ -33,7 +34,7 @@ func Handler(config map[string]*string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			if _, err := w.Write(nil); err != nil {
-				httputils.InternalServerError(w, err)
+				httperror.InternalServerError(w, err)
 			}
 		} else {
 			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
@@ -41,8 +42,8 @@ func Handler(config map[string]*string) http.Handler {
 				name = `World`
 			}
 
-			if err := httputils.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httputils.IsPretty(r.URL.RawQuery)); err != nil {
-				httputils.InternalServerError(w, err)
+			if err := json.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, json.IsPretty(r.URL.RawQuery)); err != nil {
+				httperror.InternalServerError(w, err)
 			}
 		}
 	})
