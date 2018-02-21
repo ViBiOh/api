@@ -8,8 +8,6 @@
 
 ```
 Usage of api:
-  -c string
-      [health] URL to check
   -corsCredentials
       [cors] Access-Control-Allow-Credentials
   -corsExpose string
@@ -38,4 +36,6 @@ Usage of api:
       [tls] Self-signed certificate hosts, comma separated (default "localhost")
   -tlsKey string
       [tls] PEM Key file
+  -url string
+      [health] URL to check
 ```
