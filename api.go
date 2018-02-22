@@ -6,6 +6,7 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/go-api/crud"
+	"github.com/ViBiOh/go-api/dump"
 	"github.com/ViBiOh/go-api/echo"
 	"github.com/ViBiOh/go-api/hello"
 	"github.com/ViBiOh/httputils"
@@ -15,32 +16,13 @@ import (
 	"github.com/ViBiOh/httputils/owasp"
 )
 
-const echoPath = `/echo`
-const helloPath = `/hello`
-const crudPath = `/crud`
-const healthcheckPath = `/health`
-
-var (
-	echoHandler        http.Handler
-	helloHandler       http.Handler
-	crudHandler        http.Handler
-	healthcheckHandler http.Handler
-	restHandler        http.Handler
+const (
+	echoPath        = `/echo`
+	helloPath       = `/hello`
+	dumpPath        = `/dump`
+	crudPath        = `/crud`
+	healthcheckPath = `/health`
 )
-
-func handler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, healthcheckPath) {
-			healthcheckHandler.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, helloPath) {
-			helloHandler.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, crudPath) {
-			crudHandler.ServeHTTP(w, r)
-		} else {
-			httperror.NotFound(w)
-		}
-	})
-}
 
 func main() {
 	owaspConfig := owasp.Flags(``)
@@ -48,11 +30,27 @@ func main() {
 	helloConfig := hello.Flags(``)
 
 	httputils.StartMainServer(func() http.Handler {
-		echoHandler = http.StripPrefix(echoPath, echo.Handler())
-		helloHandler = http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
-		crudHandler = http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
-		healthcheckHandler = http.StripPrefix(healthcheckPath, healthcheck.Handler())
-		restHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler()))
+		echoHandler := http.StripPrefix(echoPath, echo.Handler())
+		helloHandler := http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
+		dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
+		crudHandler := http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
+		healthcheckHandler := http.StripPrefix(healthcheckPath, healthcheck.Handler())
+
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, healthcheckPath) {
+				healthcheckHandler.ServeHTTP(w, r)
+			} else if strings.HasPrefix(r.URL.Path, helloPath) {
+				helloHandler.ServeHTTP(w, r)
+			} else if strings.HasPrefix(r.URL.Path, dumpPath) {
+				dumpHandler.ServeHTTP(w, r)
+			} else if strings.HasPrefix(r.URL.Path, crudPath) {
+				crudHandler.ServeHTTP(w, r)
+			} else {
+				httperror.NotFound(w)
+			}
+		})
+
+		restHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler))
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, echoPath) {
