@@ -22,6 +22,6 @@ func Handler() http.Handler {
 			log.Printf(`Error while reading body: %v`, err)
 		}
 
-		log.Printf("\n%s /%s\n%s\n%s", r.Method, r.URL.Path, headers, body)
+		log.Printf("\n%s %s\n%s\n%s", r.Method, r.URL.Path, headers, body)
 	})
 }
