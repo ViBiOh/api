@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/json"
+	"github.com/ViBiOh/httputils/httpjson"
 )
 
 type hello struct {
@@ -42,7 +42,7 @@ func Handler(config map[string]*string) http.Handler {
 				name = `World`
 			}
 
-			if err := json.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, json.IsPretty(r.URL.RawQuery)); err != nil {
+			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
 				httperror.InternalServerError(w, err)
 			}
 		}

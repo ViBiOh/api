@@ -17,14 +17,14 @@
     "cors",
     "healthcheck",
     "httperror",
-    "json",
+    "httpjson",
     "owasp",
     "pagination",
     "request",
     "server",
     "tools"
   ]
-  revision = "ffedff675f711425bed74940efee7021ba098536"
+  revision = "203b8898ad2677a44cfc79ef8df214e93e7d4899"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -35,6 +35,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b4f99b6c0aad571430557ec25182af4f0f44b777fa7daff41f6f4be9f95b9f79"
+  inputs-digest = "e7d17b039e4e32fdba1ead97b96fe3f80fd0a0af2d810e6a341748a9b569a8db"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils/httperror"
-	httpjson "github.com/ViBiOh/httputils/json"
+	"github.com/ViBiOh/httputils/httpjson"
 	"github.com/ViBiOh/httputils/pagination"
 	"github.com/ViBiOh/httputils/request"
 )
