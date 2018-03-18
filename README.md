@@ -19,17 +19,17 @@ Usage of api:
   -corsOrigin string
       [cors] Access-Control-Allow-Origin (default "*")
   -csp string
-      [owasp] Content-Security-Policy (default "default-src 'self'")
+      [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
   -frameOptions string
       [owasp] X-Frame-Options (default "deny")
   -hsts
       [owasp] Indicate Strict Transport Security (default true)
   -location string
       [hello] TimeZone for displaying current time (default "Europe/Paris")
-  -port string
-      Listen port (default "1080")
+  -port int
+      Listen port (default 1080)
   -tls
-      Serve TLS content
+      Serve TLS content (default true)
   -tlsCert string
       [tls] PEM Certificate file
   -tlsHosts string

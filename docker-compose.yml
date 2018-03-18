@@ -3,8 +3,6 @@ version: '2'
 services:
   api:
     image: vibioh/api
-    command:
-    - -tls
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'

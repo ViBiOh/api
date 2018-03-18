@@ -29,7 +29,7 @@ func main() {
 	corsConfig := cors.Flags(`cors`)
 	helloConfig := hello.Flags(``)
 
-	httputils.StartMainServer(func() http.Handler {
+	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		echoHandler := http.StripPrefix(echoPath, echo.Handler())
 		helloHandler := http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
 		dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
@@ -59,5 +59,5 @@ func main() {
 				restHandler.ServeHTTP(w, r)
 			}
 		})
-	}, nil)
+	}, nil).ListenAndServe()
 }
