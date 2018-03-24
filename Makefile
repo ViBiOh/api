@@ -36,11 +36,11 @@ docker-deps:
 	curl -s -o zoneinfo.zip https://raw.githubusercontent.com/golang/go/master/lib/time/zoneinfo.zip
 
 docker-build:
-	docker build -t ${DOCKER_USER}/api .
+	docker build -t $(DOCKER_USER)/api .
 
 docker-push:
-	docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-	docker push ${DOCKER_USER}/api
+	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
+	docker push $(DOCKER_USER)/api
 
 start-api:
 	go run api.go \
