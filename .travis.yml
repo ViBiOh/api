@@ -1,6 +1,7 @@
 jobs:
   include:
   - stage: Build
+
     language: go
     sudo: required
     services:
