@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ViBiOh/httputils/request"
+	"github.com/ViBiOh/httputils/pkg/request"
 )
 
 func Test_getRequestID(t *testing.T) {

@@ -14,8 +14,8 @@ deps:
 	dep ensure
 
 format:
-	goimports -w **/*.go *.go
-	gofmt -s -w **/*.go *.go
+	goimports -w */*.go */*/*.go
+	gofmt -s -w */*.go */*/*.go
 
 lint:
 	golint `go list ./... | grep -v vendor`
@@ -29,7 +29,7 @@ bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/api api.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/api cmd/api.go
 
 docker-deps:
 	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem
@@ -43,5 +43,5 @@ docker-push:
 	docker push $(DOCKER_USER)/api
 
 start-api:
-	go run api.go \
+	go run cmd/api.go \
 		-tls=false

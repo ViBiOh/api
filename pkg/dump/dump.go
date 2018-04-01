@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/httputils/request"
+	"github.com/ViBiOh/httputils/pkg/request"
 )
 
 // Handler for dump request. Should be use with net/http

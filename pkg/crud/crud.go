@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/httpjson"
-	"github.com/ViBiOh/httputils/pagination"
-	"github.com/ViBiOh/httputils/request"
+	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/httpjson"
+	"github.com/ViBiOh/httputils/pkg/pagination"
+	"github.com/ViBiOh/httputils/pkg/request"
 )
 
 const defaultPage = uint(1)

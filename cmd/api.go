@@ -5,15 +5,15 @@ import (
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/ViBiOh/go-api/crud"
-	"github.com/ViBiOh/go-api/dump"
-	"github.com/ViBiOh/go-api/echo"
-	"github.com/ViBiOh/go-api/hello"
-	"github.com/ViBiOh/httputils"
-	"github.com/ViBiOh/httputils/cors"
-	"github.com/ViBiOh/httputils/healthcheck"
-	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/owasp"
+	"github.com/ViBiOh/go-api/pkg/crud"
+	"github.com/ViBiOh/go-api/pkg/dump"
+	"github.com/ViBiOh/go-api/pkg/echo"
+	"github.com/ViBiOh/go-api/pkg/hello"
+	"github.com/ViBiOh/httputils/pkg"
+	"github.com/ViBiOh/httputils/pkg/cors"
+	"github.com/ViBiOh/httputils/pkg/healthcheck"
+	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/owasp"
 )
 
 const (

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/httpjson"
+	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/httpjson"
 )
 
 type hello struct {
