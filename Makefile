@@ -1,8 +1,8 @@
-default: go docker
+default: api docker
 
-go: deps dev
+api: deps go
 
-dev: format lint tst bench build
+go: format lint tst bench build
 
 docker: docker-deps docker-build
 
@@ -35,11 +35,13 @@ docker-deps:
 	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem
 	curl -s -o zoneinfo.zip https://raw.githubusercontent.com/golang/go/master/lib/time/zoneinfo.zip
 
+docker-login:
+	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
+
 docker-build:
 	docker build -t $(DOCKER_USER)/api .
 
-docker-push:
-	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
+docker-push: docker-login
 	docker push $(DOCKER_USER)/api
 
 start-api:

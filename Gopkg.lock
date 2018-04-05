@@ -15,6 +15,7 @@
     "pkg/alcotest",
     "pkg/cert",
     "pkg/cors",
+    "pkg/dump",
     "pkg/healthcheck",
     "pkg/httperror",
     "pkg/httpjson",
@@ -24,7 +25,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "fe606d9cdfe10039ae176d5ef70cc5c7015bb0a3"
+  revision = "965744e78932fca67dc2efb34e3948e77aff0f1d"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -35,6 +36,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bb599f8c900f2d0063175a451dbbf31335b351bd444304297e49251cae4fcb4b"
+  inputs-digest = "1ae55be8888e8e6588a1a5975a14d4c8d3d57390e9bb074614d44926e5a50aa4"
   solver-name = "gps-cdcl"
   solver-version = 1
