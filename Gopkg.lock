@@ -25,7 +25,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "965744e78932fca67dc2efb34e3948e77aff0f1d"
+  revision = "6e5a7d80a67ed46f5c0be6e632ac5d0c5e20a74b"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
