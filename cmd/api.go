@@ -11,6 +11,7 @@ import (
 	"github.com/ViBiOh/go-api/pkg/hello"
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/cors"
+	"github.com/ViBiOh/httputils/pkg/datadog"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/owasp"
@@ -28,6 +29,7 @@ func main() {
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
 	helloConfig := hello.Flags(``)
+	datadogConfig := datadog.Flags(`datadog`)
 
 	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		echoHandler := http.StripPrefix(echoPath, echo.Handler())
@@ -50,7 +52,7 @@ func main() {
 			}
 		})
 
-		restHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler))
+		restHandler := datadog.NewApp(datadogConfig).Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, echoPath) {
