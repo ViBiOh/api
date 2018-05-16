@@ -31,17 +31,18 @@ func main() {
 	helloConfig := hello.Flags(``)
 	datadogConfig := datadog.Flags(`datadog`)
 
-	healthcheckApp := healthcheck.NewApp(healthcheck.Basic())
+	healthcheckApp := healthcheck.NewApp()
 
 	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		echoHandler := http.StripPrefix(echoPath, echo.Handler())
 		helloHandler := http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
 		dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 		crudHandler := http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
-		healthcheckHandler := http.StripPrefix(healthcheckPath, healthcheckApp.Handler())
+
+		healthcheckHandler := healthcheckApp.Handler(nil)
 
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasPrefix(r.URL.Path, healthcheckPath) {
+			if r.URL.Path == healthcheckPath {
 				healthcheckHandler.ServeHTTP(w, r)
 			} else if strings.HasPrefix(r.URL.Path, helloPath) {
 				helloHandler.ServeHTTP(w, r)
