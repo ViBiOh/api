@@ -55,8 +55,7 @@ func main() {
 			}
 		})
 
-		opentracingApp := opentracing.NewApp(opentracingConfig)
-		restHandler := opentracingApp.Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
+		restHandler := opentracing.NewApp(opentracingConfig).Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, echoPath) {
