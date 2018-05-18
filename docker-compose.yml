@@ -3,6 +3,9 @@ version: '2'
 services:
   api:
     image: vibioh/api
+    command:
+    - -tracingName
+    - api
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'

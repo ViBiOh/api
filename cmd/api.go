@@ -13,6 +13,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 )
 
@@ -28,6 +29,7 @@ func main() {
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
 	helloConfig := hello.Flags(``)
+	opentracingConfig := opentracing.Flags(`tracing`)
 
 	healthcheckApp := healthcheck.NewApp()
 
@@ -53,7 +55,8 @@ func main() {
 			}
 		})
 
-		restHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler))
+		opentracingApp := opentracing.NewApp(opentracingConfig)
+		restHandler := opentracingApp.Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, echoPath) {
