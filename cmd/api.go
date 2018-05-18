@@ -18,11 +18,10 @@ import (
 )
 
 const (
-	echoPath        = `/echo`
-	helloPath       = `/hello`
-	dumpPath        = `/dump`
-	crudPath        = `/crud`
-	healthcheckPath = `/health`
+	echoPath  = `/echo`
+	helloPath = `/hello`
+	dumpPath  = `/dump`
+	crudPath  = `/crud`
 )
 
 func main() {
@@ -39,12 +38,8 @@ func main() {
 		dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 		crudHandler := http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
 
-		healthcheckHandler := healthcheckApp.Handler(nil)
-
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == healthcheckPath {
-				healthcheckHandler.ServeHTTP(w, r)
-			} else if strings.HasPrefix(r.URL.Path, helloPath) {
+			if strings.HasPrefix(r.URL.Path, helloPath) {
 				helloHandler.ServeHTTP(w, r)
 			} else if strings.HasPrefix(r.URL.Path, dumpPath) {
 				dumpHandler.ServeHTTP(w, r)
@@ -55,10 +50,13 @@ func main() {
 			}
 		})
 
+		healthcheckHandler := healthcheckApp.Handler(nil)
 		restHandler := opentracing.NewApp(opentracingConfig).Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasPrefix(r.URL.Path, echoPath) {
+			if r.URL.Path == `/health` {
+				healthcheckHandler.ServeHTTP(w, r)
+			} else if strings.HasPrefix(r.URL.Path, echoPath) {
 				echoHandler.ServeHTTP(w, r)
 			} else {
 				restHandler.ServeHTTP(w, r)
