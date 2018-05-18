@@ -26,7 +26,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "d8625b9093f5106cb2a7a81c1b7df43f71f9b125"
+  revision = "ea01d4c472e6c5bb84aa1b35fe08aca414f70a12"
 
 [[projects]]
   branch = "master"
@@ -39,6 +39,12 @@
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/opentracing-contrib/go-stdlib"
+  packages = ["nethttp"]
+  revision = "36723135187404d2f4002f4f189938565e64cc5c"
 
 [[projects]]
   name = "github.com/opentracing/opentracing-go"
