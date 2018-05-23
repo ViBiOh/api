@@ -45,7 +45,7 @@ docker-push: docker-login
 	docker push $(DOCKER_USER)/api
 
 start-api:
-	go run cmd/api.go \
+	go run -race cmd/api.go \
 		-tls=false
 
 .PHONY: api go docker deps format lint tst bench build docker-deps docker-login docker-build docker-push start-api
