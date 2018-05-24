@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 	"strings"
 
@@ -10,11 +11,13 @@ import (
 	"github.com/ViBiOh/go-api/pkg/echo"
 	"github.com/ViBiOh/go-api/pkg/hello"
 	"github.com/ViBiOh/httputils/pkg"
+	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
+	"github.com/ViBiOh/httputils/pkg/server"
 )
 
 const (
@@ -25,42 +28,47 @@ const (
 )
 
 func main() {
+	serverConfig := httputils.Flags(``)
+	alcotestConfig := alcotest.Flags(``)
+	opentracingConfig := opentracing.Flags(`tracing`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
+
 	helloConfig := hello.Flags(``)
-	opentracingConfig := opentracing.Flags(`tracing`)
+	flag.Parse()
 
+	alcotest.DoAndExit(alcotestConfig)
+
+	serverApp := httputils.NewApp(serverConfig)
 	healthcheckApp := healthcheck.NewApp()
+	opentracingApp := opentracing.NewApp(opentracingConfig)
+	owaspApp := owasp.NewApp(owaspConfig)
+	corsApp := cors.NewApp(corsConfig)
 
-	httputils.NewApp(httputils.Flags(``), func() http.Handler {
-		echoHandler := http.StripPrefix(echoPath, echo.Handler())
-		helloHandler := http.StripPrefix(helloPath, gziphandler.GzipHandler(hello.Handler(helloConfig)))
-		dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
-		crudHandler := http.StripPrefix(crudPath, gziphandler.GzipHandler(crud.Handler()))
+	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
+	crudHandler := http.StripPrefix(crudPath, crud.Handler())
+	dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
+	echoHandler := http.StripPrefix(echoPath, echo.Handler())
 
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasPrefix(r.URL.Path, helloPath) {
-				helloHandler.ServeHTTP(w, r)
-			} else if strings.HasPrefix(r.URL.Path, dumpPath) {
-				dumpHandler.ServeHTTP(w, r)
-			} else if strings.HasPrefix(r.URL.Path, crudPath) {
-				crudHandler.ServeHTTP(w, r)
-			} else {
-				httperror.NotFound(w)
-			}
-		})
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, helloPath) {
+			helloHandler.ServeHTTP(w, r)
+		} else if strings.HasPrefix(r.URL.Path, dumpPath) {
+			dumpHandler.ServeHTTP(w, r)
+		} else if strings.HasPrefix(r.URL.Path, crudPath) {
+			crudHandler.ServeHTTP(w, r)
+		} else {
+			httperror.NotFound(w)
+		}
+	})
 
-		healthcheckHandler := healthcheckApp.Handler(nil)
-		restHandler := opentracing.NewApp(opentracingConfig).Handler(owasp.Handler(owaspConfig, cors.Handler(corsConfig, handler)))
+	restHandler := server.ChainMiddlewares(gziphandler.GzipHandler(handler), opentracingApp, owaspApp, corsApp)
 
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == `/health` {
-				healthcheckHandler.ServeHTTP(w, r)
-			} else if strings.HasPrefix(r.URL.Path, echoPath) {
-				echoHandler.ServeHTTP(w, r)
-			} else {
-				restHandler.ServeHTTP(w, r)
-			}
-		})
-	}, nil, healthcheckApp).ListenAndServe()
+	serverApp.ListenAndServe(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, echoPath) {
+			echoHandler.ServeHTTP(w, r)
+		} else {
+			restHandler.ServeHTTP(w, r)
+		}
+	}), nil, healthcheckApp)
 }
