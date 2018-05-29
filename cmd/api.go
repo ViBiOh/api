@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/go-api/pkg/crud"
 	"github.com/ViBiOh/go-api/pkg/dump"
 	"github.com/ViBiOh/go-api/pkg/echo"
@@ -13,6 +12,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
+	"github.com/ViBiOh/httputils/pkg/gzip"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/opentracing"
@@ -44,6 +44,7 @@ func main() {
 	opentracingApp := opentracing.NewApp(opentracingConfig)
 	owaspApp := owasp.NewApp(owaspConfig)
 	corsApp := cors.NewApp(corsConfig)
+	gzipApp := gzip.NewApp()
 
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
 	crudHandler := http.StripPrefix(crudPath, crud.Handler())
@@ -62,7 +63,7 @@ func main() {
 		}
 	})
 
-	restHandler := server.ChainMiddlewares(gziphandler.GzipHandler(handler), opentracingApp, owaspApp, corsApp)
+	restHandler := server.ChainMiddlewares(handler, opentracingApp, gzipApp, owaspApp, corsApp)
 
 	serverApp.ListenAndServe(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, echoPath) {
