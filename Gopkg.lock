@@ -16,6 +16,7 @@
     "pkg/cert",
     "pkg/cors",
     "pkg/dump",
+    "pkg/gzip",
     "pkg/healthcheck",
     "pkg/httperror",
     "pkg/httpjson",
@@ -26,7 +27,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "5f118d9228ef4b0d3a598415e4cccc37b65f5577"
+  revision = "9f9961492345a8306528feb1283c6b76fc6d7e3e"
 
 [[projects]]
   branch = "master"
@@ -149,11 +150,11 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "dfa909b99c79129e1100513e5cd36307665e5723"
+  revision = "8d282c4e200f6234d5df69ac4ad1ecb709c3df2c"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f904868d35fc7bf2c9184d755ebf01cfb5f06c97cb6a5997deb0cdb82fa2791d"
+  inputs-digest = "7476d655d2eb6669f92c05957412544a76d32618c44de32b665185b805dc8d0d"
   solver-name = "gps-cdcl"
   solver-version = 1
