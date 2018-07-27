@@ -35,7 +35,7 @@ func readCrudFromBody(r *http.Request) (*user, error) {
 }
 
 func listCrud(w http.ResponseWriter, r *http.Request) {
-	page, pageSize, _, _, err := pagination.ParsePaginationParams(r, defaultPageSize, maxPageSize)
+	page, pageSize, _, _, err := pagination.ParseParams(r, defaultPage, defaultPageSize, maxPageSize)
 	if err != nil {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing pagination: %v`, err))
 		return
