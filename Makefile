@@ -1,3 +1,4 @@
+APP_NAME ?= api
 VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
 AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
@@ -8,6 +9,9 @@ api: deps go
 go: format lint tst bench build
 
 docker: docker-deps docker-build
+
+name:
+	@echo -n $(APP_NAME)
 
 version:
 	@echo -n $(VERSION)
@@ -38,7 +42,7 @@ bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/api cmd/api.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) cmd/$(APP_NAME).go
 
 docker-deps:
 	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem
@@ -48,13 +52,19 @@ docker-login:
 	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
 
 docker-build:
-	docker build -t $(DOCKER_USER)/api .
+	docker build -t $(DOCKER_USER)/$(APP_NAME) .
 
 docker-push: docker-login
-	docker push $(DOCKER_USER)/api
+	docker push $(DOCKER_USER)/$(APP_NAME)
 
-start-api:
-	go run -race cmd/api.go \
+docker-pull: docker-login
+	docker push $(DOCKER_USER)/$(APP_NAME):$(VERSION)
+
+docker-promote:
+	docker tag $(DOCKER_USER)/$(APP_NAME):$(VERSION) $(DOCKER_USER)/$(APP_NAME):latest
+
+start-$(APP_NAME):
+	go run cmd/$(APP_NAME).go \
 		-tls=false
 
-.PHONY: api go docker version author deps format lint tst bench build docker-deps docker-login docker-build docker-push start-api
+.PHONY: api go docker name version author deps format lint tst bench build docker-deps docker-login docker-build docker-push docker-pull docker-promote start-$(APP_NAME)
