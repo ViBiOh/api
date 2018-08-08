@@ -52,15 +52,15 @@ docker-login:
 	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
 
 docker-build:
-	docker build -t $(DOCKER_USER)/$(APP_NAME) .
+	docker build -t $(DOCKER_USER)/$(APP_NAME):$(VERSION) .
 
 docker-push: docker-login
-	docker push $(DOCKER_USER)/$(APP_NAME)
+	docker push $(DOCKER_USER)/$(APP_NAME):$(VERSION)
 
 docker-pull: docker-login
 	docker push $(DOCKER_USER)/$(APP_NAME):$(VERSION)
 
-docker-promote:
+docker-promote: docker-pull
 	docker tag $(DOCKER_USER)/$(APP_NAME):$(VERSION) $(DOCKER_USER)/$(APP_NAME):latest
 
 start-$(APP_NAME):

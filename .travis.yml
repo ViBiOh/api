@@ -8,12 +8,23 @@ jobs:
     - docker
     go : '1.10'
     after_success: |
+      make docker-push
+
       if [ "${TRAVIS_BRANCH}" == "master" ]; then
         bash <(curl -s https://codecov.io/bash)
-        curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/go-api
-
-        make docker-push
       fi
+
+  include:
+  - stage: Publish
+
+    sudo: required
+    services:
+    - docker
+    script: |
+      curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/go-api
+
+      make docker-promote
+      VERSION=latest make docker-push
 
   - stage: Deploy
 
@@ -28,6 +39,8 @@ jobs:
 
 stages:
   - Build
+  - name: Publish
+    if: branch = master
   - name: Deploy
     if: branch = master
 
