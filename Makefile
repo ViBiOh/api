@@ -58,7 +58,7 @@ docker-push: docker-login
 	docker push $(DOCKER_USER)/$(APP_NAME):$(VERSION)
 
 docker-pull: docker-login
-	docker push $(DOCKER_USER)/$(APP_NAME):$(VERSION)
+	docker pull $(DOCKER_USER)/$(APP_NAME):$(VERSION)
 
 docker-promote: docker-pull
 	docker tag $(DOCKER_USER)/$(APP_NAME):$(VERSION) $(DOCKER_USER)/$(APP_NAME):latest
