@@ -8,11 +8,8 @@ jobs:
     - docker
     go : '1.10'
     after_success: |
-      make docker-push
-
-      if [ "${TRAVIS_BRANCH}" == "master" ]; then
-        bash <(curl -s https://codecov.io/bash)
-      fi
+      echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+      docker push ${DOCKER_USER}/`make name`:`make version`
 
   - stage: Publish
 
@@ -20,10 +17,10 @@ jobs:
     services:
     - docker
     script: |
-      curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/go-api
-
-      make docker-promote
-      VERSION=latest make docker-push
+      echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+      docker pull ${DOCKER_USER}/`make name`:`make version`
+      docker tag ${DOCKER_USER}/`make name`:`make version` ${DOCKER_USER}/`make name`:latest
+      docker push ${DOCKER_USER}/`make name`:latest
 
   - stage: Deploy
 

@@ -2,7 +2,3 @@
 bin/
 vendor/
 coverage.*
-
-# Docker
-cacert.pem
-zoneinfos.zip
