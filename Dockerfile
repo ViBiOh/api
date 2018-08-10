@@ -14,14 +14,12 @@ RUN make ${APP_NAME} \
 
 FROM scratch
 
-ENV APP_NAME api
-
 HEALTHCHECK --retries=10 CMD [ "/${APP_NAME}", "-url", "https://localhost:1080/health" ]
 
-ENTRYPOINT [ "/${APP_NAME}" ]
+ENTRYPOINT [ "/api" ]
 ENV ZONEINFO zoneinfo.zip
 EXPOSE 1080
 
 COPY --from=builder /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /app/zoneinfo.zip zoneinfo.zip
-COPY --from=builder /app/${APP_NAME} /${APP_NAME}
+COPY --from=builder /app/${APP_NAME} /api
