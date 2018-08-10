@@ -14,6 +14,8 @@ RUN make ${APP_NAME} \
 
 FROM scratch
 
+ENV APP_NAME api
+
 ENV ZONEINFO zoneinfo.zip
 EXPOSE 1080
 
