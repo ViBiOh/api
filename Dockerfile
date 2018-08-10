@@ -14,9 +14,11 @@ RUN make ${APP_NAME} \
 
 FROM scratch
 
-HEALTHCHECK --retries=10 CMD [ "/api", "-url", "https://localhost:1080/health" ]
+ENV APP_NAME api
 
-ENTRYPOINT [ "/api" ]
+HEALTHCHECK --retries=10 CMD [ "/${APP_NAME}", "-url", "https://localhost:1080/health" ]
+
+ENTRYPOINT [ "/${APP_NAME}" ]
 ENV ZONEINFO zoneinfo.zip
 EXPOSE 1080
 

@@ -3,7 +3,7 @@ VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
 AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
 default:
-	docker build -t $(DOCKER_USER)/$(APP_NAME):$(VERSION) .
+	docker build -t vibioh/$(APP_NAME):$(VERSION) .
 
 $(APP_NAME): deps go
 
@@ -41,7 +41,7 @@ bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) cmd/$(APP_NAME).go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) cmd/api.go
 
 start-$(APP_NAME):
 	go run cmd/$(APP_NAME).go \
