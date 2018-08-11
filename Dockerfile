@@ -20,5 +20,5 @@ EXPOSE 1080
 HEALTHCHECK --retries=10 CMD [ "/api", "-url", "https://localhost:1080/health" ]
 ENTRYPOINT [ "/api" ]
 
-COPY --from=builder /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /app/ /
+COPY --from=builder /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
