@@ -43,8 +43,8 @@ bench:
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) cmd/api.go
 
-start-$(APP_NAME):
+start:
 	go run cmd/$(APP_NAME).go \
 		-tls=false
 
-.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start-$(APP_NAME)
+.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start
