@@ -9,14 +9,14 @@ PID=/tmp/.$(APP_NAME).pid
 help: Makefile
 	@sed -n 's|^##||p' $< | column -t -s ':' | sed -e 's|^| |'
 
-## default: Build Docker container for current version
-default:
+## docker: Build App in a Docker container, tagged with current version
+docker:
 	docker build -t vibioh/$(APP_NAME):$(VERSION) .
 
-## $(APP_NAME): Build golang binary with dependencies download
+## $(APP_NAME): Build App with dependencies download
 $(APP_NAME): deps go
 
-## go: Build golang binary
+## go: Build App
 go: format lint tst bench build
 
 ## name: Output app name
@@ -58,7 +58,7 @@ tst:
 bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
-## build: Build static binary of app
+## build: Build binary of App
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(GOBIN)/$(APP_NAME) cmd/api.go
 
