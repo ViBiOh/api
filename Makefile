@@ -74,4 +74,4 @@ stop:
 	kill -9 `cat $(PID)` 2> /dev/null || true
 	rm $(PID)
 
-.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start stop
+.PHONY: docker $(APP_NAME) go name version author deps format lint tst bench build start stop
