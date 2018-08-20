@@ -1,17 +1,13 @@
-APP_NAME ?= api
-VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
-AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
-
 MAKEFLAGS += --silent
 GOBIN=bin
 PID=/tmp/.$(APP_NAME).pid
 
+APP_NAME ?= api
+VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
+AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
+
 help: Makefile
 	@sed -n 's|^##||p' $< | column -t -s ':' | sed -e 's|^| |'
-
-## docker: Build App in a Docker container, tagged with current version
-docker:
-	docker build -t vibioh/$(APP_NAME):$(VERSION) .
 
 ## $(APP_NAME): Build App with dependencies download
 $(APP_NAME): deps go
@@ -74,4 +70,4 @@ stop:
 	kill -9 `cat $(PID)` 2> /dev/null || true
 	rm $(PID)
 
-.PHONY: docker $(APP_NAME) go name version author deps format lint tst bench build start stop
+.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start stop
