@@ -42,7 +42,7 @@ func Handler(config map[string]*string) http.Handler {
 				name = `World`
 			}
 
-			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httpjson.IsPretty(r)); err != nil {
 				httperror.InternalServerError(w, err)
 			}
 		}

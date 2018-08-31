@@ -41,7 +41,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := httpjson.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID), httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+	if err := httpjson.ResponseArrayJSON(w, http.StatusOK, listUser(page, pageSize, sortByID), httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
@@ -49,7 +49,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
 	if requestUser := getUser(id); requestUser == nil {
 		httperror.NotFound(w)
-	} else if err := httpjson.ResponseJSON(w, http.StatusOK, requestUser, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+	} else if err := httpjson.ResponseJSON(w, http.StatusOK, requestUser, httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
@@ -57,7 +57,7 @@ func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
 func createCrud(w http.ResponseWriter, r *http.Request) {
 	if obj, err := readCrudFromBody(r); err != nil {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
-	} else if err := httpjson.ResponseJSON(w, http.StatusCreated, createUser(obj.Name), httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+	} else if err := httpjson.ResponseJSON(w, http.StatusCreated, createUser(obj.Name), httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
@@ -67,7 +67,7 @@ func updateCrud(w http.ResponseWriter, r *http.Request, id uint) {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
 	} else if updatedUser := updateUser(id, obj.Name); updatedUser == nil {
 		httperror.NotFound(w)
-	} else if err := httpjson.ResponseJSON(w, http.StatusOK, updatedUser, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+	} else if err := httpjson.ResponseJSON(w, http.StatusOK, updatedUser, httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
