@@ -147,7 +147,7 @@ func Test_listCrud(t *testing.T) {
 			t.Errorf("%v\nlistCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\nlistCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
@@ -191,7 +191,7 @@ func Test_readCrud(t *testing.T) {
 			t.Errorf("%v\nreadCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\nreadCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
@@ -228,7 +228,7 @@ func Test_createCrud(t *testing.T) {
 			t.Errorf("%v\ncreateCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\ncreateCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
@@ -281,7 +281,7 @@ func Test_updateCrud(t *testing.T) {
 			t.Errorf("%v\nupdateCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\nupdateCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
@@ -325,7 +325,7 @@ func Test_removeCrud(t *testing.T) {
 			t.Errorf("%v\nremoveCrudTest_removeCrud(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\nremoveCrudTest_removeCrud(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
@@ -427,7 +427,7 @@ func Test_ServeHTTP(t *testing.T) {
 			t.Errorf("%v\nServeHTTP(%v) = %v, want status %v", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%v\nServeHTTP(%v) = %v, want %v", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}

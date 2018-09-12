@@ -25,7 +25,7 @@ func getRequestID(path string) (uint, error) {
 func readCrudFromBody(r *http.Request) (*user, error) {
 	var requestObj user
 
-	if bodyBytes, err := request.ReadBody(r.Body); err != nil {
+	if bodyBytes, err := request.ReadBodyRequest(r); err != nil {
 		return nil, fmt.Errorf(`Error while reading body: %v`, err)
 	} else if err := json.Unmarshal(bodyBytes, &requestObj); err != nil {
 		return nil, fmt.Errorf(`Error while unmarshalling body: %v`, err)
