@@ -1,30 +1,22 @@
-MAKEFLAGS += --silent
-GOBIN=bin
-BINARY_PATH=$(GOBIN)/$(APP_NAME)
+APP_NAME ?= api
 VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
 AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
-APP_NAME ?= api
-PID=/tmp/.$(APP_NAME).pid
+MAKEFLAGS += --silent
+GOBIN=bin
+BINARY_PATH=$(GOBIN)/$(APP_NAME)
 
+## help: Display list of commands
 .PHONY: help
 help: Makefile
 	@sed -n 's|^##||p' $< | column -t -s ':' | sed -e 's|^| |'
 
-.PHONY: $(APP_NAME)
-## $(APP_NAME): Build app with dependencies download
-$(APP_NAME): deps go
-
-## go: Build App
-.PHONY: go
-go: format lint tst bench build
-
-## name: Output name of app
+## name: Output name
 .PHONY: name
 name:
 	@echo -n $(APP_NAME)
 
-## dist: Output build output path
+## dist: Output binary path
 .PHONY: dist
 dist:
 	@echo -n $(BINARY_PATH)
@@ -39,6 +31,14 @@ version:
 author:
 	@python -c 'import sys; import urllib; sys.stdout.write(urllib.quote_plus(sys.argv[1]))' "$(AUTHOR)"
 
+## $(APP_NAME): Build app with dependencies download
+.PHONY: $(APP_NAME)
+$(APP_NAME): deps go
+
+## go: Build app
+.PHONY: go
+go: format lint tst bench build
+
 ## deps: Download dependencies
 .PHONY: deps
 deps:
@@ -48,47 +48,40 @@ deps:
 	go get golang.org/x/tools/cmd/goimports
 	dep ensure
 
-## format: Format code of app
+## format: Format code
 .PHONY: format
 format:
 	goimports -w */*.go */*/*.go
 	gofmt -s -w */*.go */*/*.go
 
-## lint: Lint code of app
+## lint: Lint code
 .PHONY: lint
 lint:
 	golint `go list ./... | grep -v vendor`
 	errcheck -ignoretests `go list ./... | grep -v vendor`
 	go vet ./...
 
-## tst: Test code of app with coverage
+## tst: Test with coverage
 .PHONY: tst
 tst:
 	script/coverage
 
-## bench: Benchmark code of app
+## bench: Benchmark code
 .PHONY: bench
 bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
-## build: Build binary of app
+## build: Build binary
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH) cmd/api.go
 
 ## start: Start app
 .PHONY: start
-start: stop build
-	$(GOBIN)/$(APP_NAME) \
-		-tls=false \
-	& echo $$! > $(PID)
-
-## stop: Stop app
-.PHONY: stop
-stop:
-	touch $(PID)
-	kill -9 `cat $(PID)` 2> /dev/null || true
-	rm $(PID)
+start:
+	go run \
+		cmd/api.go \
+		-tls=false
 
 ## debug: Debug app
 .PHONY: debug
