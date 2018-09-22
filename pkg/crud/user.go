@@ -1,55 +1,36 @@
 package crud
 
-import "sort"
+import (
+	"errors"
+	"fmt"
+	"sync"
+
+	"github.com/ViBiOh/httputils/pkg/uuid"
+)
+
+var (
+	// ErrUserNotFound occurs when user with given ID if not found
+	ErrUserNotFound = errors.New(`User not found`)
+)
 
 type user struct {
-	ID   uint   `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 var (
-	users = map[uint]*user{}
-	seq   = uint(1)
+	users = map[string]*user{}
+	mutex = sync.RWMutex{}
 )
 
-type usersSorter struct {
-	users []*user
-	by    func(p1, p2 *user) bool
-}
-
-func (s *usersSorter) Len() int {
-	return len(s.users)
-}
-
-func (s *usersSorter) Swap(i, j int) {
-	s.users[i], s.users[j] = s.users[j], s.users[i]
-}
-
-func (s *usersSorter) Less(i, j int) bool {
-	return s.by(s.users[i], s.users[j])
-}
-
-type sortBy func(p1, p2 *user) bool
-
-func (by sortBy) Sort(arr []*user) {
-	sort.Sort(&usersSorter{
-		users: arr,
-		by:    by,
-	})
-}
-
-func sortByID(o1, o2 *user) bool {
-	return o1.ID < o2.ID
-}
-
-func listUser(page, pageSize uint, sortFn func(*user, *user) bool) []*user {
+func listUser(page, pageSize uint, sortCriteria sortBy) []*user {
 	list := make([]*user, 0)
 	for _, value := range users {
 		list = append(list, value)
 	}
 
 	listSize := uint(len(list))
-	sortBy(sortFn).Sort(list)
+	sortCriteria.Sort(list)
 
 	var min uint
 	if page > 1 {
@@ -63,28 +44,53 @@ func listUser(page, pageSize uint, sortFn func(*user, *user) bool) []*user {
 	return list[min:max]
 }
 
-func getUser(id uint) *user {
+func getUser(id string) *user {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
 	return users[id]
 }
 
-func createUser(name string) *user {
-	createdUser := &user{ID: seq, Name: name}
-	users[seq] = createdUser
+func createUser(name string) (*user, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
 
-	seq++
-	return createdUser
-}
-
-func updateUser(id uint, name string) *user {
-	foundUser, ok := users[id]
-
-	if ok {
-		foundUser.Name = name
+	newID, err := uuid.New()
+	if err != nil {
+		return nil, fmt.Errorf(`Error while generating UUID: %v`, err)
 	}
 
-	return foundUser
+	createdUser := &user{ID: newID, Name: name}
+	users[createdUser.ID] = createdUser
+
+	return createdUser, nil
 }
 
-func deleteUser(id uint) {
+func updateUser(id string, name string) (*user, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	foundUser, ok := users[id]
+
+	if !ok {
+		return nil, ErrUserNotFound
+	}
+
+	foundUser.Name = name
+	return foundUser, nil
+}
+
+func deleteUser(id string) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	_, ok := users[id]
+
+	if !ok {
+		return ErrUserNotFound
+	}
+
 	delete(users, id)
+
+	return nil
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/httperror"
@@ -17,9 +16,8 @@ const defaultPage = uint(1)
 const defaultPageSize = uint(20)
 const maxPageSize = uint(^uint(0) >> 1)
 
-func getRequestID(path string) (uint, error) {
-	parsed, err := strconv.ParseUint(strings.TrimPrefix(path, `/`), 10, 32)
-	return uint(parsed), err
+func getRequestID(path string) string {
+	return strings.TrimPrefix(path, `/`)
 }
 
 func readCrudFromBody(r *http.Request) (*user, error) {
@@ -46,7 +44,7 @@ func listCrud(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
+func readCrud(w http.ResponseWriter, r *http.Request, id string) {
 	if requestUser := getUser(id); requestUser == nil {
 		httperror.NotFound(w)
 	} else if err := httpjson.ResponseJSON(w, http.StatusOK, requestUser, httpjson.IsPretty(r)); err != nil {
@@ -57,26 +55,33 @@ func readCrud(w http.ResponseWriter, r *http.Request, id uint) {
 func createCrud(w http.ResponseWriter, r *http.Request) {
 	if obj, err := readCrudFromBody(r); err != nil {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
-	} else if err := httpjson.ResponseJSON(w, http.StatusCreated, createUser(obj.Name), httpjson.IsPretty(r)); err != nil {
+	} else if createdUser, err := createUser(obj.Name); err != nil {
+		httperror.InternalServerError(w, err)
+	} else if err := httpjson.ResponseJSON(w, http.StatusCreated, createdUser, httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
 
-func updateCrud(w http.ResponseWriter, r *http.Request, id uint) {
+func updateCrud(w http.ResponseWriter, r *http.Request, id string) {
 	if obj, err := readCrudFromBody(r); err != nil {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing body: %v`, err))
-	} else if updatedUser := updateUser(id, obj.Name); updatedUser == nil {
+	} else if updatedUser, err := updateUser(id, obj.Name); err == ErrUserNotFound {
 		httperror.NotFound(w)
+	} else if err != nil {
+		httperror.InternalServerError(w, err)
 	} else if err := httpjson.ResponseJSON(w, http.StatusOK, updatedUser, httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
 	}
 }
 
-func removeCrud(w http.ResponseWriter, r *http.Request, id uint) {
+func removeCrud(w http.ResponseWriter, r *http.Request, id string) {
 	if getUser(id) == nil {
 		httperror.NotFound(w)
+	} else if err := deleteUser(id); err == ErrUserNotFound {
+		httperror.NotFound(w)
+	} else if err != nil {
+		httperror.InternalServerError(w, err)
 	} else {
-		deleteUser(id)
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
@@ -95,9 +100,9 @@ func Handler() http.Handler {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
 		} else {
-			if id, err := getRequestID(r.URL.Path); err != nil {
-				httperror.BadRequest(w, fmt.Errorf(`Error while parsing request path: %v`, err))
-			} else if r.Method == http.MethodGet {
+			id := getRequestID(r.URL.Path)
+
+			if r.Method == http.MethodGet {
 				readCrud(w, r, id)
 			} else if r.Method == http.MethodPut {
 				updateCrud(w, r, id)
