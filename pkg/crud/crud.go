@@ -16,8 +16,8 @@ const defaultPage = uint(1)
 const defaultPageSize = uint(20)
 const maxPageSize = uint(^uint(0) >> 1)
 
-func getRequestID(path string) string {
-	return strings.TrimPrefix(path, `/`)
+func getID(r *http.Request) string {
+	return strings.Split(strings.Trim(r.URL.Path, `/`), `/`)[0]
 }
 
 func readCrudFromBody(r *http.Request) (*user, error) {
@@ -100,14 +100,12 @@ func Handler() http.Handler {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
 		} else {
-			id := getRequestID(r.URL.Path)
-
 			if r.Method == http.MethodGet {
-				readCrud(w, r, id)
+				readCrud(w, r, getID(r))
 			} else if r.Method == http.MethodPut {
-				updateCrud(w, r, id)
+				updateCrud(w, r, getID(r))
 			} else if r.Method == http.MethodDelete {
-				removeCrud(w, r, id)
+				removeCrud(w, r, getID(r))
 			} else {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
