@@ -1,36 +1,50 @@
 package crud
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 
 	"github.com/ViBiOh/httputils/pkg/uuid"
 )
 
-var (
-	// ErrUserNotFound occurs when user with given ID if not found
-	ErrUserNotFound = errors.New(`User not found`)
-)
-
-type user struct {
-	ID   string `json:"id"`
+// User describe a user
+type User struct {
+	UUID string `json:"id"`
 	Name string `json:"name"`
 }
 
-var (
-	users = map[string]*user{}
-	mutex = sync.RWMutex{}
-)
+// ID returns ID
+func (a User) ID() string {
+	return a.UUID
+}
 
-func listUser(page, pageSize uint, sortCriteria sortBy) []*user {
-	list := make([]*user, 0)
-	for _, value := range users {
+// UserService is a raw implementation of User
+type UserService struct {
+	users map[string]*User
+	mutex sync.RWMutex
+}
+
+// NewUserService creates a new user service
+func NewUserService() *UserService {
+	return &UserService{
+		users:  map[string]*User{},
+		mutex: sync.RWMutex{},
+	}
+}
+
+// Empty returns empy user
+func (a *UserService) Empty() Item {
+	return &User{}
+}
+
+// List users
+func (a *UserService) List(page, pageSize uint) []Item {
+	list := make([]Item, 0)
+	for _, value := range a.users {
 		list = append(list, value)
 	}
 
 	listSize := uint(len(list))
-	sortCriteria.Sort(list)
 
 	var min uint
 	if page > 1 {
@@ -44,53 +58,59 @@ func listUser(page, pageSize uint, sortCriteria sortBy) []*user {
 	return list[min:max]
 }
 
-func getUser(id string) *user {
-	mutex.RLock()
-	defer mutex.RUnlock()
+// Get user by ID
+func (a *UserService) Get(id string) Item {
+	a.mutex.RLock()
+	defer a.mutex.RUnlock()
 
-	return users[id]
+	return a.users[id]
 }
 
-func createUser(name string) (*user, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
+// Create user
+func (a *UserService) Create(o Item) (Item, error) {
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
+
+	user := o.(*User)
 
 	newID, err := uuid.New()
 	if err != nil {
 		return nil, fmt.Errorf(`Error while generating UUID: %v`, err)
 	}
 
-	createdUser := &user{ID: newID, Name: name}
-	users[createdUser.ID] = createdUser
+	createdUser := &User{UUID: newID, Name: user.Name}
+	a.users[createdUser.UUID] = createdUser
 
 	return createdUser, nil
 }
 
-func updateUser(id string, name string) (*user, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
+// Update user
+func (a *UserService) Update(id string, o Item) (Item, error) {
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
 
-	foundUser, ok := users[id]
+	foundUser, ok := a.users[id]
 
 	if !ok {
-		return nil, ErrUserNotFound
+		return nil, ErrNotFound
 	}
 
-	foundUser.Name = name
+	foundUser.Name = o.(*User).Name
 	return foundUser, nil
 }
 
-func deleteUser(id string) error {
-	mutex.Lock()
-	defer mutex.Unlock()
+// Delete user by ID
+func (a *UserService) Delete(id string) error {
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
 
-	_, ok := users[id]
+	_, ok := a.users[id]
 
 	if !ok {
-		return ErrUserNotFound
+		return ErrNotFound
 	}
 
-	delete(users, id)
+	delete(a.users, id)
 
 	return nil
 }

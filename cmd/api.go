@@ -37,6 +37,7 @@ func main() {
 	rollbarConfig := rollbar.Flags(`rollbar`)
 
 	helloConfig := hello.Flags(``)
+	crudConfig := crud.Flags(`crud`)
 	flag.Parse()
 
 	alcotest.DoAndExit(alcotestConfig)
@@ -49,8 +50,10 @@ func main() {
 	rollbarApp := rollbar.NewApp(rollbarConfig)
 	gzipApp := gzip.NewApp()
 
+	crudApp := crud.NewApp(crudConfig, crud.NewUserService())
+
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
-	crudHandler := http.StripPrefix(crudPath, crud.Handler())
+	crudHandler := http.StripPrefix(crudPath, crudApp.Handler())
 	dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 	echoHandler := http.StripPrefix(echoPath, echo.Handler())
 

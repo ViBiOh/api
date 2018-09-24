@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:689ca7626842e09f7b2fb16482b46be7d32de3cb0f8141dc48c6d62687d29446"
+  digest = "1:8c06d87bd09775e352644bb4a4f351326953e52b524fbf66151a46568df5857f"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -32,9 +32,10 @@
     "pkg/rollbar",
     "pkg/server",
     "pkg/tools",
+    "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "fb865f36bf80f309c5083b2c635ffdeb70a7f07f"
+  revision = "7846741e9a368c412f88293a5cf75365bb9799cc"
 
 [[projects]]
   branch = "master"
@@ -137,7 +138,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8c49953a1414305f2ff5465147ee576dd705487c35b15918fcd4efdc0cb7a290"
+  digest = "1:ef1dd9945e58ee9b635273d28c0ef3fa3742a7dedc038ebe207fd63e6ce000ef"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -146,7 +147,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "05ee40e3a273f7245e8777337fc7b46e533a9a92"
+  revision = "418d78d0b9a7b7de3a6bbc8a23def624cc977bb2"
 
 [[projects]]
   digest = "1:8b6db3b490230af0836cd57f2da94e092ac0c2837fe24e762458006531749b53"
@@ -195,7 +196,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "26e67e76b6c3f6ce91f7c52def5af501b4e0f3a2"
+  revision = "2f5d2388922f370f4355f327fcf4cfe9f5583908"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -215,6 +216,7 @@
     "github.com/ViBiOh/httputils/pkg/request",
     "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
+    "github.com/ViBiOh/httputils/pkg/uuid",
     "github.com/gorilla/websocket",
   ]
   solver-name = "gps-cdcl"
