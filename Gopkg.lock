@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8c06d87bd09775e352644bb4a4f351326953e52b524fbf66151a46568df5857f"
+  digest = "1:7b281a3061b47514b75b0e12f9060af8db8135b5834ab8102606729cc05adf5d"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -35,7 +35,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "7846741e9a368c412f88293a5cf75365bb9799cc"
+  revision = "8c25cca68eaf981be72e72841aef272d5ee8fb0c"
 
 [[projects]]
   branch = "master"
@@ -216,6 +216,7 @@
     "github.com/ViBiOh/httputils/pkg/request",
     "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
+    "github.com/ViBiOh/httputils/pkg/tools",
     "github.com/ViBiOh/httputils/pkg/uuid",
     "github.com/gorilla/websocket",
   ]

@@ -27,7 +27,7 @@ type UserService struct {
 // NewUserService creates a new user service
 func NewUserService() *UserService {
 	return &UserService{
-		users:  map[string]*User{},
+		users: map[string]*User{},
 		mutex: sync.RWMutex{},
 	}
 }

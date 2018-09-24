@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/httpjson"
@@ -45,10 +44,6 @@ func Flags(prefix string) map[string]*uint {
 		`defaultPageSize`: flag.Uint(tools.ToCamel(fmt.Sprintf(`%sDefaultPageSize`, prefix)), 20, fmt.Sprintf(`[%s] Default page size`, prefix)),
 		`maxPageSize`:     flag.Uint(tools.ToCamel(fmt.Sprintf(`%sMaxPageSize`, prefix)), 500, fmt.Sprintf(`[%s] Max page size`, prefix)),
 	}
-}
-
-func getID(r *http.Request) string {
-	return strings.Split(strings.Trim(r.URL.Path, `/`), `/`)[0]
 }
 
 func (a App) readPayload(r *http.Request) (Item, error) {
@@ -121,13 +116,13 @@ func (a App) update(w http.ResponseWriter, r *http.Request, id string) {
 	}
 
 	obj, err = a.service.Update(id, obj)
-	if err == ErrNotFound {
-		httperror.NotFound(w)
-		return
-	}
-
 	if err != nil {
-		httperror.InternalServerError(w, err)
+		if err == ErrNotFound {
+			httperror.NotFound(w)
+		} else {
+			httperror.InternalServerError(w, err)
+		}
+
 		return
 	}
 
@@ -150,6 +145,7 @@ func (a App) delete(w http.ResponseWriter, r *http.Request, id string) {
 		} else {
 			httperror.InternalServerError(w, err)
 		}
+
 		return
 	}
 
@@ -159,31 +155,33 @@ func (a App) delete(w http.ResponseWriter, r *http.Request, id string) {
 // Handler for CRUD requests. Should be use with net/http
 func (a App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		isRoot := tools.IsRoot(r)
+
 		switch r.Method {
 		case http.MethodGet:
-			if tools.IsRoot(r) {
+			if isRoot {
 				a.list(w, r)
 			} else {
-				a.get(w, r, getID(r))
+				a.get(w, r, tools.GetID(r))
 			}
 
 		case http.MethodPost:
-			if tools.IsRoot(r) {
+			if isRoot {
 				a.create(w, r)
 			} else {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
 
 		case http.MethodPut:
-			if !tools.IsRoot(r) {
-				a.update(w, r, getID(r))
+			if !isRoot {
+				a.update(w, r, tools.GetID(r))
 			} else {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
 
 		case http.MethodDelete:
-			if !tools.IsRoot(r) {
-				a.delete(w, r, getID(r))
+			if !isRoot {
+				a.delete(w, r, tools.GetID(r))
 			} else {
 				w.WriteHeader(http.StatusMethodNotAllowed)
 			}
