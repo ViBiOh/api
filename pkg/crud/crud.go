@@ -46,6 +46,14 @@ func Flags(prefix string) map[string]*uint {
 	}
 }
 
+func handleError(w http.ResponseWriter, err error, label string) {
+	if err == ErrNotFound {
+		httperror.NotFound(w)
+	} else {
+		httperror.InternalServerError(w, fmt.Errorf(`Error while executing %s: %v`, label, err))
+	}
+}
+
 func (a App) readPayload(r *http.Request) (Item, error) {
 	bodyBytes, err := request.ReadBodyRequest(r)
 
@@ -68,16 +76,22 @@ func (a App) list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := httpjson.ResponseArrayJSON(w, http.StatusOK, a.service.List(page, pageSize), httpjson.IsPretty(r)); err != nil {
+	list, err := a.service.List(page, pageSize)
+	if err != nil {
+		httperror.InternalServerError(w, fmt.Errorf(`Error while listing items: %v`, err))
+		return
+	}
+
+	if err := httpjson.ResponseArrayJSON(w, http.StatusOK, list, httpjson.IsPretty(r)); err != nil {
 		httperror.InternalServerError(w, err)
+		return
 	}
 }
 
 func (a App) get(w http.ResponseWriter, r *http.Request, id string) {
-	obj := a.service.Get(id)
-
-	if obj == nil {
-		httperror.NotFound(w)
+	obj, err := a.service.Get(id)
+	if err != nil {
+		handleError(w, err, `get`)
 		return
 	}
 
@@ -97,7 +111,7 @@ func (a App) create(w http.ResponseWriter, r *http.Request) {
 
 	obj, err = a.service.Create(obj)
 	if err != nil {
-		httperror.InternalServerError(w, err)
+		handleError(w, err, `create`)
 		return
 	}
 
@@ -117,12 +131,7 @@ func (a App) update(w http.ResponseWriter, r *http.Request, id string) {
 
 	obj, err = a.service.Update(id, obj)
 	if err != nil {
-		if err == ErrNotFound {
-			httperror.NotFound(w)
-		} else {
-			httperror.InternalServerError(w, err)
-		}
-
+		handleError(w, err, `update`)
 		return
 	}
 
@@ -133,19 +142,15 @@ func (a App) update(w http.ResponseWriter, r *http.Request, id string) {
 }
 
 func (a App) delete(w http.ResponseWriter, r *http.Request, id string) {
-	if a.service.Get(id) == nil {
-		httperror.NotFound(w)
+	_, err := a.service.Get(id)
+	if err == nil {
+		handleError(w, err, `get`)
 		return
 	}
 
-	err := a.service.Delete(id)
+	err = a.service.Delete(id)
 	if err != nil {
-		if err == ErrNotFound {
-			httperror.NotFound(w)
-		} else {
-			httperror.InternalServerError(w, err)
-		}
-
+		handleError(w, err, `delete`)
 		return
 	}
 

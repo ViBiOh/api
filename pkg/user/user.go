@@ -1,9 +1,10 @@
-package crud
+package user
 
 import (
 	"fmt"
 	"sync"
 
+	"github.com/ViBiOh/go-api/pkg/crud"
 	"github.com/ViBiOh/httputils/pkg/uuid"
 )
 
@@ -18,28 +19,28 @@ func (a User) ID() string {
 	return a.UUID
 }
 
-// UserService is a raw implementation of User
-type UserService struct {
+// Service is a raw implementation of User
+type Service struct {
 	users map[string]*User
 	mutex sync.RWMutex
 }
 
-// NewUserService creates a new user service
-func NewUserService() *UserService {
-	return &UserService{
+// NewService creates a new user service
+func NewService() *Service {
+	return &Service{
 		users: map[string]*User{},
 		mutex: sync.RWMutex{},
 	}
 }
 
 // Empty returns empy user
-func (a *UserService) Empty() Item {
+func (a *Service) Empty() crud.Item {
 	return &User{}
 }
 
 // List users
-func (a *UserService) List(page, pageSize uint) []Item {
-	list := make([]Item, 0)
+func (a *Service) List(page, pageSize uint) ([]crud.Item, error) {
+	list := make([]crud.Item, 0)
 	for _, value := range a.users {
 		list = append(list, value)
 	}
@@ -55,19 +56,19 @@ func (a *UserService) List(page, pageSize uint) []Item {
 		max = listSize
 	}
 
-	return list[min:max]
+	return list[min:max], nil
 }
 
 // Get user by ID
-func (a *UserService) Get(id string) Item {
+func (a *Service) Get(id string) (crud.Item, error) {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
 
-	return a.users[id]
+	return a.users[id], nil
 }
 
 // Create user
-func (a *UserService) Create(o Item) (Item, error) {
+func (a *Service) Create(o crud.Item) (crud.Item, error) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
@@ -85,14 +86,14 @@ func (a *UserService) Create(o Item) (Item, error) {
 }
 
 // Update user
-func (a *UserService) Update(id string, o Item) (Item, error) {
+func (a *Service) Update(id string, o crud.Item) (crud.Item, error) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
 	foundUser, ok := a.users[id]
 
 	if !ok {
-		return nil, ErrNotFound
+		return nil, crud.ErrNotFound
 	}
 
 	foundUser.Name = o.(*User).Name
@@ -100,14 +101,14 @@ func (a *UserService) Update(id string, o Item) (Item, error) {
 }
 
 // Delete user by ID
-func (a *UserService) Delete(id string) error {
+func (a *Service) Delete(id string) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
 	_, ok := a.users[id]
 
 	if !ok {
-		return ErrNotFound
+		return crud.ErrNotFound
 	}
 
 	delete(a.users, id)

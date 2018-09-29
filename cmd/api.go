@@ -9,6 +9,7 @@ import (
 	"github.com/ViBiOh/go-api/pkg/dump"
 	"github.com/ViBiOh/go-api/pkg/echo"
 	"github.com/ViBiOh/go-api/pkg/hello"
+	"github.com/ViBiOh/go-api/pkg/user"
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
@@ -50,7 +51,7 @@ func main() {
 	rollbarApp := rollbar.NewApp(rollbarConfig)
 	gzipApp := gzip.NewApp()
 
-	crudApp := crud.NewApp(crudConfig, crud.NewUserService())
+	crudApp := crud.NewApp(crudConfig, user.NewService())
 
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
 	crudHandler := http.StripPrefix(crudPath, crudApp.Handler())
