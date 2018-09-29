@@ -70,13 +70,13 @@ func (a App) readPayload(r *http.Request) (Item, error) {
 }
 
 func (a App) list(w http.ResponseWriter, r *http.Request) {
-	page, pageSize, _, _, err := pagination.ParseParams(r, a.defaultPage, a.defaultPageSize, a.maxPageSize)
+	page, pageSize, sortKey, sortAsc, err := pagination.ParseParams(r, a.defaultPage, a.defaultPageSize, a.maxPageSize)
 	if err != nil {
 		httperror.BadRequest(w, fmt.Errorf(`Error while parsing pagination: %v`, err))
 		return
 	}
 
-	list, err := a.service.List(page, pageSize)
+	list, err := a.service.List(page, pageSize, sortKey, sortAsc)
 	if err != nil {
 		httperror.InternalServerError(w, fmt.Errorf(`Error while listing items: %v`, err))
 		return

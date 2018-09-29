@@ -39,7 +39,7 @@ func (a *Service) Empty() crud.Item {
 }
 
 // List users
-func (a *Service) List(page, pageSize uint) ([]crud.Item, error) {
+func (a *Service) List(page, pageSize uint, _ string, _ bool) ([]crud.Item, error) {
 	list := make([]crud.Item, 0)
 	for _, value := range a.users {
 		list = append(list, value)
