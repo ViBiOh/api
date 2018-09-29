@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/go-api/pkg/crud"
 	"github.com/ViBiOh/go-api/pkg/dump"
 	"github.com/ViBiOh/go-api/pkg/echo"
 	"github.com/ViBiOh/go-api/pkg/hello"
@@ -13,6 +12,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
+	"github.com/ViBiOh/httputils/pkg/crud"
 	"github.com/ViBiOh/httputils/pkg/gzip"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/httperror"

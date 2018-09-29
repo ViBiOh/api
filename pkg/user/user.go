@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ViBiOh/go-api/pkg/crud"
+	"github.com/ViBiOh/httputils/pkg/crud"
 	"github.com/ViBiOh/httputils/pkg/uuid"
 )
 
