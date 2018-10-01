@@ -76,7 +76,7 @@ func (a *Service) Create(o crud.Item) (crud.Item, error) {
 
 	newID, err := uuid.New()
 	if err != nil {
-		return nil, fmt.Errorf(`Error while generating UUID: %v`, err)
+		return nil, fmt.Errorf(`error while generating UUID: %v`, err)
 	}
 
 	createdUser := &User{UUID: newID, Name: user.Name}

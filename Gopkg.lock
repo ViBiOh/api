@@ -11,13 +11,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:218952ffc9d9905b33667dcacd1ea19626281a9cda28792b3162e44c62a644ab"
+  digest = "1:c2927c510794e5f9ff0821136da16d04acb9cc49f622e743f8463f4c3bb2dde6"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
     "pkg/alcotest",
     "pkg/cert",
     "pkg/cors",
+    "pkg/crud",
     "pkg/dump",
     "pkg/gzip",
     "pkg/healthcheck",
@@ -26,6 +27,7 @@
     "pkg/model",
     "pkg/opentracing",
     "pkg/owasp",
+    "pkg/pagination",
     "pkg/query",
     "pkg/request",
     "pkg/rollbar",
@@ -34,7 +36,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "59f3065a45305cafb62152850bf4a5adc5da2c79"
+  revision = "b6d3cd35d8be695407c488c7142e582a1e626ebc"
 
 [[projects]]
   branch = "master"
@@ -204,6 +206,7 @@
     "github.com/ViBiOh/httputils/pkg",
     "github.com/ViBiOh/httputils/pkg/alcotest",
     "github.com/ViBiOh/httputils/pkg/cors",
+    "github.com/ViBiOh/httputils/pkg/crud",
     "github.com/ViBiOh/httputils/pkg/dump",
     "github.com/ViBiOh/httputils/pkg/gzip",
     "github.com/ViBiOh/httputils/pkg/healthcheck",
