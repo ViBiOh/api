@@ -1,9 +1,9 @@
 package echo
 
 import (
-	"log"
 	"net/http"
 
+	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/gorilla/websocket"
 )
 
@@ -22,13 +22,13 @@ func Handler() http.Handler {
 		if ws != nil {
 			defer func() {
 				if err := ws.Close(); err != nil {
-					log.Printf(`Error while closing connection: %v`, err)
+					logger.Error(`error while closing connection: %v`, err)
 				}
 			}()
 		}
 
 		if err != nil {
-			log.Print(err)
+			logger.Error(`%v`, err)
 			return
 		}
 
@@ -39,12 +39,12 @@ func Handler() http.Handler {
 			}
 
 			if err != nil {
-				log.Print(err)
+				logger.Error(`%v`, err)
 				return
 			}
 
 			if err = ws.WriteMessage(messageType, p); err != nil {
-				log.Print(err)
+				logger.Error(`%v`, err)
 				return
 			}
 		}
