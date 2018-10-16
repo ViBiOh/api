@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b72250c4a945ac58e13bfe8c3f89779fd52c73458bc14bb1e723075972b46e70"
+  digest = "1:a833826c81ef9e89aaeebdd3e9afbdad56b658f076a267fe6cb6ea1f91c45407"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -37,7 +37,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "b6b8c3b4bc4ba81030d7490e2bd5f3a1a46c9bc1"
+  revision = "55e0fe4bbad8dca85233b843cb8c907c416dba4d"
 
 [[projects]]
   branch = "master"
@@ -214,6 +214,7 @@
     "github.com/ViBiOh/httputils/pkg/healthcheck",
     "github.com/ViBiOh/httputils/pkg/httperror",
     "github.com/ViBiOh/httputils/pkg/httpjson",
+    "github.com/ViBiOh/httputils/pkg/logger",
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
     "github.com/ViBiOh/httputils/pkg/rollbar",
