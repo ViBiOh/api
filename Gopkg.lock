@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a833826c81ef9e89aaeebdd3e9afbdad56b658f076a267fe6cb6ea1f91c45407"
+  digest = "1:6e6658861264e9891ccac0800f06e770bdd361b217d14dae0a26f4ce87e88ee3"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -29,6 +29,7 @@
     "pkg/opentracing",
     "pkg/owasp",
     "pkg/pagination",
+    "pkg/prometheus",
     "pkg/query",
     "pkg/request",
     "pkg/rollbar",
@@ -37,7 +38,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "55e0fe4bbad8dca85233b843cb8c907c416dba4d"
+  revision = "2fa55f3c04629fa0b3a5be6a2efba29137fddaaa"
 
 [[projects]]
   branch = "master"
@@ -199,7 +200,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
+  revision = "04a2e542c03f1d053ab3e4d6e5abcd4b66e2be8e"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -217,6 +218,7 @@
     "github.com/ViBiOh/httputils/pkg/logger",
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
+    "github.com/ViBiOh/httputils/pkg/prometheus",
     "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
     "github.com/ViBiOh/httputils/pkg/uuid",

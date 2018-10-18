@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"html"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/httpjson"
+	"github.com/ViBiOh/httputils/pkg/logger"
 )
 
 type hello struct {
@@ -28,7 +28,7 @@ func Flags(prefix string) map[string]*string {
 func Handler(config map[string]*string) http.Handler {
 	location, err := time.LoadLocation(*config[`locationName`])
 	if err != nil {
-		log.Fatalf(`Error while loading location %s: %v`, *config[`locationName`], err)
+		logger.Error(`Error while loading location %s: %v`, *config[`locationName`], err)
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
