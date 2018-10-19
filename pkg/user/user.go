@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/ViBiOh/httputils/pkg/crud"
@@ -76,7 +75,7 @@ func (a *Service) Create(o crud.Item) (crud.Item, error) {
 
 	newID, err := uuid.New()
 	if err != nil {
-		return nil, fmt.Errorf(`error while generating UUID: %v`, err)
+		return nil, err
 	}
 
 	createdUser := &User{UUID: newID, Name: user.Name}
