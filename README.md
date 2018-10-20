@@ -6,7 +6,7 @@
 
 ## Usage
 
-```
+```bash
 Usage of api:
   -corsCredentials
       [cors] Access-Control-Allow-Credentials
@@ -18,6 +18,12 @@ Usage of api:
       [cors] Access-Control-Allow-Methods (default "GET")
   -corsOrigin string
       [cors] Access-Control-Allow-Origin (default "*")
+  -crudDefaultPage uint
+      [crud] Default page (default 1)
+  -crudDefaultPageSize uint
+      [crud] Default page size (default 20)
+  -crudMaxPageSize uint
+      [crud] Max page size (default 500)
   -csp string
       [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
   -frameOptions string
@@ -28,12 +34,8 @@ Usage of api:
       [hello] TimeZone for displaying current time (default "Europe/Paris")
   -port int
       Listen port (default 1080)
-  -rollbarEnv string
-      [rollbar] Environment (default "prod")
-  -rollbarServerRoot string
-      [rollbar] Server Root
-  -rollbarToken string
-      [rollbar] Token
+  -prometheusPath string
+      [prometheus] Path for exposing metrics (default "/metrics")
   -tls
       Serve TLS content (default true)
   -tlsCert string
@@ -51,5 +53,5 @@ Usage of api:
   -url string
       [health] URL to check
   -userAgent string
-      [health] User-Agent used (default "Golang alcotest")
+      [health] User-Agent for check (default "Golang alcotest")
 ```

@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:513dd6742f92fb2e82c5adb8685ab659245d4490fd17aaaa13f926d55d1b85f5"
+  digest = "1:0e9de506f6462f866db245ff85ee4b6bc7a749c87567c6495cc0aabd84be8b7b"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -33,13 +33,12 @@
     "pkg/prometheus",
     "pkg/query",
     "pkg/request",
-    "pkg/rollbar",
     "pkg/server",
     "pkg/tools",
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "0168b128387a7809255d260c5a0722025233c1c7"
+  revision = "a147310fb9a8c422292a2d6f7fe4781eda74919d"
 
 [[projects]]
   branch = "master"
@@ -130,7 +129,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3307c587aea10ad16379bcda6ab59ae71beda5893c99767a4c908760c7b5b996"
+  digest = "1:1261069fb38fbe59aba55117ee39c59814f211c027d66d59ed1c60e5c11b377c"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -138,7 +137,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "c5df33d3bef320f5f0a7ddc06ccef10a0433286c"
+  revision = "16b4535ad14a9ef20a9d9fd8055143c5faa15224"
 
 [[projects]]
   branch = "master"
@@ -152,14 +151,6 @@
   ]
   pruneopts = "UT"
   revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
-
-[[projects]]
-  digest = "1:8b6db3b490230af0836cd57f2da94e092ac0c2837fe24e762458006531749b53"
-  name = "github.com/rollbar/rollbar-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5f41889d7c6a59e4add07998cf776b1d335d287f"
-  version = "v1.0.1"
 
 [[projects]]
   digest = "1:ac6f26e917fd2fb3194a7ebe2baf6fb32de2f2fbfed130c18aac0e758a6e1d22"
@@ -220,7 +211,6 @@
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
     "github.com/ViBiOh/httputils/pkg/prometheus",
-    "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
     "github.com/ViBiOh/httputils/pkg/uuid",
     "github.com/gorilla/websocket",
