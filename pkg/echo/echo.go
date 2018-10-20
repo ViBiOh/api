@@ -3,6 +3,7 @@ package echo
 import (
 	"net/http"
 
+	"github.com/ViBiOh/httputils/pkg/errors"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/gorilla/websocket"
 )
@@ -22,7 +23,7 @@ func Handler() http.Handler {
 		if ws != nil {
 			defer func() {
 				if err := ws.Close(); err != nil {
-					logger.Error(`error while closing connection: %v`, err)
+					logger.Error(`%+v`, errors.WithStack(err))
 				}
 			}()
 		}
