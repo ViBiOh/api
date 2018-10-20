@@ -25,6 +25,7 @@ jobs:
 
   - stage: Deploy
 
+    script: echo Nothing
     deploy:
       provider: script
       skip_cleanup: true
