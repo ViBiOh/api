@@ -1,21 +1,24 @@
 package user
 
 import (
+	"context"
+	"encoding/json"
 	"sync"
 
 	"github.com/ViBiOh/httputils/pkg/crud"
 	"github.com/ViBiOh/httputils/pkg/uuid"
+	"github.com/pkg/errors"
 )
 
 // User describe a user
 type User struct {
-	UUID string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// ID returns ID
-func (a User) ID() string {
-	return a.UUID
+// SetID define ID
+func (a *User) SetID(id string) {
+	a.ID = id
 }
 
 // Service is a raw implementation of User
@@ -32,13 +35,19 @@ func NewService() *Service {
 	}
 }
 
-// Empty returns empy user
-func (a *Service) Empty() crud.Item {
-	return &User{}
+// Unmarsall a User
+func (a *Service) Unmarsall(content []byte) (crud.Item, error) {
+	var tag User
+
+	if err := json.Unmarshal(content, &tag); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &tag, nil
 }
 
 // List users
-func (a *Service) List(page, pageSize uint, _ string, _ bool) ([]crud.Item, error) {
+func (a *Service) List(_ context.Context, page, pageSize uint, _ string, _ bool, _ map[string][]string) ([]crud.Item, uint, error) {
 	list := make([]crud.Item, 0)
 	for _, value := range a.users {
 		list = append(list, value)
@@ -55,11 +64,11 @@ func (a *Service) List(page, pageSize uint, _ string, _ bool) ([]crud.Item, erro
 		max = listSize
 	}
 
-	return list[min:max], nil
+	return list[min:max], listSize, nil
 }
 
 // Get user by ID
-func (a *Service) Get(id string) (crud.Item, error) {
+func (a *Service) Get(_ context.Context, id string) (crud.Item, error) {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
 
@@ -67,7 +76,7 @@ func (a *Service) Get(id string) (crud.Item, error) {
 }
 
 // Create user
-func (a *Service) Create(o crud.Item) (crud.Item, error) {
+func (a *Service) Create(_ context.Context, o crud.Item) (crud.Item, error) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
@@ -78,39 +87,37 @@ func (a *Service) Create(o crud.Item) (crud.Item, error) {
 		return nil, err
 	}
 
-	createdUser := &User{UUID: newID, Name: user.Name}
-	a.users[createdUser.UUID] = createdUser
+	createdUser := &User{ID: newID, Name: user.Name}
+	a.users[createdUser.ID] = createdUser
 
 	return createdUser, nil
 }
 
 // Update user
-func (a *Service) Update(id string, o crud.Item) (crud.Item, error) {
+func (a *Service) Update(_ context.Context, o crud.Item) (crud.Item, error) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	foundUser, ok := a.users[id]
+	user := o.(*User)
+
+	foundUser, ok := a.users[user.ID]
 
 	if !ok {
 		return nil, crud.ErrNotFound
 	}
 
-	foundUser.Name = o.(*User).Name
+	foundUser.Name = user.Name
 	return foundUser, nil
 }
 
 // Delete user by ID
-func (a *Service) Delete(id string) error {
+func (a *Service) Delete(_ context.Context, o crud.Item) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	_, ok := a.users[id]
+	user := o.(*User)
 
-	if !ok {
-		return crud.ErrNotFound
-	}
-
-	delete(a.users, id)
+	delete(a.users, user.ID)
 
 	return nil
 }
