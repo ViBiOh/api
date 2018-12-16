@@ -9,7 +9,7 @@ import (
 	"github.com/ViBiOh/go-api/pkg/echo"
 	"github.com/ViBiOh/go-api/pkg/hello"
 	"github.com/ViBiOh/go-api/pkg/user"
-	"github.com/ViBiOh/httputils/pkg"
+	httputils "github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/crud"
