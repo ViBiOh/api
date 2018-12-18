@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:727bb9568237c9c76b755dfe8534b6a961f8abe1a417b8ab6603471e2ba39618"
+  digest = "1:d10f5adce0f4c9b000012ca3b20ab83e495a59cb54460d0bc5c871e12799f554"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -38,7 +38,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "c63a4d292c81848acc76c431f66e5140190df87e"
+  revision = "2fff2dd86693cb2230add917d8660d112cb7294a"
 
 [[projects]]
   branch = "master"
@@ -129,7 +129,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:db712fde5d12d6cdbdf14b777f0c230f4ff5ab0be8e35b239fc319953ed577a4"
+  digest = "1:33c81bf709f084827a560e14415b1d7001a6d1d6fa4bec2cc2e60b84ecbc0e0a"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -137,7 +137,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "4724e9255275ce38f7179b2478abeae4e28c904f"
+  revision = "67670fe90761d7ff18ec1d640135e53b9198328f"
 
 [[projects]]
   branch = "master"
@@ -192,7 +192,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "891ebc4b82d6e74f468c533b06f983c7be918a96"
+  revision = "e147a9138326bc0e9d4e179541ffd8af41cff8a9"
 
 [solve-meta]
   analyzer-name = "dep"

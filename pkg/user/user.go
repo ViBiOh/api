@@ -27,8 +27,8 @@ type Service struct {
 	mutex sync.RWMutex
 }
 
-// NewService creates a new user service
-func NewService() *Service {
+// New creates a new user service
+func New() *Service {
 	return &Service{
 		users: map[string]*User{},
 		mutex: sync.RWMutex{},
