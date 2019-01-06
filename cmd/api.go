@@ -31,7 +31,7 @@ const (
 )
 
 func main() {
-	fs := flag.NewFlagSet("api", flag.ExitOnError)
+	fs := flag.NewFlagSet(`api`, flag.ExitOnError)
 
 	serverConfig := httputils.Flags(fs, ``)
 	alcotestConfig := alcotest.Flags(fs, ``)
