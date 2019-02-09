@@ -24,6 +24,8 @@ Usage of api:
       [crud] Default page size (default 20)
   -crudMaxPageSize uint
       [crud] Max page size (default 500)
+  -crudPath string
+      [crud] HTTP Path prefix (default "/crud")
   -csp string
       [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
   -frameOptions string
