@@ -4,6 +4,8 @@ services:
   api:
     image: vibioh/api
     command:
+    - -tracingAgent
+    - monitoring_jaeger:6831
     - -tracingName
     - api
     labels:
