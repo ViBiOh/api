@@ -23,13 +23,13 @@ func Handler() http.Handler {
 		if ws != nil {
 			defer func() {
 				if err := ws.Close(); err != nil {
-					logger.Error(`%+v`, errors.WithStack(err))
+					logger.Error("%+v", errors.WithStack(err))
 				}
 			}()
 		}
 
 		if err != nil {
-			logger.Error(`%v`, err)
+			logger.Error("%v", err)
 			return
 		}
 
@@ -40,12 +40,12 @@ func Handler() http.Handler {
 			}
 
 			if err != nil {
-				logger.Error(`%v`, err)
+				logger.Error("%v", err)
 				return
 			}
 
 			if err = ws.WriteMessage(messageType, p); err != nil {
-				logger.Error(`%v`, err)
+				logger.Error("%v", err)
 				return
 			}
 		}

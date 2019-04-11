@@ -25,27 +25,27 @@ import (
 )
 
 const (
-	echoPath  = `/echo`
-	helloPath = `/hello`
-	dumpPath  = `/dump`
-	crudPath  = `/crud`
+	echoPath  = "/echo"
+	helloPath = "/hello"
+	dumpPath  = "/dump"
+	crudPath  = "/crud"
 )
 
 func main() {
-	fs := flag.NewFlagSet(`api`, flag.ExitOnError)
+	fs := flag.NewFlagSet("api", flag.ExitOnError)
 
-	serverConfig := httputils.Flags(fs, ``)
-	alcotestConfig := alcotest.Flags(fs, ``)
-	prometheusConfig := prometheus.Flags(fs, `prometheus`)
-	opentracingConfig := opentracing.Flags(fs, `tracing`)
-	owaspConfig := owasp.Flags(fs, ``)
-	corsConfig := cors.Flags(fs, `cors`)
+	serverConfig := httputils.Flags(fs, "")
+	alcotestConfig := alcotest.Flags(fs, "")
+	prometheusConfig := prometheus.Flags(fs, "prometheus")
+	opentracingConfig := opentracing.Flags(fs, "tracing")
+	owaspConfig := owasp.Flags(fs, "")
+	corsConfig := cors.Flags(fs, "cors")
 
-	helloConfig := hello.Flags(fs, ``)
-	crudConfig := crud.Flags(fs, `crud`)
+	helloConfig := hello.Flags(fs, "")
+	crudConfig := crud.Flags(fs, "crud")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
-		logger.Fatal(`%+v`, err)
+		logger.Fatal("%+v", err)
 	}
 
 	alcotest.DoAndExit(alcotestConfig)

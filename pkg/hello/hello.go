@@ -26,7 +26,7 @@ type Config struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
-		locationName: fs.String(tools.ToCamel(fmt.Sprintf(`%sLocation`, prefix)), `Europe/Paris`, `[hello] TimeZone for displaying current time`),
+		locationName: fs.String(tools.ToCamel(fmt.Sprintf("%sLocation", prefix)), "Europe/Paris", "[hello] TimeZone for displaying current time"),
 	}
 }
 
@@ -34,7 +34,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 func Handler(config Config) http.Handler {
 	location, err := time.LoadLocation(*config.locationName)
 	if err != nil {
-		logger.Error(`Error while loading location %s: %v`, *config.locationName, err)
+		logger.Error("Error while loading location %s: %v", *config.locationName, err)
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,12 +43,12 @@ func Handler(config Config) http.Handler {
 				httperror.InternalServerError(w, err)
 			}
 		} else {
-			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), `/`)
-			if name == `` {
-				name = `World`
+			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), "/")
+			if name == "" {
+				name = "World"
 			}
 
-			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf(`Hello %s, current time is %v !`, name, time.Now().In(location))}, httpjson.IsPretty(r)); err != nil {
+			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf("Hello %s, current time is %v !", name, time.Now().In(location))}, httpjson.IsPretty(r)); err != nil {
 				httperror.InternalServerError(w, err)
 			}
 		}
