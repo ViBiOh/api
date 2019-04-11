@@ -25,6 +25,7 @@ services:
     read_only: true
     cpu_shares: 128
     mem_limit: 25165824
+    user: 0
     security_opt:
     - no-new-privileges
 
