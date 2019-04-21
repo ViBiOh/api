@@ -2,4 +2,3 @@
 bin/
 vendor/
 coverage.*
-swagger.json

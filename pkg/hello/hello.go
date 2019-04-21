@@ -15,7 +15,6 @@ import (
 )
 
 // Hello represents the outputed welcome message
-// swagger:response Hello
 type Hello struct {
 	Name string `json:"greeting"`
 }
@@ -36,7 +35,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 func Handler(config Config) http.Handler {
 	location, err := time.LoadLocation(*config.locationName)
 	if err != nil {
-		logger.Error("Error while loading location %s: %v", *config.locationName, err)
+		logger.Error("error while loading location %s: %v", *config.locationName, err)
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -52,18 +51,6 @@ func Handler(config Config) http.Handler {
 			return
 		}
 
-		// swagger:route GET /hello hello
-		//
-		// Say hello
-		//
-		// Consumes:
-		// - application/json
-		//
-		// Produces:
-		// - application/json
-		//
-		// Responses:
-		// 200: Hello
 		name := strings.TrimPrefix(html.EscapeString(r.URL.Path), "/")
 		if name == "" {
 			name = "World"

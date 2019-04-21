@@ -47,12 +47,11 @@ $(APP_NAME): deps go
 
 ## go: Build app
 .PHONY: go
-go: format lint tst bench doc build
+go: format lint tst bench build
 
 ## deps: Download dependencies
 .PHONY: deps
 deps:
-	go get github.com/go-swagger/go-swagger/cmd/swagger
 	go get github.com/golang/dep/cmd/dep
 	go get github.com/kisielk/errcheck
 	go get golang.org/x/lint/golint
@@ -81,11 +80,6 @@ tst:
 .PHONY: bench
 bench:
 	go test $(APP_PACKAGES) -bench . -benchmem -run Benchmark.*
-
-## doc: Generate Swagger doc
-.PHONY: doc
-doc:
-	swagger generate spec -b ./cmd/ -o swagger.json
 
 ## build: Build binary
 .PHONY: build

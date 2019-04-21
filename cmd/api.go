@@ -1,12 +1,3 @@
-// Package main API sandbox
-//
-// Sandbox for testing API behavior
-//
-// Version: 0.0.1
-// Host: api.vibioh.fr
-// Schemes: https, wss
-//
-// swagger:meta
 package main
 
 import (
@@ -38,12 +29,7 @@ const (
 	helloPath = "/hello"
 	dumpPath  = "/dump"
 	crudPath  = "/crud"
-	docPath   = "/doc"
 )
-
-// JsonResponse describes a JSON
-// swagger:response json
-type jsonResponse map[string]interface{}
 
 func main() {
 	fs := flag.NewFlagSet("api", flag.ExitOnError)
@@ -86,18 +72,8 @@ func main() {
 			dumpHandler.ServeHTTP(w, r)
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, docPath) {
-
-			// swagger:route GET /doc doc
-			//
-			// Provide Swagger documentation of app
-			//
-			// Produces:
-			// - application/json
-			//
-			// Responses:
-			// 200: json
-			http.ServeFile(w, r, "swagger.json")
+		} else if r.URL.Path == "/swagger.yaml" {
+			http.ServeFile(w, r, "swagger.yaml")
 		} else {
 			httperror.NotFound(w)
 		}
