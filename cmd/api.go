@@ -1,3 +1,10 @@
+// API sandbox for ViBiOh
+//
+// Host: api.vibioh.fr
+//
+// Schemes: https, wss
+//
+// swagger:meta
 package main
 
 import (
@@ -36,12 +43,6 @@ const (
 // swagger:response json
 type jsonResponse map[string]interface{}
 
-// swagger:meta
-//
-// API sandbox for ViBiOh
-//
-// Host: api.vibioh.fr
-// Schemes: https wss
 func main() {
 	fs := flag.NewFlagSet("api", flag.ExitOnError)
 
