@@ -1,7 +1,9 @@
-// API sandbox for ViBiOh
+// Package main API sandbox
 //
+// Sandbox for testing API behavior
+//
+// Version: 0.0.1
 // Host: api.vibioh.fr
-//
 // Schemes: https, wss
 //
 // swagger:meta
