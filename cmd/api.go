@@ -32,6 +32,16 @@ const (
 	docPath   = "/doc"
 )
 
+// JsonResponse describes a JSON
+// swagger:response json
+type jsonResponse map[string]interface{}
+
+// swagger:meta
+//
+// API sandbox for ViBiOh
+//
+// Host: api.vibioh.fr
+// Schemes: https wss
 func main() {
 	fs := flag.NewFlagSet("api", flag.ExitOnError)
 
@@ -81,6 +91,9 @@ func main() {
 			//
 			// Produces:
 			// - application/json
+			//
+			// Responses:
+			// 200: json
 			http.ServeFile(w, r, "swagger.json")
 		} else {
 			httperror.NotFound(w)

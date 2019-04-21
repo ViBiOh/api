@@ -15,9 +15,8 @@ import (
 )
 
 // Hello represents the outputed welcome message
-// swagger:model
+// swagger:response Hello
 type Hello struct {
-	// required: true
 	Name string `json:"greeting"`
 }
 
@@ -55,7 +54,7 @@ func Handler(config Config) http.Handler {
 
 		// swagger:route GET /hello hello
 		//
-		// Say hello to caller
+		// Say hello
 		//
 		// Consumes:
 		// - application/json
