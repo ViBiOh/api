@@ -14,7 +14,10 @@ import (
 	"github.com/ViBiOh/httputils/pkg/tools"
 )
 
-type hello struct {
+// Hello represents the outputed welcome message
+// swagger:model
+type Hello struct {
+	// required: true
 	Name string `json:"greeting"`
 }
 
@@ -42,15 +45,33 @@ func Handler(config Config) http.Handler {
 			if _, err := w.Write(nil); err != nil {
 				httperror.InternalServerError(w, err)
 			}
-		} else {
-			name := strings.TrimPrefix(html.EscapeString(r.URL.Path), "/")
-			if name == "" {
-				name = "World"
-			}
+			return
+		}
 
-			if err := httpjson.ResponseJSON(w, http.StatusOK, hello{fmt.Sprintf("Hello %s, current time is %v !", name, time.Now().In(location))}, httpjson.IsPretty(r)); err != nil {
-				httperror.InternalServerError(w, err)
-			}
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		// swagger:route GET /hello hello
+		//
+		// Say hello to caller
+		//
+		// Consumes:
+		// - application/json
+		//
+		// Produces:
+		// - application/json
+		//
+		// Responses:
+		// 200: Hello
+		name := strings.TrimPrefix(html.EscapeString(r.URL.Path), "/")
+		if name == "" {
+			name = "World"
+		}
+
+		if err := httpjson.ResponseJSON(w, http.StatusOK, Hello{fmt.Sprintf("Hello %s, current time is %v !", name, time.Now().In(location))}, httpjson.IsPretty(r)); err != nil {
+			httperror.InternalServerError(w, err)
 		}
 	})
 }

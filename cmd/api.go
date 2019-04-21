@@ -29,6 +29,7 @@ const (
 	helloPath = "/hello"
 	dumpPath  = "/dump"
 	crudPath  = "/crud"
+	docPath   = "/doc"
 )
 
 func main() {
@@ -72,6 +73,15 @@ func main() {
 			dumpHandler.ServeHTTP(w, r)
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
+		} else if strings.HasPrefix(r.URL.Path, docPath) {
+
+			// swagger:route GET /doc doc
+			//
+			// Provide Swagger documentation of app
+			//
+			// Produces:
+			// - application/json
+			http.ServeFile(w, r, "swagger.json")
 		} else {
 			httperror.NotFound(w)
 		}

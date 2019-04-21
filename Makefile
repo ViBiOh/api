@@ -47,11 +47,12 @@ $(APP_NAME): deps go
 
 ## go: Build app
 .PHONY: go
-go: format lint tst bench build
+go: format lint tst bench doc build
 
 ## deps: Download dependencies
 .PHONY: deps
 deps:
+	go get github.com/go-swagger/go-swagger/cmd/swagger
 	go get github.com/golang/dep/cmd/dep
 	go get github.com/kisielk/errcheck
 	go get golang.org/x/lint/golint
@@ -81,14 +82,18 @@ tst:
 bench:
 	go test $(APP_PACKAGES) -bench . -benchmem -run Benchmark.*
 
+## doc: Generate Swagger doc
+.PHONY: doc
+doc:
+	swagger generate spec -b ./cmd/ -o swagger.json
+
 ## build: Build binary
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH) cmd/api.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH) $(SERVER_SOURCE)
 
 ## start: Start app
 .PHONY: start
 start:
 	$(SERVER_RUNNER) \
-		cmd/api.go \
 		-tls=false
