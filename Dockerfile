@@ -10,7 +10,8 @@ RUN make ${APP_NAME} \
  && mkdir -p /app \
  && curl -s -o /app/cacert.pem https://curl.haxx.se/ca/cacert.pem \
  && curl -s -o /app/zoneinfo.zip https://raw.githubusercontent.com/golang/go/master/lib/time/zoneinfo.zip \
- && cp bin/${APP_NAME} /app/
+ && cp bin/${APP_NAME} /app/ \
+ && cp swagger.json /app/
 
 FROM scratch
 
@@ -21,6 +22,6 @@ EXPOSE 1080
 HEALTHCHECK --retries=10 CMD [ "/api", "-url", "https://localhost:1080/health" ]
 ENTRYPOINT [ "/api" ]
 
-COPY ./swagger.json /swagger.json
+COPY --from=builder /app/swagger.json /swagger.json
 COPY --from=builder /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /app/zoneinfo.zip /app/${APP_NAME} /
