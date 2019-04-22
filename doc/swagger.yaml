@@ -125,12 +125,12 @@ paths:
         required: true
         content:
           application/json:
-            type: object
-            properties:
-              name:
-                type: string
-                required: true
-                description: User's name
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User's name
 
       responses:
         '201':
