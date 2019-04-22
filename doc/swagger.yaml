@@ -58,7 +58,7 @@ paths:
 
   /crud:
     get:
-      description: List users with paginations
+      description: List Users with pagination
       parameters:
         - name: page
           in: query
@@ -103,14 +103,14 @@ paths:
                     $ref: '#/components/schemas/Users'
 
         '400':
-          description: Invalid parameters for listing Users
+          description: Invalid pagination parameters
           content:
             text/plain:
               schema:
                 type: string
 
         '416':
-          description: No data to return for given pagination
+          description: No more data for pagination
 
         '500':
           description: Server-side error
@@ -141,7 +141,7 @@ paths:
                 $ref: '#/components/schemas/User'
 
         '400':
-          description: Invalid parameters for creating Users
+          description: Invalid payload for creation
           content:
             text/plain:
               schema:
@@ -157,10 +157,34 @@ paths:
     parameters:
       - name: id
         in: path
-        description: User's id to delete
+        description: User's ID
         required: true
         schema:
           type: string
+
+    get:
+      description: Retrieve a User
+
+      responses:
+        '200':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '500':
+          description: Server-side error
+          content:
+            text/plain:
+              $ref: '#/components/schemas/InternalServerError'
 
     put:
       description: Update a User
@@ -181,7 +205,7 @@ paths:
                 $ref: '#/components/schemas/User'
 
         '400':
-          description: Invalid parameters for updating Users
+          description: Invalid payload for update
           content:
             text/plain:
               schema:
