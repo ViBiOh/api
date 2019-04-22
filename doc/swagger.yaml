@@ -26,13 +26,6 @@ paths:
               schema:
                 type: string
 
-  /hello:
-    options:
-      description: Show hello options
-      responses:
-        '204':
-          description: Headers only response
-
   /hello/{name}:
     get:
       description: Say hello

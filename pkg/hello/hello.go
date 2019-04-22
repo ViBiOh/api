@@ -39,13 +39,6 @@ func Handler(config Config) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodOptions {
-			if _, err := w.Write(nil); err != nil {
-				httperror.InternalServerError(w, err)
-			}
-			return
-		}
-
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
