@@ -63,9 +63,9 @@ func main() {
 	crudApp := crud.New(crudConfig, user.New())
 
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
-	crudHandler := http.StripPrefix(crudPath, crudApp.Handler())
 	dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 	echoHandler := http.StripPrefix(echoPath, echo.Handler())
+	crudHandler := crudApp.Handler()
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, helloPath) {

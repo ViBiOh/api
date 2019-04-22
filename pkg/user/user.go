@@ -59,9 +59,14 @@ func (a *Service) List(_ context.Context, page, pageSize uint, _ string, _ bool,
 	if page > 1 {
 		min = (page - 1) * pageSize
 	}
+
 	max := min + pageSize
 	if max > listSize {
 		max = listSize
+	}
+
+	if min >= listSize {
+		return list, listSize, nil
 	}
 
 	return list[min:max], listSize, nil
@@ -72,7 +77,12 @@ func (a *Service) Get(_ context.Context, id string) (crud.Item, error) {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
 
-	return a.users[id], nil
+	user, ok := a.users[id]
+	if !ok {
+		return nil, crud.ErrNotFound
+	}
+
+	return user, nil
 }
 
 // Create user

@@ -14,6 +14,18 @@ paths:
         '503':
           description: App is shutting down
 
+  /dump:
+    get:
+      description: Dump request data
+
+      responses:
+        '200':
+          description: Request informations
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /hello:
     options:
       description: Show hello options
@@ -43,3 +55,191 @@ paths:
                   greeting:
                     type: string
                     description: Greeting sentence
+
+  /crud:
+    get:
+      description: List users with paginations
+      parameters:
+        - name: page
+          in: query
+          description: Page of list
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          description: Pagesize of list
+          required: false
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          description: Paginated list of Users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                    format: int64
+                    description: Page of list
+                  pageSize:
+                    type: integer
+                    format: int64
+                    description: Pagesize of list
+                  pageCount:
+                    type: integer
+                    format: int64
+                    description: Number of pages
+                  total:
+                    type: integer
+                    format: int64
+                    description: Total count of Users
+                  results:
+                    $ref: '#/components/schemas/Users'
+
+        '400':
+          description: Invalid parameters for listing Users
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '416':
+          description: No data to return for given pagination
+
+        '500':
+          description: Server-side error
+          content:
+            text/plain:
+              $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      description: Create a User
+      requestBody:
+        description: User to create
+        required: true
+        content:
+          application/json:
+            type: object
+            properties:
+              name:
+                type: string
+                required: true
+                description: User's name
+
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '400':
+          description: Invalid parameters for creating Users
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '500':
+          description: Server-side error
+          content:
+            text/plain:
+              $ref: '#/components/schemas/InternalServerError'
+
+  /crud/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: User's id to delete
+        required: true
+        schema:
+          type: string
+
+    put:
+      description: Update a User
+      requestBody:
+        description: User data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '400':
+          description: Invalid parameters for updating Users
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '500':
+          description: Server-side error
+          content:
+            text/plain:
+              $ref: '#/components/schemas/InternalServerError'
+
+    delete:
+      description: Delete a User
+
+      responses:
+        '204':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+        '404':
+          description: User not found
+          content:
+            text/plain:
+              schema:
+                type: string
+
+        '500':
+          description: Server-side error
+          content:
+            text/plain:
+              $ref: '#/components/schemas/InternalServerError'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: User's identifier
+        name:
+          type: string
+          description: User's name
+
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    InternalServerError:
+      type: string
