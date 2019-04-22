@@ -14,13 +14,14 @@ paths:
         '503':
           description: App is shutting down
 
-  /hello/${name}:
+  /hello:
     options:
       description: Show hello options
       responses:
         '204':
           description: Headers only response
 
+  /hello/{name}:
     get:
       description: Say hello
       parameters:
@@ -42,7 +43,3 @@ paths:
                   greeting:
                     type: string
                     description: Greeting sentence
-
-servers:
-  - url: 'https://api.vibioh.fr/'
-  - url: 'wss://api.vibioh.fr/'

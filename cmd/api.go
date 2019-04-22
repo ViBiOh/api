@@ -4,6 +4,7 @@ import (
 	"flag"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/ViBiOh/go-api/pkg/dump"
@@ -16,7 +17,6 @@ import (
 	"github.com/ViBiOh/httputils/pkg/crud"
 	"github.com/ViBiOh/httputils/pkg/gzip"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
-	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
@@ -29,6 +29,8 @@ const (
 	helloPath = "/hello"
 	dumpPath  = "/dump"
 	crudPath  = "/crud"
+
+	docPath = "doc/"
 )
 
 func main() {
@@ -72,10 +74,8 @@ func main() {
 			dumpHandler.ServeHTTP(w, r)
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
-		} else if r.URL.Path == "/swagger.yaml" {
-			http.ServeFile(w, r, "swagger.yaml")
 		} else {
-			httperror.NotFound(w)
+			http.ServeFile(w, r, path.Join(docPath, r.URL.Path))
 		}
 	})
 
