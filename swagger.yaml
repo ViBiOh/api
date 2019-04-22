@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: Sandbox for testing API behavior
   title: API sandbox
-  version: "0.0.1"
+  version: '0.0.1'
 
 paths:
   /health:
@@ -10,13 +10,27 @@ paths:
       description: Healthcheck of app
       responses:
         '204':
-          description: Everything fine
+          description: Everything is fine
         '503':
           description: App is shutting down
 
-  /hello:
+  /hello/${name}:
+    options:
+      description: Show hello options
+      responses:
+        '204':
+          description: Headers only response
+
     get:
       description: Say hello
+      parameters:
+        - name: name
+          in: path
+          description: Name to greet
+          required: false
+          schema:
+            type: string
+
       responses:
         '200':
           description: Greeting message
@@ -27,7 +41,7 @@ paths:
                 properties:
                   greeting:
                     type: string
-                    description: Greeting words
+                    description: Greeting sentence
 
 servers:
   - url: 'https://api.vibioh.fr/'
