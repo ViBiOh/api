@@ -67,6 +67,18 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: sort
+          in: query
+          description: Sort key of list
+          required: false
+          schema:
+            type: string
+        - name: desc
+          in: query
+          description: Sort by descending order
+          required: false
+          schema:
+            type: boolean
 
       responses:
         '200':
