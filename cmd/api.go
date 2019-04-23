@@ -75,6 +75,7 @@ func main() {
 		} else if strings.HasPrefix(r.URL.Path, crudPath) {
 			crudHandler.ServeHTTP(w, r)
 		} else {
+			w.Header().Set("Cache-Control", "no-cache")
 			http.ServeFile(w, r, path.Join(docPath, r.URL.Path))
 		}
 	})

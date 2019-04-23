@@ -49,11 +49,7 @@ func (a *Service) Unmarsall(content []byte) (crud.Item, error) {
 // List users
 func (a *Service) List(_ context.Context, page, pageSize uint, _ string, _ bool, _ map[string][]string) ([]crud.Item, uint, error) {
 	list := make([]crud.Item, 0)
-	for _, value := range a.users {
-		list = append(list, value)
-	}
-
-	listSize := uint(len(list))
+	listSize := uint(len(a.users))
 
 	var min uint
 	if page > 1 {
@@ -67,6 +63,10 @@ func (a *Service) List(_ context.Context, page, pageSize uint, _ string, _ bool,
 
 	if min >= listSize {
 		return list, listSize, nil
+	}
+
+	for _, value := range a.users {
+		list = append(list, value)
 	}
 
 	return list[min:max], listSize, nil
@@ -109,15 +109,9 @@ func (a *Service) Update(_ context.Context, o crud.Item) (crud.Item, error) {
 	defer a.mutex.Unlock()
 
 	user := o.(*User)
+	a.users[user.ID] = user
 
-	foundUser, ok := a.users[user.ID]
-
-	if !ok {
-		return nil, crud.ErrNotFound
-	}
-
-	foundUser.Name = user.Name
-	return foundUser, nil
+	return user, nil
 }
 
 // Delete user by ID
@@ -125,9 +119,7 @@ func (a *Service) Delete(_ context.Context, o crud.Item) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	user := o.(*User)
-
-	delete(a.users, user.ID)
+	delete(a.users, o.(*User).ID)
 
 	return nil
 }

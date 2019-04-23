@@ -123,6 +123,13 @@ paths:
             text/plain:
               $ref: '#/components/schemas/InternalServerError'
 
+    options:
+      description: Show crud headers
+
+      responses:
+        '204':
+          description: Headers for Users
+
     post:
       description: Create a User
       requestBody:
@@ -190,6 +197,13 @@ paths:
           content:
             text/plain:
               $ref: '#/components/schemas/InternalServerError'
+
+    options:
+      description: Show crud headers
+
+      responses:
+        '204':
+          description: Headers for Users
 
     put:
       description: Update a User
