@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2a527d4e5d2aff2dce9b657091cee2cfbb2ac3c35419e5803e26305986663261"
+  digest = "1:5206afc8fd8a9bf4ea3a55aa6defbb589c44a66b53265475945d6bdbd975758b"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -38,7 +38,7 @@
     "pkg/uuid",
   ]
   pruneopts = "UT"
-  revision = "680d6442679eba4ebfc8f9165dce00d1dd719b47"
+  revision = "6b9bbd27325cd599911510db788a6e0e2cb5379b"
 
 [[projects]]
   digest = "1:d6afaeed1502aa28e80a4ed0981d570ad91b2579193404256ce672ed0a609e0d"
