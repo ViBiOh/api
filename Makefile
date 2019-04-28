@@ -91,5 +91,4 @@ build:
 start:
 	$(SERVER_RUNNER) \
 		-corsMethods "GET,OPTIONS,POST,PUT,DELETE" \
-		-tls=false \
 		-csp "default-src 'self'; base-uri 'self'; script-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; style-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; img-src 'self' data:; connect-src 'self' api.vibioh.fr"
