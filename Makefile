@@ -47,7 +47,7 @@ $(APP_NAME): deps go
 
 ## go: Build app
 .PHONY: go
-go: format lint tst bench build
+go: format lint test bench build
 
 ## deps: Download dependencies
 .PHONY: deps
@@ -71,9 +71,9 @@ lint:
 	errcheck -ignoretests $(APP_PACKAGES)
 	go vet $(APP_PACKAGES)
 
-## tst: Test with coverage
-.PHONY: tst
-tst:
+## test: Test with coverage
+.PHONY: test 
+test:
 	script/coverage
 
 ## bench: Benchmark code
