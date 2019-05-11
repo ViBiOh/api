@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/ViBiOh/httputils/pkg/crud"
+	"github.com/ViBiOh/httputils/pkg/errors"
 	"github.com/ViBiOh/httputils/pkg/uuid"
-	"github.com/pkg/errors"
 )
 
 // User describe a user
