@@ -52,7 +52,11 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp := httputils.New(serverConfig)
+	serverApp, err := httputils.New(serverConfig)
+	if err != nil {
+		logger.Fatal("%+v", err)
+	}
+
 	healthcheckApp := healthcheck.New()
 	prometheusApp := prometheus.New(prometheusConfig)
 	opentracingApp := opentracing.New(opentracingConfig)
@@ -65,7 +69,7 @@ func main() {
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
 	dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 	echoHandler := http.StripPrefix(echoPath, echo.Handler())
-	crudHandler := crudApp.Handler()
+	crudHandler := http.StripPrefix(crudPath, crudApp.Handler())
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, helloPath) {

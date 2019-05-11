@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: Sandbox for testing API behavior
   title: API sandbox
-  version: '0.0.1'
+  version: '1.0.0'
 
 paths:
   /health:
@@ -56,27 +56,25 @@ paths:
         - name: page
           in: query
           description: Page of list
-          required: false
+          default: 1
           schema:
             type: integer
             format: int64
         - name: pageSize
           in: query
-          description: Pagesize of list
-          required: false
+          description: Page size of list
+          default: 20
           schema:
             type: integer
             format: int64
         - name: sort
           in: query
           description: Sort key of list
-          required: false
           schema:
             type: string
         - name: desc
           in: query
           description: Sort by descending order
-          required: false
           schema:
             type: boolean
 
@@ -118,10 +116,7 @@ paths:
           description: No more data for pagination
 
         '500':
-          description: Server-side error
-          content:
-            text/plain:
-              $ref: '#/components/schemas/InternalServerError'
+          $ref: '#/components/schemas/Error'
 
     options:
       description: Show crud headers
@@ -160,10 +155,7 @@ paths:
                 type: string
 
         '500':
-          description: Server-side error
-          content:
-            text/plain:
-              $ref: '#/components/schemas/InternalServerError'
+          $ref: '#/components/schemas/Error'
 
   /crud/{id}:
     parameters:
@@ -193,10 +185,7 @@ paths:
                 type: string
 
         '500':
-          description: Server-side error
-          content:
-            text/plain:
-              $ref: '#/components/schemas/InternalServerError'
+          $ref: '#/components/schemas/Error'
 
     options:
       description: Show crud headers
@@ -238,10 +227,7 @@ paths:
                 type: string
 
         '500':
-          description: Server-side error
-          content:
-            text/plain:
-              $ref: '#/components/schemas/InternalServerError'
+          $ref: '#/components/schemas/Error'
 
     delete:
       description: Delete a User
@@ -262,10 +248,7 @@ paths:
                 type: string
 
         '500':
-          description: Server-side error
-          content:
-            text/plain:
-              $ref: '#/components/schemas/InternalServerError'
+          $ref: '#/components/schemas/Error'
 
 components:
   schemas:
@@ -284,5 +267,9 @@ components:
       items:
         $ref: '#/components/schemas/User'
 
-    InternalServerError:
-      type: string
+    Error:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
