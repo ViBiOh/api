@@ -15,7 +15,7 @@ FROM scratch
 ENV ZONEINFO zoneinfo.zip
 EXPOSE 1080
 
-HEALTHCHECK --retries=10 CMD /api -url http://localhost:1080/health
+HEALTHCHECK --retries=10 CMD [ "/api", "-url", "http://localhost:1080/health" ]
 ENTRYPOINT [ "/api" ]
 
 ARG APP_VERSION
