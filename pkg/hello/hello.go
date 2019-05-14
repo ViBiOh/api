@@ -14,7 +14,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg/tools"
 )
 
-// Hello represents the outputed welcome message
+// Hello represents the outputted welcome message
 type Hello struct {
 	Name string `json:"greeting"`
 }
