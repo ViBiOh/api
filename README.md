@@ -1,8 +1,8 @@
-# go-api
+# api
 
-[![Build Status](https://travis-ci.org/ViBiOh/go-api.svg?branch=master)](https://travis-ci.org/ViBiOh/go-api)
-[![codecov](https://codecov.io/gh/ViBiOh/go-api/branch/master/graph/badge.svg)](https://codecov.io/gh/ViBiOh/go-api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/go-api)](https://goreportcard.com/report/github.com/ViBiOh/go-api)
+[![Build Status](https://travis-ci.org/ViBiOh/api.svg?branch=master)](https://travis-ci.org/ViBiOh/api)
+[![codecov](https://codecov.io/gh/ViBiOh/api/branch/master/graph/badge.svg)](https://codecov.io/gh/ViBiOh/api)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/api)](https://goreportcard.com/report/github.com/ViBiOh/api)
 
 ## Usage
 

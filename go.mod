@@ -1,4 +1,4 @@
-module github.com/ViBiOh/go-api
+module github.com/ViBiOh/api
 
 go 1.12
 
