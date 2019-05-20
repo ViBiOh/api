@@ -10,7 +10,11 @@ import (
 // Handler for dump request. Should be use with net/http
 func Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if _, err := w.Write([]byte(dump.Request(r))); err != nil {
+		value := dump.Request(r)
+
+		logger.Info("Dump of request\n%s", value)
+
+		if _, err := w.Write([]byte(value)); err != nil {
 			httperror.InternalServerError(w, err)
 		}
 	})
