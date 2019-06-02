@@ -23,7 +23,7 @@ func Handler() http.Handler {
 		if ws != nil {
 			defer func() {
 				if err := ws.Close(); err != nil {
-					logger.Error("%+v", errors.WithStack(err))
+					logger.Error("%#v", errors.WithStack(err))
 				}
 			}()
 		}
