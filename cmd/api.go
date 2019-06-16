@@ -29,8 +29,7 @@ const (
 	helloPath = "/hello"
 	dumpPath  = "/dump"
 	crudPath  = "/crud"
-
-	docPath = "doc/"
+	docPath   = "doc/"
 )
 
 func main() {
