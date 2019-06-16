@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-goFiles=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "\.go$" | sed 'N;s/\n/ /g')
+goFiles=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "\.go$" | tr '\n' ' ')
 
 BLUE='\033[0;34m'
 RED='\033[0;31m'
