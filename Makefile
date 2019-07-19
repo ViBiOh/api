@@ -1,5 +1,10 @@
 SHELL = /bin/sh
 
+ifneq ("$(wildcard .env)","")
+	include .env
+	export
+endif
+
 APP_NAME = api
 PACKAGES ?= ./...
 GO_FILES ?= */*.go */*/*.go
@@ -69,7 +74,7 @@ lint:
 	go vet $(PACKAGES)
 
 ## test: Test with coverage
-.PHONY: test 
+.PHONY: test
 test:
 	script/coverage
 
