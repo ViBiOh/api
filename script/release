@@ -4,8 +4,8 @@ set -o nounset -o pipefail -o errexit
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 readonly OUTPUT_DIR="${SCRIPT_DIR}/../release"
-readonly TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
 readonly OUTPUT_TXT="output.txt"
+readonly TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
 
 read_variable_if_required() {
   if [[ -z "${!1:-}" ]]; then
