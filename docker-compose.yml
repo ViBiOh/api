@@ -8,10 +8,6 @@ services:
     - GET,OPTIONS,POST,PUT,DELETE
     - -csp
     - "default-src 'self'; base-uri 'self'; script-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; style-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; img-src 'self' data:; connect-src 'self' api.vibioh.fr"
-    - -tracingAgent
-    - monitoring_jaeger_1:6831
-    - -tracingName
-    - api
     labels:
       traefik.frontend.passHostHeader: 'true'
       traefik.frontend.rule: 'Host: api.vibioh.fr'
