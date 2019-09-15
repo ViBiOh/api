@@ -46,9 +46,6 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp, err := httputils.New(serverConfig)
-	logger.Fatal(err)
-
 	prometheusApp := prometheus.New(prometheusConfig)
 	opentracingApp := opentracing.New(opentracingConfig)
 	owaspApp := owasp.New(owaspConfig)
@@ -76,7 +73,7 @@ func main() {
 
 	restHandler := httputils.ChainMiddlewares(handler, prometheusApp, opentracingApp, owaspApp, corsApp)
 
-	serverApp.ListenAndServe(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	httputils.New(serverConfig).ListenAndServe(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, echoPath) {
 			echoHandler.ServeHTTP(w, r)
 		} else {
