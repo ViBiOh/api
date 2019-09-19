@@ -4,26 +4,18 @@ services:
   api:
     image: vibioh/api
     labels:
-      traefik.http.routers.about-http.rule: Host(`api.vibioh.fr`)
-      traefik.http.routers.about-http.entrypoints: http
-      traefik.http.routers.about-http.middlewares: redirect@file
-      traefik.http.routers.about-https.rule: Host(`api.vibioh.fr`)
-      traefik.http.routers.about-https.entrypoints: https
-      traefik.http.routers.about-https.middlewares: compress@file
-      traefik.http.routers.about-https.tls: true
-      traefik.http.routers.about-https.tls.certResolver: default
-      traefik.http.services.about-service.loadbalancer.passhostheader: true
-      traefik.http.services.about-service.loadbalancer.server.port: '1080'
-      traefik.http.middlewares.about-rate-limit.ratelimit.average: '10'
-      traefik.http.middlewares.about-rate-limit.ratelimit.burst: '50'
-      traefik.frontend.passHostHeader: 'true'
-      traefik.frontend.rule: 'Host: api.vibioh.fr'
-      traefik.protocol: 'http'
-      traefik.port: '1080'
-      traefik.frontend.rateLimit.extractorFunc: 'client.ip'
-      traefik.frontend.rateLimit.rateSet.first.period: '60s'
-      traefik.frontend.rateLimit.rateSet.first.average: '100'
-      traefik.frontend.rateLimit.rateSet.first.burst: '200'
+      traefik.http.routers.api-http.rule: Host(`api.vibioh.fr`)
+      traefik.http.routers.api-http.entrypoints: http
+      traefik.http.routers.api-http.middlewares: redirect@file
+      traefik.http.routers.api-https.rule: Host(`api.vibioh.fr`)
+      traefik.http.routers.api-https.entrypoints: https
+      traefik.http.routers.api-https.middlewares: compress@file
+      traefik.http.routers.api-https.tls: true
+      traefik.http.routers.api-https.tls.certResolver: default
+      traefik.http.services.api-service.loadbalancer.passhostheader: true
+      traefik.http.services.api-service.loadbalancer.server.port: '1080'
+      traefik.http.middlewares.api-rate-limit.ratelimit.average: '10'
+      traefik.http.middlewares.api-rate-limit.ratelimit.burst: '50'
     environment:
       API_CORS_METHODS: GET,OPTIONS,POST,PUT,DELETE
       API_CSP: "default-src 'self'; base-uri 'self'; script-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; style-src 'self' 'unsafe-inline' unpkg.com/swagger-ui-dist@3/; img-src 'self' data:; connect-src 'self' api.vibioh.fr"
