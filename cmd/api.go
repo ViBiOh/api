@@ -11,14 +11,14 @@ import (
 	"github.com/ViBiOh/api/pkg/echo"
 	"github.com/ViBiOh/api/pkg/hello"
 	"github.com/ViBiOh/api/pkg/user"
-	httputils "github.com/ViBiOh/httputils/pkg"
-	"github.com/ViBiOh/httputils/pkg/alcotest"
-	"github.com/ViBiOh/httputils/pkg/cors"
-	"github.com/ViBiOh/httputils/pkg/crud"
-	"github.com/ViBiOh/httputils/pkg/logger"
-	"github.com/ViBiOh/httputils/pkg/opentracing"
-	"github.com/ViBiOh/httputils/pkg/owasp"
-	"github.com/ViBiOh/httputils/pkg/prometheus"
+	httputils "github.com/ViBiOh/httputils/v2/pkg"
+	"github.com/ViBiOh/httputils/v2/pkg/alcotest"
+	"github.com/ViBiOh/httputils/v2/pkg/cors"
+	"github.com/ViBiOh/httputils/v2/pkg/crud"
+	"github.com/ViBiOh/httputils/v2/pkg/logger"
+	"github.com/ViBiOh/httputils/v2/pkg/opentracing"
+	"github.com/ViBiOh/httputils/v2/pkg/owasp"
+	"github.com/ViBiOh/httputils/v2/pkg/prometheus"
 )
 
 const (

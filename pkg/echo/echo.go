@@ -3,8 +3,8 @@ package echo
 import (
 	"net/http"
 
-	"github.com/ViBiOh/httputils/pkg/errors"
-	"github.com/ViBiOh/httputils/pkg/logger"
+	"github.com/ViBiOh/httputils/v2/pkg/errors"
+	"github.com/ViBiOh/httputils/v2/pkg/logger"
 	"github.com/gorilla/websocket"
 )
 

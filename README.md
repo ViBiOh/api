@@ -8,44 +8,46 @@
 
 ```bash
 Usage of api:
+  -address string
+        [http] Listen address {API_ADDRESS}
   -cert string
-        [http] Certificate file
+        [http] Certificate file {API_CERT}
   -corsCredentials
-        [cors] Access-Control-Allow-Credentials
+        [cors] Access-Control-Allow-Credentials {API_CORS_CREDENTIALS}
   -corsExpose string
-        [cors] Access-Control-Expose-Headers
+        [cors] Access-Control-Expose-Headers {API_CORS_EXPOSE}
   -corsHeaders string
-        [cors] Access-Control-Allow-Headers (default "Content-Type")
+        [cors] Access-Control-Allow-Headers {API_CORS_HEADERS} (default "Content-Type")
   -corsMethods string
-        [cors] Access-Control-Allow-Methods (default "GET")
+        [cors] Access-Control-Allow-Methods {API_CORS_METHODS} (default "GET")
   -corsOrigin string
-        [cors] Access-Control-Allow-Origin (default "*")
+        [cors] Access-Control-Allow-Origin {API_CORS_ORIGIN} (default "*")
   -crudDefaultPage uint
-        [crud] Default page (default 1)
+        [crud] Default page {API_CRUD_DEFAULT_PAGE} (default 1)
   -crudDefaultPageSize uint
-        [crud] Default page size (default 20)
+        [crud] Default page size {API_CRUD_DEFAULT_PAGE_SIZE} (default 20)
   -crudMaxPageSize uint
-        [crud] Max page size (default 500)
+        [crud] Max page size {API_CRUD_MAX_PAGE_SIZE} (default 500)
   -csp string
-        [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
+        [owasp] Content-Security-Policy {API_CSP} (default "default-src 'self'; base-uri 'self'")
   -frameOptions string
-        [owasp] X-Frame-Options (default "deny")
+        [owasp] X-Frame-Options {API_FRAME_OPTIONS} (default "deny")
   -hsts
-        [owasp] Indicate Strict Transport Security (default true)
+        [owasp] Indicate Strict Transport Security {API_HSTS} (default true)
   -key string
-        [http] Key file
+        [http] Key file {API_KEY}
   -location string
-        [hello] TimeZone for displaying current time (default "Europe/Paris")
+        [hello] TimeZone for displaying current time {API_LOCATION} (default "Europe/Paris")
   -port int
-        [http] Listen port (default 1080)
+        [http] Listen port {API_PORT} (default 1080)
   -prometheusPath string
-        [prometheus] Path for exposing metrics (default "/metrics")
+        [prometheus] Path for exposing metrics {API_PROMETHEUS_PATH} (default "/metrics")
   -tracingAgent string
-        [tracing] Jaeger Agent (e.g. host:port) (default "jaeger:6831")
+        [tracing] Jaeger Agent (e.g. host:port) {API_TRACING_AGENT} (default "jaeger:6831")
   -tracingName string
-        [tracing] Service name
+        [tracing] Service name {API_TRACING_NAME}
   -url string
-        [alcotest] URL to check
+        [alcotest] URL to check {API_URL}
   -userAgent string
-        [alcotest] User-Agent for check (default "Golang alcotest")
+        [alcotest] User-Agent for check {API_USER_AGENT} (default "Golang alcotest")
 ```
