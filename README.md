@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/ViBiOh/api.svg?branch=master)](https://travis-ci.org/ViBiOh/api)
 [![codecov](https://codecov.io/gh/ViBiOh/api/branch/master/graph/badge.svg)](https://codecov.io/gh/ViBiOh/api)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/api)](https://goreportcard.com/report/github.com/ViBiOh/api)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ViBiOh/api)](https://dependabot.com)
 
 ## Usage
 
