@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/ViBiOh/httputils/v2/pkg/crud"
-	"github.com/ViBiOh/httputils/v2/pkg/errors"
-	"github.com/ViBiOh/httputils/v2/pkg/uuid"
+	"github.com/ViBiOh/httputils/v3/pkg/crud"
+	"github.com/ViBiOh/httputils/v3/pkg/uuid"
 )
 
 // User describe a user
@@ -40,7 +39,7 @@ func (a *Service) Unmarsall(content []byte) (crud.Item, error) {
 	var tag User
 
 	if err := json.Unmarshal(content, &tag); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	return &tag, nil

@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/httputils/v2/pkg/errors"
-	"github.com/ViBiOh/httputils/v2/pkg/httperror"
-	"github.com/ViBiOh/httputils/v2/pkg/logger"
-	"github.com/ViBiOh/httputils/v2/pkg/request"
+	"github.com/ViBiOh/httputils/v3/pkg/httperror"
+	"github.com/ViBiOh/httputils/v3/pkg/logger"
+	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
 
 // Handler for dump request. Should be use with net/http
@@ -20,7 +19,7 @@ func Handler() http.Handler {
 		logger.Info("Dump of request\n%s", value)
 
 		if _, err := w.Write([]byte(value)); err != nil {
-			httperror.InternalServerError(w, errors.WithStack(err))
+			httperror.InternalServerError(w, err)
 		}
 	})
 }
