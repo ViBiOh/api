@@ -46,7 +46,7 @@ func dumpRequest(r *http.Request) string {
 
 	body, err := request.ReadBodyRequest(r)
 	if err != nil {
-		logger.Error("%#v", err)
+		logger.Error("%s", err)
 	}
 
 	var outputPattern bytes.Buffer
