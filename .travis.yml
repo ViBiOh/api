@@ -5,10 +5,10 @@ jobs:
     sudo: required
     services:
     - docker
-    script: docker build --build-arg CODECOV_TOKEN --build-arg "APP_VERSION=$(make version)" -t "vibioh/$(make name):$(make version)" .
+    script: docker build --build-arg CODECOV_TOKEN --build-arg "APP_VERSION=$(make version)" -t "${DOCKER_USER}/$(make name):$(make version)" .
     after_success:
-    - echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
-    - docker push "vibioh/$(make name):$(make version)"
+    - echo "${DOCKER_PASS}" | docker login -u ${DOCKER_USER} --password-stdin
+    - docker push "${DOCKER_USER}/$(make name):$(make version)"
 
   - stage: Publish
 
@@ -16,26 +16,16 @@ jobs:
     services:
     - docker
     script:
-    - echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
-    - docker pull "vibioh/$(make name):$(make version)"
-    - docker tag "vibioh/$(make name):$(make version)" "vibioh/$(make name):latest"
-    - docker push "vibioh/$(make name):latest"
+    - echo "${DOCKER_PASS}" | docker login -u ${DOCKER_USER} --password-stdin
+    - docker pull "${DOCKER_USER}/$(make name):$(make version)"
+    - docker tag "${DOCKER_USER}/$(make name):$(make version)" "${DOCKER_USER}/$(make name):latest"
+    - docker push "${DOCKER_USER}/$(make name):latest"
     after_success:
     - curl -q -sS -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/api
-
-  - stage: Deploy
-
-    script: echo Nothing
-    deploy:
-      provider: script
-      skip_cleanup: true
-      script: bash script/deploy "$(make name)" "@docker-compose.yml"
 
 stages:
   - Build
   - name: Publish
-    if: branch = master && type = push
-  - name: Deploy
     if: branch = master && type = push
 
 notifications:
