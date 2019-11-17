@@ -11,10 +11,10 @@ import (
 	"github.com/ViBiOh/api/pkg/echo"
 	"github.com/ViBiOh/api/pkg/hello"
 	"github.com/ViBiOh/api/pkg/user"
-	httputils "github.com/ViBiOh/httputils/v3/pkg"
 	"github.com/ViBiOh/httputils/v3/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
 	"github.com/ViBiOh/httputils/v3/pkg/crud"
+	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
 	"github.com/ViBiOh/httputils/v3/pkg/prometheus"
@@ -44,10 +44,6 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	prometheusApp := prometheus.New(prometheusConfig)
-	owaspApp := owasp.New(owaspConfig)
-	corsApp := cors.New(corsConfig)
-
 	crudApp := crud.New(crudConfig, user.New())
 
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
@@ -68,13 +64,14 @@ func main() {
 		}
 	})
 
-	restHandler := httputils.ChainMiddlewares(handler, prometheusApp, owaspApp, corsApp)
+	restHandler := httputils.ChainMiddlewares(handler, prometheus.New(prometheusConfig), owasp.New(owaspConfig), cors.New(corsConfig))
 
-	httputils.New(serverConfig).ListenAndServe(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httputils.New(serverConfig)
+	server.ListenServeWait(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, echoPath) {
 			echoHandler.ServeHTTP(w, r)
 		} else {
 			restHandler.ServeHTTP(w, r)
 		}
-	}), httputils.HealthHandler(nil), nil)
+	}))
 }

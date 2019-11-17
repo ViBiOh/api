@@ -46,5 +46,5 @@ Usage of api:
   -url string
         [alcotest] URL to check {API_URL}
   -userAgent string
-        [alcotest] User-Agent for check {API_USER_AGENT} (default "Golang alcotest")
+        [alcotest] User-Agent for check {API_USER_AGENT} (default "Alcotest")
 ```
