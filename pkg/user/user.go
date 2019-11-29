@@ -4,32 +4,32 @@ import (
 	"context"
 	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/ViBiOh/httputils/v3/pkg/crud"
-	"github.com/ViBiOh/httputils/v3/pkg/uuid"
 )
 
 // User describe a user
 type User struct {
-	ID   string `json:"id"`
+	ID   uint64 `json:"id"`
 	Name string `json:"name"`
 }
 
 // SetID define ID
-func (a *User) SetID(id string) {
+func (a *User) SetID(id uint64) {
 	a.ID = id
 }
 
 // Service is a raw implementation of User
 type Service struct {
-	users map[string]*User
+	users map[uint64]*User
 	mutex sync.RWMutex
 }
 
 // New creates a new user service
 func New() *Service {
 	return &Service{
-		users: map[string]*User{},
+		users: map[uint64]*User{},
 		mutex: sync.RWMutex{},
 	}
 }
@@ -72,7 +72,7 @@ func (a *Service) List(_ context.Context, page, pageSize uint, _ string, _ bool,
 }
 
 // Get user by ID
-func (a *Service) Get(_ context.Context, id string) (crud.Item, error) {
+func (a *Service) Get(_ context.Context, id uint64) (crud.Item, error) {
 	a.mutex.RLock()
 	defer a.mutex.RUnlock()
 
@@ -91,12 +91,7 @@ func (a *Service) Create(_ context.Context, o crud.Item) (crud.Item, error) {
 
 	user := o.(*User)
 
-	newID, err := uuid.New()
-	if err != nil {
-		return nil, err
-	}
-
-	createdUser := &User{ID: newID, Name: user.Name}
+	createdUser := &User{ID: uint64(time.Now().Unix()), Name: user.Name}
 	a.users[createdUser.ID] = createdUser
 
 	return createdUser, nil
