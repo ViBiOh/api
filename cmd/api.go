@@ -10,10 +10,8 @@ import (
 	"github.com/ViBiOh/api/pkg/dump"
 	"github.com/ViBiOh/api/pkg/echo"
 	"github.com/ViBiOh/api/pkg/hello"
-	"github.com/ViBiOh/api/pkg/user"
 	"github.com/ViBiOh/httputils/v3/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
-	"github.com/ViBiOh/httputils/v3/pkg/crud"
 	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
@@ -24,7 +22,6 @@ const (
 	echoPath  = "/echo"
 	helloPath = "/hello"
 	dumpPath  = "/dump"
-	crudPath  = "/crud"
 	docPath   = "doc/"
 )
 
@@ -38,26 +35,20 @@ func main() {
 	corsConfig := cors.Flags(fs, "cors")
 
 	helloConfig := hello.Flags(fs, "")
-	crudConfig := crud.Flags(fs, "crud")
 
 	logger.Fatal(fs.Parse(os.Args[1:]))
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	crudApp := crud.New(crudConfig, user.New())
-
 	helloHandler := http.StripPrefix(helloPath, hello.Handler(helloConfig))
 	dumpHandler := http.StripPrefix(dumpPath, dump.Handler())
 	echoHandler := http.StripPrefix(echoPath, echo.Handler())
-	crudHandler := http.StripPrefix(crudPath, crudApp.Handler())
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, helloPath) {
 			helloHandler.ServeHTTP(w, r)
 		} else if strings.HasPrefix(r.URL.Path, dumpPath) {
 			dumpHandler.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, crudPath) {
-			crudHandler.ServeHTTP(w, r)
 		} else {
 			w.Header().Set("Cache-Control", "no-cache")
 			http.ServeFile(w, r, path.Join(docPath, r.URL.Path))
