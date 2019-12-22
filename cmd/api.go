@@ -55,7 +55,7 @@ func main() {
 		}
 	})
 
-	restHandler := httputils.ChainMiddlewares(handler, prometheus.New(prometheusConfig), owasp.New(owaspConfig), cors.New(corsConfig))
+	restHandler := httputils.ChainMiddlewares(handler, prometheus.New(prometheusConfig).Middleware, owasp.New(owaspConfig).Middleware, cors.New(corsConfig).Middleware)
 
 	server := httputils.New(serverConfig)
 	server.ListenServeWait(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
