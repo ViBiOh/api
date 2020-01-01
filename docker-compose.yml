@@ -4,7 +4,7 @@ version: "2"
 
 services:
   api:
-    image: vibioh/api
+    image: ${DOCKER_USER}/api
     labels:
       traefik.http.routers.api-http.rule: Host(`api.vibioh.fr`)
       traefik.http.routers.api-http.entrypoints: http
